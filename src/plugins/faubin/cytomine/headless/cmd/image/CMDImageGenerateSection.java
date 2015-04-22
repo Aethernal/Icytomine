@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.headless.cmd.project;
+package plugins.faubin.cytomine.headless.cmd.image;
 
 import icy.sequence.Sequence;
 
@@ -13,14 +13,15 @@ import plugins.faubin.cytomine.utils.roi.roi2dpolygon.CytomineImportedROI;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
 
-public class CMDProjectGenerateSection extends CMD {
+public class CMDImageGenerateSection extends CMD {
 
-	public CMDProjectGenerateSection(Console console) {
+	public CMDImageGenerateSection(Console console) {
 		super(console);
 
 		String command = "generate_section";
-		String description = "Generate ROI of the sections for all the images in the project and upload them to cytomine";
-		String[] arguments = new String[] { "(long) projectID", "(int) image_max_size" };
+		String description = "Generate the sections ROIs of the image and upload them to cytomine";
+		String[] arguments = new String[] { "(long) imageID",
+				"(int) image_max_size" };
 
 		super.initialize(command, description, arguments);
 
@@ -36,47 +37,36 @@ public class CMDProjectGenerateSection extends CMD {
 			public Object call() {
 				int nbAnnotations = 0;
 				try {
-					long projectID = Long.parseLong(args[0]);
+					long imageID = Long.parseLong(args[0]);
 					try {
 						final int maxSize = Integer.parseInt(args[1]);
 						try {
-							final ImageInstanceCollection collection = console.cytomine
-									.getImageInstances(projectID);
 
-							// variables
-							int count = 0;
-
-							for (int i = 0; i < collection.size(); i++) {
-
-								ImageInstance instance = collection.get(i);
-								try {
-									System.out.println("generating ROIs ...");
-									
-									// downloading image
-									Sequence seq = CytomineUtil
-											.loadImage(instance,
-													console.cytomine, maxSize);
-									// creating rois
-									List<CytomineImportedROI> rois = CytomineUtil
-											.generateSectionsROI(seq);
-									// adding roi to sequence
-									for (int j = 0; j < rois.size(); j++) {
-										seq.addROI(rois.get(j));
-									}
-									nbAnnotations += CytomineUtil.uploadRoi(
-											console.cytomine, instance, seq);
-
-								} catch (Exception e) {
-									e.printStackTrace();
+							ImageInstance instance = console.cytomine
+									.getImageInstance(imageID);
+							try {
+								System.out.println("generating ROIs ...");
+								
+								// downloading image
+								Sequence seq = CytomineUtil.loadImage(instance,
+										console.cytomine, maxSize);
+								// creating rois
+								List<CytomineImportedROI> rois = CytomineUtil
+										.generateSectionsROI(seq);
+								// adding roi to sequence
+								for (int j = 0; j < rois.size(); j++) {
+									seq.addROI(rois.get(j));
 								}
-								count++;
-								System.out.println("\n" + count + " of "
-										+ collection.size() + "\n");
+								nbAnnotations += CytomineUtil.uploadRoi(
+										console.cytomine, instance, seq);
+
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 
 						} catch (Exception e) {
 							System.out.println(Config.messages
-									.get("project_get_failed"));
+									.get("image_get_failed"));
 						}
 					} catch (NumberFormatException e) {
 						System.out.println(Config.messages

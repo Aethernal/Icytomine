@@ -13,6 +13,7 @@ import plugins.faubin.cytomine.headless.cmd.CMDContainer;
 import plugins.faubin.cytomine.headless.cmd.CMDExit;
 import plugins.faubin.cytomine.headless.cmd.CMDHelp;
 import plugins.faubin.cytomine.headless.cmd.CMDProjects;
+import plugins.faubin.cytomine.headless.cmd.image.CMDImageGenerateSection;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectDeleteAll;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectDeleteTerm;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateSection;
@@ -54,9 +55,11 @@ public class Console {
 					}
 					if(commands.get(cmd)!=null){
 						commands.get(cmd).execute(cmdArgs);
+						Icy.exit(false);
 						System.exit(0);
 					}else{
 						System.out.println(Config.messages.get("unknown_command"));
+						Icy.exit(false);
 						System.exit(1);
 					}
 				}
@@ -131,9 +134,14 @@ public class Console {
 			cmdProject.add(cmdProjectList);
 			cmdProject.add(cmdProjectGenerateSections);
 			cmdProject.add(cmdProjectListTerms);
+		CMDContainer cmdImage = new CMDContainer(this, "image"); 	
+			CMDImageGenerateSection cmdImageGenerateSections = new CMDImageGenerateSection(this);
+			
+			cmdImage.add(cmdImageGenerateSections);
 			
 		addCMD(cmdProjects);
 		addCMD(cmdProject);
+		addCMD(cmdImage);
 	}
 
 	public void writeUnknownCommand(){

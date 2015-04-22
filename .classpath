@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="var" path="ICY_HOME/icy.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jts-1.8.0"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/blocks/Blocks.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/thresholder/Thresholder.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/roi/LabelExtractor.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/roi/Convexify.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/tprovoost/bestthreshold/BestThreshold.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/ezplug/EzPlug.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv_java2411"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/ylemontag/histogram/gui/histogram.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/vannary/morphomaths/MorphoMaths.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Cytomine"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

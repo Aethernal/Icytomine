@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+<section name="icy">
+<key name="maxMemory" value="2432"/>
+<section name="general">
+<section name="toolTips"/>
+<section name="confirms">
+<key name="exit" value="false"/>
+</section>
+<key name="userLogin" value=""/>
+<key name="userName" value=""/>
+<section name="ROIPanel">
+<key name="col_type" value="false"/>
+<key name="position_x" value="false"/>
+<key name="position_y" value="false"/>
+<key name="position_z" value="false"/>
+<key name="position_t" value="false"/>
+<key name="position_c" value="false"/>
+<key name="size_x" value="false"/>
+<key name="size_y" value="false"/>
+<key name="size_z" value="false"/>
+<key name="size_t" value="false"/>
+<key name="size_c" value="false"/>
+<key name="col_contour" value="false"/>
+<key name="col_points" value="false"/>
+<key name="col_surface_area" value="false"/>
+<key name="col_volume" value="false"/>
+<key name="col_min_int" value="false"/>
+<key name="col_mean_int" value="false"/>
+<key name="col_max_int" value="false"/>
+<key name="col_standard_dev" value="false"/>
+</section>
+<key name="lastUpdateCheckTime" value="1429193658536"/>
+</section>
+<section name="canvas"/>
+<section name="network"/>
+<section name="chat">
+<key name="nickname" value="guest4914"/>
+</section>
+<section name="repositories"/>
+<section name="plugin">
+<section name="local"/>
+<section name="online"/>
+</section>
+<section name="workspaces">
+<section name="local">
+<section name="actives"/>
+</section>
+<section name="online"/>
+</section>
+<key name="id" value="236096839"/>
+<key name="os" value="mac64"/>
+<key name="clientCpuNumber" value="8"/>
+<key name="clientTotalMemory" value="8589934592"/>
+<key name="appFolder" value="/Users/faubin/Desktop/icy"/>
+<section name="loader">
+<section name="entry0">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry1">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry2">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry3">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry4">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry5">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry6">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry7">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry8">
+<key name="nbFile" value="0"/>
+</section>
+<section name="entry9">
+<key name="nbFile" value="0"/>
+</section>
+</section>
+<key name="version" value="1.6.1.1"/>
+<key name="lastUploadDate" value="1429193683890"/>
+</section>
+<section name="plugins"/>
+<section name="frame">
+<section name="main">
+<key name="XE" value="50"/>
+<key name="YE" value="73"/>
+<key name="WidthE" value="1820"/>
+<key name="HeightE" value="877"/>
+<key name="MaximizedE" value="false"/>
+</section>
+<section name="inspector">
+<key name="XC" value="1512"/>
+<key name="YC" value="0"/>
+<key name="XE" value="600"/>
+<key name="YE" value="140"/>
+<key name="XI" value="600"/>
+<key name="YI" value="140"/>
+<key name="WidthC" value="300"/>
+<key name="HeightC" value="715"/>
+<key name="WidthE" value="300"/>
+<key name="HeightE" value="600"/>
+<key name="WidthI" value="300"/>
+<key name="HeightI" value="600"/>
+<key name="Panelized" value="true"/>
+<key name="Externalized" value="false"/>
+<key name="MaximizedI" value="false"/>
+<key name="MaximizedE" value="false"/>
+</section>
+<section name="roiPanel">
+<key name="XC" value="4"/>
+<key name="YC" value="31"/>
+<key name="XE" value="100"/>
+<key name="YE" value="100"/>
+<key name="XI" value="100"/>
+<key name="YI" value="100"/>
+<key name="WidthC" value="292"/>
+<key name="HeightC" value="625"/>
+<key name="WidthE" value="400"/>
+<key name="HeightE" value="600"/>
+<key name="WidthI" value="400"/>
+<key name="HeightI" value="600"/>
+<key name="Panelized" value="true"/>
+<key name="Externalized" value="false"/>
+<key name="MaximizedI" value="false"/>
+<key name="MaximizedE" value="false"/>
+</section>
+<section name="outputConsole">
+<key name="XC" value="4"/>
+<key name="YC" value="31"/>
+<key name="XE" value="200"/>
+<key name="YE" value="200"/>
+<key name="XI" value="200"/>
+<key name="YI" value="200"/>
+<key name="WidthC" value="292"/>
+<key name="HeightC" value="625"/>
+<key name="WidthE" value="400"/>
+<key name="HeightE" value="300"/>
+<key name="WidthI" value="400"/>
+<key name="HeightI" value="300"/>
+<key name="Panelized" value="true"/>
+<key name="Externalized" value="false"/>
+<key name="MaximizedI" value="false"/>
+<key name="MaximizedE" value="false"/>
+</section>
+<section name="chatPanel">
+<key name="XC" value="4"/>
+<key name="YC" value="31"/>
+<key name="XE" value="200"/>
+<key name="YE" value="200"/>
+<key name="XI" value="200"/>
+<key name="YI" value="200"/>
+<key name="WidthC" value="292"/>
+<key name="HeightC" value="625"/>
+<key name="WidthE" value="400"/>
+<key name="HeightE" value="300"/>
+<key name="WidthI" value="400"/>
+<key name="HeightI" value="300"/>
+<key name="Panelized" value="true"/>
+<key name="Externalized" value="false"/>
+<key name="MaximizedI" value="false"/>
+<key name="MaximizedE" value="false"/>
+</section>
+<section name="preference">
+<key name="XE" value="100"/>
+<key name="YE" value="100"/>
+<key name="XI" value="100"/>
+<key name="YI" value="100"/>
+<key name="WidthE" value="640"/>
+<key name="HeightE" value="480"/>
+<key name="WidthI" value="640"/>
+<key name="HeightI" value="480"/>
+<key name="Externalized" value="false"/>
+<key name="MaximizedI" value="false"/>
+<key name="MaximizedE" value="false"/>
+</section>
+</section>
+</root>

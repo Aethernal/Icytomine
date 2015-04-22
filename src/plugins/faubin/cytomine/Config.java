@@ -16,8 +16,8 @@ public class Config {
 
 	// server connection
 	public static final String defaultServer = "http://cytomine.web.pasteur.fr";
-	public static final String defaultPublicKey = "d42e7fe6-4e84-4c04-82f5-9863d10d590e";
-	public static final String defaultPrivateKey = "d22a6cd4-04cb-4d06-8a46-082379219b4c";
+	public static final String defaultPublicKey = "";
+	public static final String defaultPrivateKey = "";
 
 	// imagesPanel
 	public static final int nbDisplayedImage = 5;

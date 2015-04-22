@@ -49,6 +49,7 @@ public class CytomineUtil {
 
 	public static Sequence loadImage(ImageInstance instance, Cytomine cytomine,
 			int maxSize) {
+		
 		String name = instance.getStr("id");
 		Long ID = instance.getLong("baseImage");
 
@@ -64,6 +65,7 @@ public class CytomineUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		return new Sequence();
 	}
 
@@ -137,14 +139,19 @@ public class CytomineUtil {
 			long ID = instance.getLong("id");
 
 			try {
-
+				
 				List<CytomineImportedROI> rois = CytomineUtil
 						.Roi2DPolyToCytomineImportedROI(CytomineUtil
 								.roiListToRoi2DPolygonList(new ArrayList<ROI>(
 										sequence.getROI2Ds())));
+				
+				System.out.println(rois.size()+" roi to upload");
 
 				for (CytomineImportedROI roi : rois) {
 
+			        Long start = System.currentTimeMillis();
+					
+			        
 					Dimension imageSize = new Dimension(
 							instance.getInt("width"), instance.getInt("height"));
 					int imageSizeY = instance.getInt("height");
@@ -163,6 +170,7 @@ public class CytomineUtil {
 					}
 
 					nbUploaded++;
+					System.out.println((System.currentTimeMillis()-start) +" ms");
 
 				}
 			} catch (Exception e) {
@@ -170,7 +178,6 @@ public class CytomineUtil {
 				e.printStackTrace();
 			}
 		}
-
 		return nbUploaded;
 	}
 
@@ -406,6 +413,7 @@ public class CytomineUtil {
 	 * @return list of generated rois
 	 */
 	public static List<CytomineImportedROI> generateSectionsROI(Sequence seq) {
+		
 		List<CytomineImportedROI> result = new ArrayList<CytomineImportedROI>();
 
 		int[] histo = CytomineUtil.generateHistogramme(seq);
@@ -448,7 +456,6 @@ public class CytomineUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return result;
 	}
 

@@ -18,7 +18,7 @@ public class CMDProjectGenerateSection extends CMD {
 	public CMDProjectGenerateSection(Console console) {
 		super(console);
 
-		String command = "generate_section";
+		String command = "generate_sections";
 		String description = "Generate ROI of the sections for all the images in the project and upload them to cytomine";
 		String[] arguments = new String[] { "(long) projectID", "(int) image_max_size" };
 
@@ -45,12 +45,12 @@ public class CMDProjectGenerateSection extends CMD {
 
 							// variables
 							int count = 0;
-
+							System.out.println("generating ROIs ...");
 							for (int i = 0; i < collection.size(); i++) {
 
 								ImageInstance instance = collection.get(i);
 								try {
-									System.out.println("generating ROIs ...");
+									
 									
 									// downloading image
 									Sequence seq = CytomineUtil

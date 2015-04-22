@@ -76,7 +76,7 @@ public class CytomineUtil {
 		int nbRemoved = 0;
 		try {
 			Map<String, String> filter = new TreeMap<String, String>();
-			filter.put("user", ""+cytomine.getCurrentUser());
+			filter.put("user", ""+cytomine.getCurrentUser().getLong("id"));
 			filter.put("image", ""+instance.getLong("id"));
 			
 			AnnotationCollection annotations = cytomine.getAnnotations(filter);
@@ -99,7 +99,7 @@ public class CytomineUtil {
 		int nbRemoved = 0;
 		try {
 			Map<String, String> filter = new TreeMap<String, String>();
-			filter.put("user", ""+cytomine.getCurrentUser());
+			filter.put("user", ""+cytomine.getCurrentUser().getLong("id"));
 			filter.put("image", ""+instance.getLong("id"));
 			filter.put("term", ""+idTerm);
 			

@@ -48,7 +48,6 @@ public class CytomineImportedROI extends ROI2DPolygon {
 				+ Pattern.quote("[") + "|" + Pattern.quote("]"));
 
 		for (int i = 1; i < annotationType.length; i++) {
-			System.out.println("term:" + annotationType[i]);
 			long ID = Long.parseLong(annotationType[i]);
 
 			CytomineImportedROI roi = new CytomineImportedROI(points,

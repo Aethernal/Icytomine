@@ -158,7 +158,7 @@ public class ImagesPanelModel extends Model {
 
 			try {
 				Map<String, String> filter = new TreeMap<String, String>();
-				filter.put("user", ""+cytomine.getCurrentUser());
+				filter.put("user", ""+cytomine.getCurrentUser().getLong("id"));
 				filter.put("image", ""+image.getLong("id"));
 				
 				AnnotationCollection annotations = cytomine.getAnnotations(filter);

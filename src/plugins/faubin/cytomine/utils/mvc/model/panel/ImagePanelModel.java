@@ -110,7 +110,7 @@ public class ImagePanelModel extends Model {
 
 		try {
 			Map<String, String> filter = new TreeMap<String, String>();
-			filter.put("user", "" + cytomine.getCurrentUser());
+			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
 			filter.put("image", "" + instance.getLong("id"));
 
 			AnnotationCollection collection = cytomine.getAnnotations(filter);
@@ -179,7 +179,7 @@ public class ImagePanelModel extends Model {
 	public void deleteRoi(ImageInstance image) {
 		try {
 			Map<String, String> filter = new TreeMap<String, String>();
-			filter.put("user", "" + cytomine.getCurrentUser());
+			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
 			filter.put("image", "" + image.getLong("id"));
 
 			AnnotationCollection collection = cytomine.getAnnotations(filter);

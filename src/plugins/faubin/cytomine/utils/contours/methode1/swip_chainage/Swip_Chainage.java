@@ -191,7 +191,7 @@ public class Swip_Chainage {
 			    /* Si une chaine n'a qu'un seul lien avec une autre chaine 
 			    a sa queue, elle peuvent fusionner par la queue */  
 	 
-			    while ((UneAutreChaine = nbfils(UneChaine, kbuf, idebug)) != null  
+			    while ((UneAutreChaine = Swip_maillon.nbfils(UneChaine, kbuf, idebug)) != null  
 		&& Swip_maillon.un_seul_lien(UneChaine.queue.famille[0], UneAutreChaine, typep, idebug)) { 
 	 
 				numberp = UneAutreChaine.numero; 
@@ -201,11 +201,11 @@ public class Swip_Chainage {
 				kbuf[numberp - 1] = null; 
 	 
 				UneChaine =  
-				inclure(kbuf, UneAutreChaine, typep, UneChaine, 'F', idebug); 
+				Swip_maillon.inclure(kbuf, UneAutreChaine, typep, UneChaine, 'F', idebug); 
 	 
 				(nbsuppres)++; 
 	 
-				remp_ds_famille(kbuf,  UneChaine.queue.famille,  -(UneChaine.numero), numberp, idebug); 
+				Swip_maillon.remp_ds_famille(kbuf,  UneChaine.queue.famille,  -(UneChaine.numero), numberp, idebug); 
 	 
 				/* Compute total length. */ 
 	 
@@ -231,7 +231,7 @@ public class Swip_Chainage {
 			    /* Si une chaine n'a qu'un seul lien avec une autre chaine 
 			    a sa tete, elle peuvent fusionner par la tete */  
 	 
-			    while ((UneAutreChaine = nbaieul(UneChaine, kbuf, idebug)) != null   
+			    while ((UneAutreChaine = Swip_maillon.nbaieul(UneChaine, kbuf, idebug)) != null   
 		&& Swip_maillon.un_seul_lien(UneChaine.tete.famille[0], UneAutreChaine, typep, idebug)) { 
 				numberp = UneAutreChaine.numero; 
 	 
@@ -240,11 +240,11 @@ public class Swip_Chainage {
 				kbuf[numberp - 1] = null; 
 	 
 				UneChaine =  
-				inclure(kbuf, UneAutreChaine, typep, UneChaine, 'D', idebug); 
+				Swip_maillon.inclure(kbuf, UneAutreChaine, typep, UneChaine, 'D', idebug); 
 	 
 				(nbsuppres)++; 
 	 
-				remp_ds_famille(kbuf, UneChaine.tete.famille,  
+				Swip_maillon.remp_ds_famille(kbuf, UneChaine.tete.famille,  
 					UneChaine.numero, numberp, idebug); 
 	 
 				/* Compute total length. */ 

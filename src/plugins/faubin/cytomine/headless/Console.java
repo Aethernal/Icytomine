@@ -43,7 +43,7 @@ public class Console {
 		//connecting to cytomine if args where given
 		if(launchArgs.length>=3){
 			System.out.println("Connecting to cytomine using launch args");
-			cytomine = new Cytomine(launchArgs[0], launchArgs[1], launchArgs[2], "./");
+			cytomine = new Cytomine(launchArgs[0], launchArgs[1], launchArgs[2]);
 			try{
 				cytomine.getProjects();
 				

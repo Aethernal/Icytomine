@@ -1,5 +1,7 @@
 package plugins.faubin.cytomine.utils.contours.methode1.gradvect;
 
+import plugins.faubin.cytomine.utils.contours.methode1.swip_chaineExtract.i2d_t;
+
 public class gradvect {
 
 	public static final int TRUE = 1;
@@ -126,6 +128,11 @@ public class gradvect {
 		}
 
 		return (0);
+	}
+
+	private static char[] I2DGetImagePtr(i2d_t i2din) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private static char[] I2DGetImagePtrB(i2d_t i2din) {

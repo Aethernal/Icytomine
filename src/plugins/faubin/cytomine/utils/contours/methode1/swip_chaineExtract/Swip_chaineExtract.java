@@ -149,6 +149,21 @@ public class Swip_chaineExtract {
 	  return(pts);
 	}
 
+	private static char[] I2DGetImagePtr(i2d_t i2d_ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private static int I2DGetLines(i2d_t i2d_ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private static int I2DGetCols(i2d_t i2d_ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	private static Chaine chaine_suivante(LinkerPar leLinker2, int[] add) {
 		// TODO Auto-generated method stub
 		return null;

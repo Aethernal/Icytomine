@@ -164,9 +164,6 @@ public class ImagePanelModel extends Model {
 							Config.previewDefaultMaxSize);
 
 			icon = new ImageIcon(image);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -105,9 +105,6 @@ public class ImagesPanelModel extends Model {
 			
 			BufferedImage image = cytomine.downloadAbstractImageAsBufferedImage(ID, size);
 			icon = new ImageIcon(image);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

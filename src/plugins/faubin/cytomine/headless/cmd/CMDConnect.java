@@ -28,7 +28,7 @@ public class CMDConnect extends CMD{
 			public Object call(){
 				Cytomine cytomine = null;
 					try {
-						cytomine = new Cytomine(args[0], args[1], args[2], "./");
+						cytomine = new Cytomine(args[0], args[1], args[2]);
 						cytomine.getProjects();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block

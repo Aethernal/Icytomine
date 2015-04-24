@@ -60,7 +60,7 @@ public class Icytomine extends PluginActionable {
 				try {
 					// connect to cytomine
 					System.out.println(username+","+passwd);
-					cytomine = new Cytomine(url, username, passwd, "./", false);
+					cytomine = new Cytomine(url, username, passwd);
 					// test connection
 					cytomine.getProjects();
 

@@ -30,6 +30,7 @@ import plugins.faubin.cytomine.utils.mvc.template.Model;
 import plugins.faubin.cytomine.utils.roi.roi2dpolygon.CytomineImportedROI;
 import plugins.faubin.cytomine.utils.threshold.Otsu;
 import plugins.kernel.roi.roi2d.ROI2DPolygon;
+import plugins.tprovoost.bestthreshold.BestThreshold;
 import plugins.vannary.morphomaths.MorphOp;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.collections.AnnotationCollection;
@@ -67,10 +68,12 @@ public class ImagePanelModel extends Model {
 	 *            open an ImageInstance in Icy allowing it to be viewed
 	 */
 	public void openInIcy(ImageInstance instance) {
-		Sequence sequence = CytomineUtil.loadImage(instance, cytomine,
+		Sequence seq = CytomineUtil.loadImage(instance, cytomine,
 				controller.getMaxSize());
 
-		Icy.getMainInterface().addSequence(sequence);
+
+		
+		Icy.getMainInterface().addSequence(seq);
 	}
 
 	/**
@@ -208,13 +211,24 @@ public class ImagePanelModel extends Model {
 				controller.getMaxSize());
 
 		List<CytomineImportedROI> rois = CytomineUtil.generateSectionsROI(seq);
+		
+		int[] histo = CytomineUtil.generateHistogramme(seq);
 
+		int seuil = Otsu.threshold(histo, seq.getWidth(), seq.getHeight());
+	
+		Sequence thresholded = Otsu.threshold(seq, seuil);
+		MorphOp morph = new MorphOp();
+		double[][] eltS2D = new double[][] { { 1.0, 1.0, 1.0 },
+				{ 1.0, 1.0, 1.0 }, { 1.0, 1.0, 1.0 } };
+		morph.closeGreyScale(thresholded, 0, eltS2D, 1, 1);
+		
 		for (int i = 0; i < rois.size(); i++) {
 
-			seq.addROI(rois.get(i));
+			thresholded.addROI(rois.get(i));
 		}
 
-		Icy.getMainInterface().addSequence(seq);
+
+		Icy.getMainInterface().addSequence(thresholded);
 
 	}
 

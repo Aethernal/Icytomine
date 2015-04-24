@@ -132,10 +132,10 @@ public class Swip_maillon {
 	    }
 	}
 	
-	public static boolean TsupTest (Chaine UneChaine,Chaine[] kbuf, int nb, int[] famille, int idebug) {
+	public static boolean TsupTest (Chaine UneChaine,Chaine[] kbuf, int[] nbrea, int[] famille, int idebug) {
 	    Character type = null ;
 	
-	    if (nb >= 2){ return true; };
+	    if (nbrea[0] >= 2){ return true; };
 		
 	        /*--------------   ici nb == 1  -----------------------------------*/
 	
@@ -176,13 +176,13 @@ public class Swip_maillon {
 	    return false;
 	}
 	
-	public static void refiliat (Chaine[] kbuf,int[] progen, int numprogen, int idebug){
+	public static void refiliat (Chaine[] kbuf,int[] progen, int[] nbrea, int idebug){
 	    Chaine UneChaine;
 	    int j ;
 	
 	    UneChaine = kbuf[Math.abs(progen[0])-1] ;
 	    if (progen[0] > 0) 
-	    	for (j=1 ; j< numprogen ; j++) {
+	    	for (j=1 ; j< nbrea[0] ; j++) {
 	    	    if (progen[j] >0) 
 			if (aieul_b ( UneChaine,progen[j] ) ) 
 				aieul_b ( kbuf[progen[j]-1],progen[0] ) ;
@@ -192,7 +192,7 @@ public class Swip_maillon {
 		}
 	
 	    if (progen[0] < 0){
-	    	for (j=1 ; j< numprogen ; j++) {
+	    	for (j=1 ; j< nbrea[0] ; j++) {
 	    	    if (progen[j] > 0){}
 			if (aieul_b( kbuf[progen[j]-1],progen[0] ) ) {
 				fils_b ( UneChaine,progen[j] );
@@ -266,23 +266,23 @@ public class Swip_maillon {
 	    return 0;
 	}
 	
-	public static int[] laieul_(Chaine UneChaine, Integer nb){
+	public static int[] laieul_(Chaine UneChaine, int[] nbrea){
 	    int i;
 	    int[] aieul;
 	
-	    nb = 0;
+	    nbrea[0] = 0;
 	    aieul = UneChaine.tete.famille;
-	    for ( i=0 ; i<4 ; ++i) if ( aieul[i]  == 0 ) break; else (nb)++;
+	    for ( i=0 ; i<4 ; ++i) if ( aieul[i]  == 0 ) break; else (nbrea[0])++;
 	    return aieul;
 	}
 	
-	public static int[] lfils_(Chaine UneChaine, Integer nb){
+	public static int[] lfils_(Chaine UneChaine, int[] nbref){
 	    int i;
 	    int[] fils;
 		
-	    nb = 0;
+	    nbref[0] = 0;
 	    fils = UneChaine.queue.famille;
-	    for ( i=0 ; i<4 ; ++i) if ( fils[i] == 0 ) break; else (nb)++;
+	    for ( i=0 ; i<4 ; ++i) if ( fils[i] == 0 ) break; else (nbref[0])++;
 	    return fils;
 	}
 	
@@ -342,32 +342,33 @@ public class Swip_maillon {
 	*/
 	
 	public static Chaine nbfils(Chaine UneChaine,Chaine[] kbuf, int idebug){ 
-	    int nb = 0,i,fils[];
+	    
+	    int i,nb[] = new int[]{0}, fils[];
 	
 	    fils = lfils_(UneChaine,nb);
 	    
-	    for ( i=0 ; i < nb ; i++ ) { 
+	    for ( i=0 ; i < nb[0] ; i++ ) { 
 	    	if (Math.abs( fils[i]) == UneChaine.numero) {
 	    	    UneChaine.mode = CONTOUR;
 		    return(null);
 		}
 	    }
 	
-	    if ( nb == 1) return( kbuf[ Math.abs(fils[0]) -1] ); else return(null);
+	    if ( nb[0] == 1) return( kbuf[ Math.abs(fils[0]) -1] ); else return(null);
 	}
 	
 	public static Chaine nbaieul(Chaine UneChaine, Chaine[] kbuf, int idebug) { 
-	    int nb = 0,i,aieul[];
+	    int nb[] = new int[]{0},i,aieul[];
 	    aieul =  laieul_(UneChaine,nb);
 	
-	    for ( i=0 ; i < nb ; i++ ) { 
+	    for ( i=0 ; i < nb[0] ; i++ ) { 
 	    	if (Math.abs(aieul[i]) == UneChaine.numero) {
 	    	    UneChaine.mode = CONTOUR;
 	    	    return(null);
 		}
 	    }
 	
-	    if ( nb == 1) return( kbuf[ Math.abs(aieul[0]) -1] ); else return(null);
+	    if ( nb[0] == 1) return( kbuf[ Math.abs(aieul[0]) -1] ); else return(null);
 	}
 	
 	/*

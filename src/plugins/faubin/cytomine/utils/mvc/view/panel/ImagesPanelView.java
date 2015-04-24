@@ -214,7 +214,7 @@ public class ImagesPanelView extends JPanel {
 							images.get(i).getStr("height") });
 
 					int size = scrollPane.getSize().height/Config.nbDisplayedImage-4;
-					if(size <= 100){ size = 100;}
+					if(size <= 10){ size = 10;}
 					model.setValueAt(controller.getImageIcon(images.get(i), size), model.getRowCount() - 1, 0);
 					
 					table.setRowHeight(model.getRowCount() - 1, size);

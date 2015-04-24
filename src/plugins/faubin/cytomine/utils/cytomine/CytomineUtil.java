@@ -2,6 +2,7 @@ package plugins.faubin.cytomine.utils.cytomine;
 
 import icy.image.IcyBufferedImage;
 import icy.image.IcyBufferedImageUtil;
+import icy.main.Icy;
 import icy.roi.ROI;
 import icy.roi.ROI2D;
 import icy.sequence.Sequence;
@@ -17,6 +18,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+
+import plugins.adufour.opencv.OpenCV;
 import plugins.adufour.roi.LabelExtractor;
 import plugins.adufour.roi.LabelExtractor.ExtractionType;
 import plugins.adufour.thresholder.Thresholder;
@@ -49,7 +58,7 @@ public class CytomineUtil {
 
 	public static Sequence loadImage(ImageInstance instance, Cytomine cytomine,
 			int maxSize) {
-		
+
 		String name = instance.getStr("id");
 		Long ID = instance.getLong("baseImage");
 
@@ -65,7 +74,7 @@ public class CytomineUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return new Sequence();
 	}
 
@@ -78,9 +87,9 @@ public class CytomineUtil {
 		int nbRemoved = 0;
 		try {
 			Map<String, String> filter = new TreeMap<String, String>();
-			filter.put("user", ""+cytomine.getCurrentUser().getLong("id"));
-			filter.put("image", ""+instance.getLong("id"));
-			
+			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
+			filter.put("image", "" + instance.getLong("id"));
+
 			AnnotationCollection annotations = cytomine.getAnnotations(filter);
 
 			for (int i = 0; i < annotations.size(); i++) {
@@ -101,10 +110,10 @@ public class CytomineUtil {
 		int nbRemoved = 0;
 		try {
 			Map<String, String> filter = new TreeMap<String, String>();
-			filter.put("user", ""+cytomine.getCurrentUser().getLong("id"));
-			filter.put("image", ""+instance.getLong("id"));
-			filter.put("term", ""+idTerm);
-			
+			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
+			filter.put("image", "" + instance.getLong("id"));
+			filter.put("term", "" + idTerm);
+
 			AnnotationCollection annotations = cytomine.getAnnotations(filter);
 
 			for (int i = 0; i < annotations.size(); i++) {
@@ -139,19 +148,17 @@ public class CytomineUtil {
 			long ID = instance.getLong("id");
 
 			try {
-				
+
 				List<CytomineImportedROI> rois = CytomineUtil
 						.Roi2DPolyToCytomineImportedROI(CytomineUtil
 								.roiListToRoi2DPolygonList(new ArrayList<ROI>(
 										sequence.getROI2Ds())));
-				
-				System.out.println(rois.size()+" roi to upload");
+
+				System.out.println(rois.size() + " roi to upload");
 
 				for (CytomineImportedROI roi : rois) {
 
-			        Long start = System.currentTimeMillis();
-					
-			        
+
 					Dimension imageSize = new Dimension(
 							instance.getInt("width"), instance.getInt("height"));
 					int imageSizeY = instance.getInt("height");
@@ -161,16 +168,20 @@ public class CytomineUtil {
 
 					String polygon = CytomineUtil.ROItoWKT(roi, ratio,
 							imageSizeY);
-					
+
 					if (!roi.terms.isEmpty()) {
-						cytomine.addAnnotationWithTerms(polygon, ID, roi.terms);
-						
+						try{
+							cytomine.addAnnotationWithTerms(polygon, ID, roi.terms);
+						}catch(Exception e){
+							cytomine.addAnnotation(polygon, ID);
+						}
+
 					} else {
 						cytomine.addAnnotation(polygon, ID);
 					}
 
 					nbUploaded++;
-					System.out.println((System.currentTimeMillis()-start) +" ms");
+
 
 				}
 			} catch (Exception e) {
@@ -212,18 +223,43 @@ public class CytomineUtil {
 	 * @param seq
 	 * @return a list of the generated rois as ROI2DArea
 	 */
-	public static List<ROI2DArea> labelExtract(Sequence seq) {
+	public static List<ROI2DPolygon> findContours(Sequence seq) {
 
-		List<ROI> result = LabelExtractor.extractLabels(seq,
-				ExtractionType.ALL_LABELS_VS_BACKGROUND, 1);
+		OpenCV.initialize();
 
-		List<ROI2DArea> resultAsArea = new ArrayList<ROI2DArea>();
+		Mat image = OpenCV.convertToMat(seq.getFirstImage());
 
-		for (int i = 0; i < result.size(); i++) {
-			resultAsArea.add((ROI2DArea) result.get(i));
+		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+		
+		Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2GRAY);
+		
+		Mat hierarchy = new Mat();
+		Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+
+		Mat drawing = Mat.zeros( image.size(), CvType.CV_8UC3 );
+	    for( int i = 0; i< contours.size(); i++ ){
+	        Scalar color = new Scalar( (int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256) );
+	        Imgproc.drawContours( drawing, contours, i, color, 1, 8, hierarchy, 1, new Point(0,0) );
+	    } 
+		
+//	    Icy.getMainInterface().addSequence(new Sequence(OpenCV.convertToIcy(drawing)));
+		
+		List<ROI2DPolygon> rois = new ArrayList<ROI2DPolygon>();
+
+		for (int i = 0; i < contours.size(); i++) {
+			Point[] pts = contours.get(i).toArray();
+
+			List<Point2D> points = new ArrayList<Point2D>();
+
+			for (int j = 0; j < pts.length; j++) {
+				points.add(new Point2D.Double(pts[j].x, pts[j].y));
+			}
+
+			rois.add(new ROI2DPolygon(points));
+
 		}
 
-		return resultAsArea;
+		return rois;
 	}
 
 	/**
@@ -237,17 +273,7 @@ public class CytomineUtil {
 
 		for (ROI2DArea roi : rois) {
 			Point2D p = roi.getBooleanMask(false).getPoints()[0];
-			ROI2DPolygon poly = (ROI2DPolygon) /* Segment.triangulate(roi) /* *//*
-																				 * Convexify
-																				 * .
-																				 * createConvexROI
-																				 * (
-																				 * roi
-																				 * )
-																				 * ;
-																				 * /
-																				 * *
-																				 */convertFromArea(roi) /**/;
+			ROI2DPolygon poly = (ROI2DPolygon) convertFromArea(roi) ;
 			if (poly != null) {
 				newRois.add(poly);
 			}
@@ -413,16 +439,19 @@ public class CytomineUtil {
 	 * @return list of generated rois
 	 */
 	public static List<CytomineImportedROI> generateSectionsROI(Sequence seq) {
-		
+
 		List<CytomineImportedROI> result = new ArrayList<CytomineImportedROI>();
 
 		int[] histo = CytomineUtil.generateHistogramme(seq);
 
 		int seuil = Otsu.threshold(histo, seq.getWidth(), seq.getHeight());
 
-		Sequence thresholded = Thresholder.threshold(seq, 0,
-				new double[] { seuil }, false);
-
+//		Sequence thresholded = thresholdOtsu(seq);
+		Sequence thresholded = Otsu.threshold(seq, seuil);
+//		Sequence thresholded = Thresholder.threshold(seq, 0,
+//				new double[] { seuil }, false);
+//		Sequence thresholded = toGray(seq);
+		
 		MorphOp morph = new MorphOp();
 		double[][] eltS2D = new double[][] { { 1.0, 1.0, 1.0 },
 				{ 1.0, 1.0, 1.0 }, { 1.0, 1.0, 1.0 } };
@@ -430,14 +459,13 @@ public class CytomineUtil {
 
 		// extract image label to generate roi
 
-		List<ROI2DArea> rois = CytomineUtil.labelExtract(thresholded);
+		List<ROI2DPolygon> rois = CytomineUtil.findContours(thresholded);
 
 		try {
 
 			// process generated points
 			List<CytomineImportedROI> roisConvex = CytomineUtil
-					.Roi2DPolyToCytomineImportedROI(CytomineUtil
-							.convertToPolygon(rois));
+					.Roi2DPolyToCytomineImportedROI(rois);
 
 			// section term id
 			List<Long> terms = new ArrayList<Long>();
@@ -446,8 +474,11 @@ public class CytomineUtil {
 			for (CytomineImportedROI roi : roisConvex) {
 				// add generated roi to sequence
 				// only take roi that are at least 30 pixel in width or height
-				if (roi.getBounds5D().getSizeX() >= 30
-						|| roi.getBounds5D().getSizeY() >= 30) {
+
+				int width = roi.getBounds().width;
+				int height = roi.getBounds().height;
+
+				if (width >= 30 && height >= 30 ){
 					roi.terms = terms;
 					result.add(roi);
 				}

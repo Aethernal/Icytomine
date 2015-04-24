@@ -7,60 +7,61 @@ import plugins.faubin.cytomine.utils.contours.methode1.swip_maillon.Swip_maillon
 
 public class Swip_Chainage {
 	
-	static LinkerPar LeLinker; 
+	public static LinkerPar LeLinker; 
 	
-	public void bruitage(Chaine[] kbuf, int nomcha, int s, Integer nbsuppres, int idebug) { 
+	public void bruitage(Chaine[] kbuf, int nomcha, int s, int[] nbsuppres, int idebug) { 
 		int i, red = 1; 
-		Integer taille, nbref = 0, nbrea = 0; 
+		int[] taille = new int[1], nbref = new int[]{0}, nbrea = new int[]{0}; 
 		int[] parent;
 		int[] enfant; 
 		Chaine[] kfus = LeLinker.fusions; 
-		Integer[] kbruit = LeLinker.bruits; 
+		int[] kbruit = LeLinker.bruits; 
 	 
 		for (i = 0; i < nomcha; i++) { 
 			if (kbruit[i] > 0 && kbuf[i] != null &&  
-					(taille = kbruit[i]) <= s) { 
+					(taille[0] = kbruit[i]) <= s) { 
 				enfant = Swip_maillon.lfils_(kbuf[i], nbref); 
 				parent = Swip_maillon.laieul_(kbuf[i], nbrea); 
 	 
-				if ((nbref == 0) && (nbrea == 0)) { 
+				if ((nbref[0] == 0) && (nbrea[0] == 0)) { 
 					kbuf[i] = null; 
 					kbruit[i] = 0; 
 					kfus[i] = null; 
-					(nbsuppres)++; 
+					(nbsuppres[0])++; 
 					continue; 
 				} 
-				if (nbref == 0) { 
+				if (nbref[0] == 0) { 
 					supp_bruit(kbuf, i, nbrea, parent,  
 							nbsuppres, idebug); 
 					continue; 
 				} 
-				if (nbrea == 0) { 
+				if (nbrea[0] == 0) { 
 					supp_bruit(kbuf, i, nbref, enfant,  
 							nbsuppres, idebug); 
 					continue; 
 				} 
-				if (nbrea == 1 && nbref == 1 && 
+				if (nbrea[0] == 1 && nbref[0] == 1 && 
 				    (Math.abs(enfant[0]) == (kbuf[i]).numero) && 
 				    (Math.abs(parent[0]) == (kbuf[i]).numero)) { 
 					kbuf[i] = null; 
 					kbruit[i] = 0; 
 					kfus[i] = null; 
-					(nbsuppres)++; 
+					(nbsuppres[0])++; 
 				} 
 			} 
 		} 
 	} 
 	
 	public void LeLinker_go(int idebug) { 
-			short		edge; 
+			short[]		edge; 
 			Chaine[] 		kbuf; 
-			Integer 	kbruit;	/* Tableau pour l'elimination du bruit */ 
+			int[] 	kbruit = new int[1];	/* Tableau pour l'elimination du bruit */ 
 			Chaine  	kfus;		/* Tableau pour la fusion de chaines */ 
 			int         ibruit; 
 			int 		lx,ly; 
 			int         i, j, l1, l2, l3, nc; 
-			int         nbsuppres = 0, s_nbsup = 0; 
+			int[] nbsuppres = new int[]{0};
+			int         s_nbsup = 0; 
 			int         nb_bruit = 0, nb_fusion = 0; 
 		 
 			LeLinker = new LinkerPar();
@@ -102,7 +103,7 @@ public class Swip_Chainage {
 			 
 						/* If edge pixel call FSA. */ 
 			 
-						if ((edge + i + j * lx)!=0) { 
+						if ((edge[0] + i + j * lx)!=0) { 
 							Swip_ChaineExam.FSA(i, j, edge, LeLinker.itab, l1, l2, kbuf, idebug); 
 							nc = nc + 1; 
 						} 
@@ -118,18 +119,18 @@ public class Swip_Chainage {
 				init_kbruit_kfus(kbuf, LeLinker.nb_chaines, ibruit); 
 				 
 				for (i = 1; i <= ibruit; i++){ 
-					s_nbsup = nbsuppres; 
+					s_nbsup = nbsuppres[0]; 
 					fusion(kbuf, LeLinker.nb_chaines, nbsuppres, ibruit, idebug); 
-					nb_fusion += nbsuppres - s_nbsup; 
-					s_nbsup = nbsuppres; 
+					nb_fusion += nbsuppres[0] - s_nbsup; 
+					s_nbsup = nbsuppres[0]; 
 					bruitage(kbuf, LeLinker.nb_chaines, i, nbsuppres, idebug); 
-					nb_bruit += nbsuppres - s_nbsup; 
+					nb_bruit += nbsuppres[0] - s_nbsup; 
 				} 
-				s_nbsup = nbsuppres; 
+				s_nbsup = nbsuppres[0]; 
 			 
 				fusion(kbuf, LeLinker.nb_chaines, nbsuppres, ibruit, idebug); 
 			 
-				nb_fusion += nbsuppres - s_nbsup; 
+				nb_fusion += nbsuppres[0] - s_nbsup; 
 				
 				
 				
@@ -137,7 +138,7 @@ public class Swip_Chainage {
 	
 	public void init_kbruit_kfus(Chaine[] kbuf, int nomcha, int ibruit){ 
 		int         taille, i; 
-		Integer[] 	kbruit;	/* Tableau pour l'elimination du bruit */ 
+		int[] 	kbruit;	/* Tableau pour l'elimination du bruit */ 
 		Chaine[]  	kfus;		/* Tableau pour la fusion de chaines */ 
 	 
 		kbruit = LeLinker.bruits; 
@@ -156,33 +157,33 @@ public class Swip_Chainage {
 		} 
 	} 
 	
-	public void supp_bruit(Chaine[] kbuf, int i, int nb, int[] parent, Integer nbsuppres, int idebug){ 
+	public void supp_bruit(Chaine[] kbuf, int i, int[] nbrea, int[] parent, int[] nbsuppres, int idebug){ 
 		int j, number; 
 		Chaine kfus[] = LeLinker.fusions; 
-		Integer[]	kbruit = LeLinker.bruits; 
+		int[]	kbruit = LeLinker.bruits; 
 	 
-		if (Swip_maillon.TsupTest(kbuf[i], kbuf, nb, parent, idebug)) { 
+		if (Swip_maillon.TsupTest(kbuf[i], kbuf, nbrea, parent, idebug)) { 
 			Swip_maillon.supp_ds_famille(kbuf, parent, kbuf[i].numero, idebug); 
-			Swip_maillon.refiliat(kbuf, parent, nb, idebug); 
+			Swip_maillon.refiliat(kbuf, parent, nbrea, idebug); 
 			kbuf[i] = null; 
 			kbruit[i] = 0; 
 			kfus[i] = null; 
 			kfus[Math.abs(parent[0]) - 1] = kbuf[Math.abs(parent[0]) - 1]; 
-			(nbsuppres)++; 
+			(nbsuppres[0])++; 
 		} else 
 			kbruit[i] = -kbruit[i]; 
 	}
 
-	public void fusion(Chaine[] kbuf, int nomcha, Integer nbsuppres, int s, int idebug) { 
+	public void fusion(Chaine[] kbuf, int nomcha, int[] nbsuppres, int s, int idebug) { 
 		int i, bruit_total; 
 		char[] bout = new char[4]; 
 		Chaine UneChaine,UneAutreChaine; // nbaieul(); 
 		Character typep = new Character(' '); 
 		int j, numberp, nb_parents; 
-		Integer parents;
+		int[] parents = new int[1];
 		
 		Chaine[] kfus = LeLinker.fusions; 
-		Integer[] kbruit = LeLinker.bruits; 
+		int[] kbruit = LeLinker.bruits; 
 	 
 		for (i = 0; i < nomcha; i++) { 
 		    if (kfus[i] != null) { 
@@ -203,7 +204,7 @@ public class Swip_Chainage {
 				UneChaine =  
 				Swip_maillon.inclure(kbuf, UneAutreChaine, typep, UneChaine, 'F', idebug); 
 	 
-				(nbsuppres)++; 
+				(nbsuppres[0])++; 
 	 
 				Swip_maillon.remp_ds_famille(kbuf,  UneChaine.queue.famille,  -(UneChaine.numero), numberp, idebug); 
 	 
@@ -242,7 +243,7 @@ public class Swip_Chainage {
 				UneChaine =  
 				Swip_maillon.inclure(kbuf, UneAutreChaine, typep, UneChaine, 'D', idebug); 
 	 
-				(nbsuppres)++; 
+				(nbsuppres[0])++; 
 	 
 				Swip_maillon.remp_ds_famille(kbuf, UneChaine.tete.famille,  
 					UneChaine.numero, numberp, idebug); 

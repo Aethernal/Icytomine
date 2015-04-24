@@ -95,10 +95,10 @@ public class Otsu {
 		return threshold;
 	}
 
-	public static Sequence seuillage(Sequence sequence, int seuil) {
+	public static Sequence threshold(Sequence sequence, int seuil) {
 		Sequence result = null;
 		BufferedImage image = new BufferedImage(sequence.getWidth(),
-				sequence.getHeight(), BufferedImage.TYPE_INT_RGB);
+				sequence.getHeight(), BufferedImage.TYPE_INT_BGR);
 		BufferedImage toModify = IcyBufferedImageUtil.toBufferedImage(
 				sequence.getFirstImage(), image);
 

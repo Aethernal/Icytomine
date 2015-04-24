@@ -11,9 +11,9 @@ public class Swip_ChainageMem {
 	public static final int MOY_CH = 100 ;/* 50 */
 	public static final int MAX_CH = 5000 ;/* 5000 */
 	
-	public LinkerPar LeLinker;
+	public static LinkerPar LeLinker;
 	
-	public int LeLinker_memory_set(Short p_image, int lmin, int nx, int ny){
+	public static int LeLinker_memory_set(short[] p_image, int lmin, int nx, int ny){
  /***** memory allocation and variable setting ***********/
 	
 		LeLinker = new LinkerPar();
@@ -21,7 +21,7 @@ public class Swip_ChainageMem {
 		LeLinker.chaines_pile = new Stack<Chaine>();
 		LeLinker.chaines = new Chaine[MAX_CH];
 		LeLinker.fusions = new Chaine[MAX_CH];
-		LeLinker.bruits = new Integer[MAX_CH];
+		LeLinker.bruits = new int[MAX_CH];
 		
  
 		/* conservation des adresses de debut de pile */
@@ -34,12 +34,12 @@ public class Swip_ChainageMem {
 		LeLinker.ibruit = lmin;
 		LeLinker.dim_x = nx;
 		LeLinker.dim_y = ny;
-		LeLinker.edge = (Short) p_image;
+		LeLinker.edge = (short[]) p_image;
 
 		 return(1);
 	}
 	
-	public void LeLinker_memory_free(){
+	public static void LeLinker_memory_free(){
 	  LeLinker.chainons_pile_deb=null; LeLinker.chainons_pile=null;
 	  LeLinker.chaines_pile_deb=null; LeLinker.chaines_pile=null;
 	  LeLinker.chaines=null; LeLinker.chaines=null;

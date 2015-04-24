@@ -77,21 +77,11 @@ public class ImagesPanelModel extends Model {
 			try {
 
 				for (CytomineImportedROI roi : rois) {
-
-					Dimension imageSize = new Dimension(
-							instance.getInt("width"), instance.getInt("height"));
-					int imageSizeY = instance.getInt("height");
-
-					Point2D ratio = CytomineUtil.getScaleRatio(thumbnailSize,
-							imageSize);
-
-					String polygon = CytomineUtil.ROItoWKT(roi, ratio,
-							imageSizeY);
-
-					cytomine.addAnnotationWithTerms(polygon,
-							instance.getLong("id"), roi.terms);
-
+					sequence.addROI(roi);
 				}
+				
+				CytomineUtil.uploadRoi(cytomine, instance, sequence);
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

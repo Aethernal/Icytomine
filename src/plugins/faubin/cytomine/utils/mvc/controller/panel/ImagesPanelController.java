@@ -74,7 +74,12 @@ public class ImagesPanelController extends Controller {
 	}
 
 	public void deleteAllAnnotations() {
-		model.deleteAllAnnotations(model.getImages(idProjet));
+		ThreadUtil.bgRun(new Runnable() {
+			@Override
+			public void run() {
+				model.deleteAllAnnotations(model.getImages(idProjet));
+			}
+		});
 
 	}
 

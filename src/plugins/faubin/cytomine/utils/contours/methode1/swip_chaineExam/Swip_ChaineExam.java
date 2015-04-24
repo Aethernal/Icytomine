@@ -11,11 +11,10 @@ import plugins.faubin.cytomine.utils.contours.methode1.swip_maillon.Swip_maillon
 public class Swip_ChaineExam {
 
 	public static final int VAL_MAX = 150;
-	private static LinkerPar LeLinker;
+	public static LinkerPar LeLinker;
+	public static String[] gtotab = new String[VAL_MAX+1];
 	
-	private static String[] gtotab = new String[VAL_MAX+1];
-	
-	public static void P_XXXX(int i,int j, Short edge, int[][][] itab, int l1,int l2,Chaine[] kbuf,int idebug)
+	public static void P_XXXX(int i,int j, short[] edge, int[][][] itab, int l1,int l2,Chaine[] kbuf,int idebug)
 	{
 	    Chaine UneChaine;
 	    int sipremier=0;
@@ -38,7 +37,7 @@ public class Swip_ChaineExam {
 	    Swip_maillon.nwmail_( kbuf[ itab[ j][l2][2 ] -1 ], i,j);
 	}
 
-	public static void P_XXXO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug){
+	public static void P_XXXO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug){
 		    Chaine UneChaine;
 		    int sipremier=0;
 	
@@ -60,7 +59,7 @@ public class Swip_ChaineExam {
 	
 	
 	
-	public static void P_XXXF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XXXF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 
 	
 	
@@ -95,7 +94,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XXOX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XXOX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -119,7 +118,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XXOO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XXOO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -151,7 +150,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XXOF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XXOF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -180,7 +179,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XXFX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XXFX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -217,7 +216,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XXFO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XXFO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -248,7 +247,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XXFF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XXFF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -292,7 +291,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XOXX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XOXX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -316,7 +315,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFXX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFXX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -351,7 +350,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFXO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFXO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -380,7 +379,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFXF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFXF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -411,7 +410,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFOX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFOX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -442,7 +441,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFOO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFOO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -472,7 +471,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFOF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFOF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -504,7 +503,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFFO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFFO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -533,7 +532,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_XFFF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_XFFF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -564,7 +563,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_OXXX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_OXXX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -588,7 +587,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_OXOX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_OXOX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -621,7 +620,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_OXFX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_OXFX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -653,7 +652,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXXX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXXX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -688,7 +687,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXXO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXXO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -720,7 +719,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXXF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXXF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -755,7 +754,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXOX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXOX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -784,7 +783,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXOO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXOO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -824,7 +823,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXOF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXOF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -853,7 +852,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXFX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXFX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -898,7 +897,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXFO(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXFO(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -937,7 +936,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FXFF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FXFF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -982,7 +981,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FOXX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FOXX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -1013,7 +1012,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FFXF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FFXF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -1037,7 +1036,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FFOX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FFOX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -1066,7 +1065,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FFOF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FFOF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -1091,7 +1090,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FFFX(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FFFX(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -1126,7 +1125,7 @@ public class Swip_ChaineExam {
 	
 	/****************************************************************************/
 	
-	public static void P_FFFF(int i,int j,Short edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
+	public static void P_FFFF(int i,int j,short[] edge,int [][][] itab, int l1, int l2, Chaine[] kbuf,int idebug)
 	
 	
 	
@@ -1150,23 +1149,23 @@ public class Swip_ChaineExam {
 	
 	
 	
-	public static boolean ptest5668(int i,int j,Short edge){
+	public static boolean ptest5668(int i,int j,short[] edge){
 	    int p5,p6,p8;
 	    int jdimx,dimx;
 
 	 
 	    dimx = LeLinker.dim_x;
 	    jdimx = j * LeLinker.dim_x;
-	    edge = (short) (edge + i + jdimx);
-	    p5 = edge + dimx;
-	    p6 = edge + 1 - dimx;
-	    p8 = edge + 1 + dimx;
+	    edge[0] = (short) (edge[0] + i + jdimx);
+	    p5 = edge[0] + dimx;
+	    p6 = edge[0] + 1 - dimx;
+	    p8 = edge[0] + 1 + dimx;
 
 	    return ( (p5 != 0 && p6 != 0) || (p6 != 0 && p8 != 0));
 	}
 	
-	public static int ptest5(int i,int j,Short edge){
-	    return edge + i + (j + 1) * LeLinker.dim_x;
+	public static int ptest5(int i,int j,short[] edge){
+	    return edge[0] + i + (j + 1) * LeLinker.dim_x;
 	}
 	
 	public static void initab_(int l,int itab[][][]){
@@ -1175,7 +1174,7 @@ public class Swip_ChaineExam {
 	    for (k=0; k<=LeLinker.dim_y + 1; k++) itab[k][l][1] = 'X' ;	
 	}
 	
-	public static void FSA(int i,int j,Short edge,int[][][] itab,int l1,int l2,Chaine[] kbuf,int idebug){
+	public static void FSA(int i,int j,short[] edge,int[][][] itab,int l1,int l2,Chaine[] kbuf,int idebug){
 	    int ncov = 0 ; 
 	    int ncfv = 0 ;
 	    int poids[] = {1,8,4,2} ;
@@ -1204,11 +1203,11 @@ public class Swip_ChaineExam {
         
         cArg[0] = int.class;
         cArg[1] = int.class;
-        cArg[2] = Short.class;
+        cArg[2] = short[].class;
         cArg[3] = int[][][].class;
         cArg[4] = int.class;
         cArg[5] = int.class;
-        cArg[6] = Chaine[].class;
+        cArg[6] = short[].class;
         cArg[7] = int.class;
         
 	    Method methode;

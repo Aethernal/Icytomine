@@ -20,7 +20,8 @@ public class ConsoleUI extends JTextPane {
 		super();
 
 		setEditable(false);
-		append("Icytomine - Version: ");
+		append("Icytomine\n");
+		append("version ");
 		append(Config.version + "\n", Color.BLUE.darker());
 
 	}
@@ -51,10 +52,12 @@ public class ConsoleUI extends JTextPane {
 
 	}
 
+	public void clear() {
+		setText("");
+	}
+
 	public void append(String msg) {
-
 		append(msg, Color.BLACK);
-
 	}
 
 }

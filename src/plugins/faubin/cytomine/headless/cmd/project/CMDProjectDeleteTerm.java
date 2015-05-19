@@ -46,7 +46,7 @@ public class CMDProjectDeleteTerm extends CMD {
 
 								nbAnnotations += CytomineUtil
 										.deleteAllRoiWithTerm(console.cytomine,
-												instance, termID);
+												instance, termID, null);
 								count++;
 								System.out.println(count + " of "
 										+ collection.size());

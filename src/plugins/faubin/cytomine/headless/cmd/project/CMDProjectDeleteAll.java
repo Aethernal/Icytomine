@@ -41,7 +41,7 @@ public class CMDProjectDeleteAll extends CMD{
 							ImageInstance instance = collection.get(i);
 
 							nbAnnotations += CytomineUtil.deleteAllRoi(
-									console.cytomine, instance);
+									console.cytomine, instance, null);
 							count++;
 							System.out.println(count+ " of " + collection.size());
 						}

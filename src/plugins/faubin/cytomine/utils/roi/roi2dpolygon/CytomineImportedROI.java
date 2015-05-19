@@ -47,7 +47,8 @@ public class CytomineImportedROI extends ROI2DPolygon {
 		String[] annotationType = annotationTerms.split(",|"
 				+ Pattern.quote("[") + "|" + Pattern.quote("]"));
 
-		for (int i = 1; i < annotationType.length; i++) {
+		//if there is multiple type only the first is used to set the color
+		for (int i = 1; i < annotationType.length;) {
 			long ID = Long.parseLong(annotationType[i]);
 
 			CytomineImportedROI roi = new CytomineImportedROI(points,

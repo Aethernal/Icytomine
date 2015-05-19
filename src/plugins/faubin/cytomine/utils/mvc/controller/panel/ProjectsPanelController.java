@@ -34,8 +34,6 @@ public class ProjectsPanelController extends Controller {
 			public void run() {
 				ImagesPanelController imagesPanel = new ImagesPanelController(
 						model.getCytomine(), ID, tabbedPane);
-				ConsoleUI.console.append("Opening project: ");
-				ConsoleUI.console.append("" + ID + "\n", Color.RED.darker());
 			}
 		});
 

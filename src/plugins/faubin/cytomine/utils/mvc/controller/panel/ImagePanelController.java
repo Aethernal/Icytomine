@@ -7,8 +7,9 @@ import javax.swing.JTabbedPane;
 
 import plugins.faubin.cytomine.utils.mvc.model.panel.ImagePanelModel;
 import plugins.faubin.cytomine.utils.mvc.template.Controller;
-import plugins.faubin.cytomine.utils.mvc.view.frames.TermFrame;
+import plugins.faubin.cytomine.utils.mvc.view.frame.TermFrame;
 import plugins.faubin.cytomine.utils.mvc.view.panel.ImagePanelView;
+import utils.CytomineReader;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.models.ImageInstance;
 
@@ -95,29 +96,45 @@ public class ImagePanelController extends Controller {
 
 	public void UpdateRoi(final ImageInstance instance) {
 		ThreadUtil.bgRun(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				model.updateRoi(instance, terms.getSelectedTerms());
 			}
-			
+
 		});
 	}
 
 	public void uploadRoi(final ImageInstance instance) {
-		
+
 		ThreadUtil.bgRun(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				model.uploadRoi(instance, terms.getSelectedTerms());
 			}
-			
+
 		});
 	}
 
 	public int getMaxSize() {
 		return view.getMaxSize();
+	}
+
+	public void generateGlomerule(final ImageInstance instance, final CytomineReader preview) {
+		ThreadUtil.bgRun(new Runnable() {
+
+			@Override
+			public void run() {
+				model.generateGlomerule(instance, preview);
+			}
+
+		});
+
+	}
+
+	public Cytomine getCytomine() {
+		return model.getCytomine();
 	}
 
 }

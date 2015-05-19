@@ -9,13 +9,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import plugins.faubin.cytomine.headless.Console;
-import plugins.faubin.cytomine.utils.mvc.view.frames.LoginFrame;
-import plugins.faubin.cytomine.utils.mvc.view.frames.ProjectsFrame;
+import plugins.faubin.cytomine.utils.mvc.view.frame.LoginFrame;
+import plugins.faubin.cytomine.utils.mvc.view.frame.IcytomineFrame;
 import be.cytomine.client.Cytomine;
+import be.cytomine.client.CytomineException;
 
 public class Icytomine extends PluginActionable {
 	public Cytomine cytomine;
-	private ProjectsFrame frame;
+	private IcytomineFrame frame;
 	private LoginFrame loginFrame;
 
 	// Icy plugin start
@@ -59,7 +60,6 @@ public class Icytomine extends PluginActionable {
 
 				try {
 					// connect to cytomine
-					System.out.println(username+","+passwd);
 					cytomine = new Cytomine(url, username, passwd);
 					// test connection
 					cytomine.getProjects();
@@ -83,10 +83,20 @@ public class Icytomine extends PluginActionable {
 	}
 
 	private void logged() {
+		
+//		// generate job
+//		
+//		try {
+//			cytomine.addSoftware("Icytomine", "Icy operation", "ROI", "icytomine");
+//		} catch (CytomineException e) {
+//			 //TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		// show the plugin panel
 		loginFrame.setVisible(false);
 
-		frame = new ProjectsFrame(cytomine);
+		frame = new IcytomineFrame(cytomine);
 		frame.setVisible(true);
 	}
 

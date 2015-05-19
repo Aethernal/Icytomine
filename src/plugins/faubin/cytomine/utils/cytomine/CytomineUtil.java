@@ -6,6 +6,8 @@ import icy.main.Icy;
 import icy.roi.ROI;
 import icy.roi.ROI2D;
 import icy.sequence.Sequence;
+import icy.sequence.SequenceEvent;
+import icy.sequence.SequenceListener;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.TreeMap;
 
 import org.opencv.core.CvType;
@@ -29,17 +32,24 @@ import plugins.adufour.opencv.OpenCV;
 import plugins.adufour.roi.LabelExtractor;
 import plugins.adufour.roi.LabelExtractor.ExtractionType;
 import plugins.adufour.thresholder.Thresholder;
+import plugins.faubin.contourdetector.Utils;
 import plugins.faubin.cytomine.Config;
+import plugins.faubin.cytomine.utils.mvc.view.frame.ProcessingFrame;
 import plugins.faubin.cytomine.utils.roi.roi2dpolygon.CytomineImportedROI;
-import plugins.faubin.cytomine.utils.threshold.Otsu;
+import plugins.faubin.cytomine.utils.threshold.CustomThreshold;
+import plugins.faubin.glomeruledetector.GlomeruleDetector;
 import plugins.kernel.roi.roi2d.ROI2DArea;
 import plugins.kernel.roi.roi2d.ROI2DPolygon;
 import plugins.tprovoost.bestthreshold.BestThreshold;
 import plugins.vannary.morphomaths.MorphOp;
 import plugins.ylemontag.histogram.BadHistogramParameters;
 import plugins.ylemontag.histogram.Histogram;
+import utils.CytomineReader;
+import utils.Tile;
 import be.cytomine.client.Cytomine;
+import be.cytomine.client.CytomineException;
 import be.cytomine.client.collections.AnnotationCollection;
+import be.cytomine.client.models.Annotation;
 import be.cytomine.client.models.ImageInstance;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -56,24 +66,34 @@ public class CytomineUtil {
 	 * @throws Exception
 	 */
 
-	public static Sequence loadImage(ImageInstance instance, Cytomine cytomine,
-			int maxSize) {
+	public static Sequence loadImage(ImageInstance instance, Cytomine cytomine, int maxSize , ProcessingFrame processFrame) {
 
-		String name = instance.getStr("id");
-		Long ID = instance.getLong("baseImage");
+		long name = instance.getLong("id");
+		long ID = instance.getLong("baseImage");
 
+		if(processFrame!=null){
+			processFrame.println("downloading image "+name+" with maxSize "+maxSize+"");
+		}
+		BufferedImage image;
 		try {
-
-			BufferedImage image = cytomine
-					.downloadAbstractImageAsBufferedImage(ID, maxSize);
+			image = cytomine.downloadAbstractImageAsBufferedImage(ID, maxSize);
+			if(processFrame!=null){
+				processFrame.println("downloading done");
+				processFrame.setActionProgress(100);
+			}
 			IcyBufferedImage icyImage = IcyBufferedImage.createFrom(image);
 			Sequence sequence = new Sequence(icyImage);
-			sequence.setName(name);
+			
+			sequence.setName(""+name);
 			return sequence;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (CytomineException e) {
+			if(processFrame!=null){
+				processFrame.println("downloading finished with null result");
+				processFrame.setActionProgress(100);
+			}
 			e.printStackTrace();
 		}
+		
 
 		return new Sequence();
 	}
@@ -83,32 +103,44 @@ public class CytomineUtil {
 	 * @param instance
 	 * @return the number of deleted roi
 	 */
-	public static int deleteAllRoi(Cytomine cytomine, ImageInstance instance) {
+	public static int deleteAllRoi(Cytomine cytomine, ImageInstance instance , ProcessingFrame processFrame) {
 		int nbRemoved = 0;
-		try {
+		
 			Map<String, String> filter = new TreeMap<String, String>();
-			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
-			filter.put("image", "" + instance.getLong("id"));
+			try {
+				filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
+				filter.put("image", "" + instance.getLong("id"));
 
-			AnnotationCollection annotations = cytomine.getAnnotations(filter);
+				AnnotationCollection annotations = cytomine.getAnnotations(filter);
 
-			for (int i = 0; i < annotations.size(); i++) {
-				cytomine.deleteAnnotation(annotations.get(i).getLong("id"));
-				nbRemoved++;
+				if(processFrame!=null){
+					processFrame.println(""+annotations.size()+" annotations will be deleted");
+				}
+				
+				for (int i = 0; i < annotations.size(); i++) {
+					cytomine.deleteAnnotation(annotations.get(i).getLong("id"));
+					nbRemoved++;
+					if(processFrame!=null){
+						processFrame.setActionProgress((int)((double)i/annotations.size()*100));
+					}
+				}
+				
+				if(processFrame!=null){
+					processFrame.println("delete done");
+				}
+				
+			} catch (CytomineException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+			
 		return nbRemoved;
 	}
 
-	public static int deleteAllRoiWithTerm(Cytomine cytomine,
-			ImageInstance instance, Long idTerm) {
+	public static int deleteAllRoiWithTerm(Cytomine cytomine, ImageInstance instance, Long idTerm, ProcessingFrame processFrame) {
 		int nbRemoved = 0;
 		try {
+			
 			Map<String, String> filter = new TreeMap<String, String>();
 			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
 			filter.put("image", "" + instance.getLong("id"));
@@ -116,11 +148,22 @@ public class CytomineUtil {
 
 			AnnotationCollection annotations = cytomine.getAnnotations(filter);
 
+			if(processFrame!=null){
+				processFrame.println(""+annotations.size()+" annotations will be deleted");
+			}
+			
 			for (int i = 0; i < annotations.size(); i++) {
 				cytomine.deleteAnnotation(annotations.get(i).getLong("id"));
 				nbRemoved++;
+				if(processFrame!=null){
+					processFrame.setActionProgress((int)((double)i/annotations.size()*100));
+				}
 			}
 
+			if(processFrame!=null){
+				processFrame.println("delete done");
+			}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -136,14 +179,12 @@ public class CytomineUtil {
 	 * @param term
 	 * @return the number of uploaded roi
 	 */
-	public static int uploadRoi(Cytomine cytomine, ImageInstance instance,
-			Sequence sequence) {
+	public static int uploadRoi(Cytomine cytomine, ImageInstance instance, Sequence sequence, ProcessingFrame processFrame) {
 		int nbUploaded = 0;
 
 		if (sequence != null) {
 
-			Dimension thumbnailSize = new Dimension(sequence.getWidth(),
-					sequence.getHeight());
+			Dimension thumbnailSize = new Dimension(sequence.getWidth(), sequence.getHeight());
 
 			long ID = instance.getLong("id");
 
@@ -151,14 +192,19 @@ public class CytomineUtil {
 
 				List<CytomineImportedROI> rois = CytomineUtil
 						.Roi2DPolyToCytomineImportedROI(CytomineUtil
-								.roiListToRoi2DPolygonList(new ArrayList<ROI>(
-										sequence.getROI2Ds())));
+								.roiListToRoi2DPolygonList(
+										new ArrayList<ROI>(
+												sequence.getROI2Ds() 
+										) 
+								) 
+						);
 
-				System.out.println(rois.size() + " roi to upload");
-
+				if(processFrame!=null){
+					processFrame.println(rois.size()+" annotations will be uploaded");
+				}
+				
 				for (CytomineImportedROI roi : rois) {
-
-
+					
 					Dimension imageSize = new Dimension(
 							instance.getInt("width"), instance.getInt("height"));
 					int imageSizeY = instance.getInt("height");
@@ -170,23 +216,36 @@ public class CytomineUtil {
 							imageSizeY);
 
 					if (!roi.terms.isEmpty()) {
-						try{
-							cytomine.addAnnotationWithTerms(polygon, ID, roi.terms);
-						}catch(Exception e){
+						try {
+							cytomine.addAnnotationWithTerms(polygon, ID,
+									roi.terms);
+						} catch (Exception e) {
 							cytomine.addAnnotation(polygon, ID);
 						}
 
 					} else {
 						cytomine.addAnnotation(polygon, ID);
 					}
-
+					
 					nbUploaded++;
-
-
+					
+					if(processFrame!=null){
+						processFrame.setActionProgress((int)((double)nbUploaded/rois.size()*100));
+					}
+					
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			
+			if(processFrame!=null){
+				processFrame.println("upload done");
+			}
+			
+		}else{
+			if(processFrame!=null){
+				processFrame.println("the sequence is null, actions will not be done");
 			}
 		}
 		return nbUploaded;
@@ -198,70 +257,25 @@ public class CytomineUtil {
 	 * @param seq
 	 * @return the thresholded sequence
 	 */
-	public static Sequence thresholdOtsu(Sequence seq) {
-
-		int otsu = BestThreshold.exec(seq, 0, 0, 2, "Otsu");
-		if (otsu > 230) {
-			otsu = 230; // TODO to fix the code of Otsu cf code
-		}
-
-		double[] thresholds = new double[1];
-		thresholds[0] = otsu;
-
-		// execute threshold
-		Sequence result = Thresholder.threshold(seq, 0, thresholds, false);
-
-		// set name for new sequence
-		result.setName(seq.getName() + " + Otsu");
-
-		return result;
-	}
-
-	/**
-	 * extract roi from a thresholded sequence
-	 * 
-	 * @param seq
-	 * @return a list of the generated rois as ROI2DArea
-	 */
-	public static List<ROI2DPolygon> findContours(Sequence seq) {
-
-		OpenCV.initialize();
-
-		Mat image = OpenCV.convertToMat(seq.getFirstImage());
-
-		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		
-		Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2GRAY);
-		
-		Mat hierarchy = new Mat();
-		Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-
-		Mat drawing = Mat.zeros( image.size(), CvType.CV_8UC3 );
-	    for( int i = 0; i< contours.size(); i++ ){
-	        Scalar color = new Scalar( (int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256) );
-	        Imgproc.drawContours( drawing, contours, i, color, 1, 8, hierarchy, 1, new Point(0,0) );
-	    } 
-		
-//	    Icy.getMainInterface().addSequence(new Sequence(OpenCV.convertToIcy(drawing)));
-		
-		List<ROI2DPolygon> rois = new ArrayList<ROI2DPolygon>();
-
-		for (int i = 0; i < contours.size(); i++) {
-			Point[] pts = contours.get(i).toArray();
-
-			List<Point2D> points = new ArrayList<Point2D>();
-
-			for (int j = 0; j < pts.length; j++) {
-				points.add(new Point2D.Double(pts[j].x, pts[j].y));
-			}
-
-			rois.add(new ROI2DPolygon(points));
-
-		}
-
-		return rois;
-	}
-
+//	public static Sequence thresholdOtsu(Sequence seq) {
+//
+//		int otsu = BestThreshold.exec(seq, 0, 0, 2, "Otsu");
+//		if (otsu > 230) {
+//			otsu = 230; // TODO to fix the code of Otsu cf code
+//		}
+//
+//		double[] thresholds = new double[1];
+//		thresholds[0] = otsu;
+//
+//		// execute threshold
+//		Sequence result = Thresholder.threshold(seq, 0, thresholds, false);
+//
+//		// set name for new sequence
+//		result.setName(seq.getName() + " + Otsu");
+//
+//		return result;
+//	}
+	
 	/**
 	 * @param rois
 	 *            ROI2DArea
@@ -273,7 +287,7 @@ public class CytomineUtil {
 
 		for (ROI2DArea roi : rois) {
 			Point2D p = roi.getBooleanMask(false).getPoints()[0];
-			ROI2DPolygon poly = (ROI2DPolygon) convertFromArea(roi) ;
+			ROI2DPolygon poly = (ROI2DPolygon) convertFromArea(roi);
 			if (poly != null) {
 				newRois.add(poly);
 			}
@@ -438,39 +452,45 @@ public class CytomineUtil {
 	 * @param seq
 	 * @return list of generated rois
 	 */
-	public static List<CytomineImportedROI> generateSectionsROI(Sequence seq) {
+	public static List<CytomineImportedROI> generateSectionsROI(Sequence seq, ProcessingFrame processFrame) {
 
+		if(processFrame!=null){
+			processFrame.println("Generating section of the sequence");
+		}
+		
 		List<CytomineImportedROI> result = new ArrayList<CytomineImportedROI>();
 
-		int[] histo = CytomineUtil.generateHistogramme(seq);
-
-		int seuil = Otsu.threshold(histo, seq.getWidth(), seq.getHeight());
-
-//		Sequence thresholded = thresholdOtsu(seq);
-		Sequence thresholded = Otsu.threshold(seq, seuil);
-//		Sequence thresholded = Thresholder.threshold(seq, 0,
-//				new double[] { seuil }, false);
-//		Sequence thresholded = toGray(seq);
-		
-		MorphOp morph = new MorphOp();
-		double[][] eltS2D = new double[][] { { 1.0, 1.0, 1.0 },
-				{ 1.0, 1.0, 1.0 }, { 1.0, 1.0, 1.0 } };
-		morph.closeGreyScale(thresholded, 0, eltS2D, 1, 1);
-
+		Sequence thresholded = SeqRGB2SeqBINARY(seq, processFrame, false);
 		// extract image label to generate roi
 
-		List<ROI2DPolygon> rois = CytomineUtil.findContours(thresholded);
+		if(processFrame!=null){
+			processFrame.setGlobalProgress(100/4);
+			processFrame.println("finding contours");
+		}
+		
+		List<ROI2DPolygon> rois = Utils.findContours(thresholded);
 
+		if(processFrame!=null){
+			processFrame.setGlobalProgress(100/4*2);
+			processFrame.println("converting Icy roi to Cytomine annotations");
+		}
+		
 		try {
 
 			// process generated points
 			List<CytomineImportedROI> roisConvex = CytomineUtil
 					.Roi2DPolyToCytomineImportedROI(rois);
 
+			if(processFrame!=null){
+				processFrame.setGlobalProgress(100/4*3);
+				processFrame.println("adding annotations to the sequence");
+			}
+			
 			// section term id
 			List<Long> terms = new ArrayList<Long>();
 			terms.add(Config.globalID.get("ontology_section"));
-
+			
+			int count = 0;
 			for (CytomineImportedROI roi : roisConvex) {
 				// add generated roi to sequence
 				// only take roi that are at least 30 pixel in width or height
@@ -478,16 +498,48 @@ public class CytomineUtil {
 				int width = roi.getBounds().width;
 				int height = roi.getBounds().height;
 
-				if (width >= 30 && height >= 30 ){
+				if (width >= 30 && height >= 30) {
 					roi.terms = terms;
 					result.add(roi);
 				}
+				if(processFrame!=null){
+					processFrame.setActionProgress((int)((double)count / roisConvex.size()*100));
+				}
+				count++;
+			}
+			
+			if(processFrame!=null){
+				processFrame.println("finished");
+				processFrame.setGlobalProgress(100);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public static Sequence SeqRGB2SeqBINARY(Sequence seq, ProcessingFrame processFrame,boolean inversed) {
+		if(processFrame!=null){
+			processFrame.println("Generating histogramme for the image");
+		}
+		int[] histo = CustomThreshold.getHistogram(seq.getFirstImage());
+
+		if(processFrame!=null){
+			processFrame.println("thresholding");
+			processFrame.setActionProgress(50);
+		}
+		
+		int seuil = CustomThreshold.generateSeuil(histo, seq.getWidth(), seq.getHeight());
+
+		Sequence thresholded = CustomThreshold.threshold(seq, seuil, inversed);
+
+		if(processFrame!=null){
+			processFrame.println("thresholding done");
+			processFrame.setActionProgress(100);
+		}
+		
+		return thresholded;
 	}
 
 	/**
@@ -535,7 +587,7 @@ public class CytomineUtil {
 	 * @return corrected points
 	 */
 	private static ArrayList<Point2D> correctYPosition(
-			ArrayList<Point2D> points, int imageSizeY) {
+		ArrayList<Point2D> points, int imageSizeY) {
 		ArrayList<Point2D> newPoints = new ArrayList<Point2D>();
 		for (int i = 0; i < points.size(); i++) {
 			newPoints.add(new Point2D.Double(points.get(i).getX(), imageSizeY
@@ -612,7 +664,6 @@ public class CytomineUtil {
 	 */
 	public static List<Point2D> WKTtoROI(String polygon, Point2D ratio,
 			int imageSizeY) {
-		// todo
 		WKTReader reader = new WKTReader();
 		try {
 			Geometry geo = reader.read(polygon);
@@ -693,19 +744,16 @@ public class CytomineUtil {
 		return sequence2;
 	}
 
-	public static int[] generateHistogramme(Sequence sequence) {
-		int[] histo = new int[255];
-		try {
-			Histogram hist = Histogram.compute(sequence, 255, 0, 255);
-			for (int i = 0; i < 255; i++) {
-				histo[i] = hist.getBin(i).getCount();
-			}
-
-		} catch (BadHistogramParameters e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public static void generateGlomeruleROI(Cytomine cytomine,Sequence seq, ProcessingFrame processFrame, int seuil) {
+		Sequence thresholded = CustomThreshold.threshold(seq, seuil, true);
+		if(processFrame!=null){
+			processFrame.println("Detecting glomerules");
 		}
-		return histo;
+		GlomeruleDetector.ellipses_detect(thresholded, thresholded, 200, 231000, 255, 2, 10);
+		if(processFrame!=null){
+			processFrame.println("detection done");
+		}
+		
 	}
 
 }

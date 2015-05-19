@@ -53,8 +53,6 @@ public class ImagesPanelController extends Controller {
 			public void run() {
 				ImagePanelController imagePanel = new ImagePanelController(
 						model.getCytomine(), id, tabbedPane);
-				ConsoleUI.console.append("Opening image: ");
-				ConsoleUI.console.append("" + id + "\n", Color.RED.darker());
 			}
 		});
 	}

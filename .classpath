@@ -15,5 +15,12 @@
 	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/ylemontag/histogram/gui/histogram.jar"/>
 	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/vannary/morphomaths/MorphoMaths.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Cytomine"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/nherve/toolbox/NherveToolbox.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/filtering/FilterToolbox.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/connectedcomponents/ConnectedComponents.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Threshold"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ContourDetector"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TiledZoom"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GlomeruleDetector"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

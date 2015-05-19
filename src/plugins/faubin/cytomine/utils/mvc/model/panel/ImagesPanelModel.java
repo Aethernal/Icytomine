@@ -1,6 +1,7 @@
 package plugins.faubin.cytomine.utils.mvc.model.panel;
 
 import icy.sequence.Sequence;
+import icy.system.thread.ThreadUtil;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
@@ -19,6 +20,7 @@ import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.utils.cytomine.CytomineUtil;
 import plugins.faubin.cytomine.utils.mvc.controller.panel.ImagesPanelController;
 import plugins.faubin.cytomine.utils.mvc.template.Model;
+import plugins.faubin.cytomine.utils.mvc.view.frame.ProcessingFrame;
 import plugins.faubin.cytomine.utils.roi.roi2dpolygon.CytomineImportedROI;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.collections.AnnotationCollection;
@@ -29,6 +31,7 @@ import be.cytomine.client.models.ImageInstance;
 public class ImagesPanelModel extends Model {
 
 	private ImagesPanelController controller;
+	private ProcessingFrame processFrame;
 
 	/**
 	 * @param cytomine
@@ -37,6 +40,16 @@ public class ImagesPanelModel extends Model {
 	public ImagesPanelModel(Cytomine cytomine, ImagesPanelController controller) {
 		super(cytomine);
 		this.controller = controller;
+
+		ThreadUtil.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				processFrame = new ProcessingFrame();
+
+			}
+		});
+
 	}
 
 	/**
@@ -60,14 +73,19 @@ public class ImagesPanelModel extends Model {
 	 */
 	public void generateAndUploadSectionROI(ImageInstanceCollection images) {
 
+		processFrame.newAction();
+
+		processFrame.println("Generating sections and upload to cytomine for "
+				+ images.size() + " images");
+
 		for (int i = 0; i < images.size(); i++) {
 			ImageInstance instance = images.get(i);
 
 			Sequence sequence = CytomineUtil.loadImage(instance, cytomine,
-					Config.thumbnailDefaultMaxSize);
+					Config.thumbnailDefaultMaxSize, processFrame);
 
-			List<CytomineImportedROI> rois = CytomineUtil
-					.generateSectionsROI(sequence);
+			List<CytomineImportedROI> rois = CytomineUtil.generateSectionsROI(
+					sequence, processFrame);
 
 			Dimension thumbnailSize = new Dimension(sequence.getWidth(),
 					sequence.getHeight());
@@ -79,20 +97,26 @@ public class ImagesPanelModel extends Model {
 				for (CytomineImportedROI roi : rois) {
 					sequence.addROI(roi);
 				}
-				
-				CytomineUtil.uploadRoi(cytomine, instance, sequence);
-				
+
+				processFrame.setGlobalProgress((int) ((double) i
+						/ images.size() * 100));
+				CytomineUtil.uploadRoi(cytomine, instance, sequence,
+						processFrame);
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+
+		processFrame.setGlobalProgress(100);
+
 	}
 
 	/**
 	 * @param imageInstance
-	 * @return an icon image of the imageInstance to previsualize the image in
-	 *         the menu.
+	 * @return an icon image of the imageInstance to visualize the image in the
+	 *         menu.
 	 */
 	public ImageIcon getIcon(ImageInstance imageInstance, int size) {
 
@@ -102,8 +126,8 @@ public class ImagesPanelModel extends Model {
 
 		try {
 
-			
-			BufferedImage image = cytomine.downloadAbstractImageAsBufferedImage(ID, size);
+			BufferedImage image = cytomine
+					.downloadAbstractImageAsBufferedImage(ID, size);
 			icon = new ImageIcon(image);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -125,7 +149,8 @@ public class ImagesPanelModel extends Model {
 		ImageInstanceCollection collection = null;
 
 		try {
-			collection = cytomine.getImageInstancesByOffsetWithMax(idProj, offset, max);
+			collection = cytomine.getImageInstancesByOffsetWithMax(idProj,
+					offset, max);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -140,26 +165,32 @@ public class ImagesPanelModel extends Model {
 	 *            the list
 	 */
 	public void deleteAllAnnotations(ImageInstanceCollection images) {
+
+		processFrame.newAction();
+
+		processFrame.println("deleting annotations of " + images.size()
+				+ " images");
+
 		for (int i = 0; i < images.size(); i++) {
 			ImageInstance image = images.get(i);
 
 			try {
-				Map<String, String> filter = new TreeMap<String, String>();
-				filter.put("user", ""+cytomine.getCurrentUser().getLong("id"));
-				filter.put("image", ""+image.getLong("id"));
-				
-				AnnotationCollection annotations = cytomine.getAnnotations(filter);
-
-				for (int j = 0; j < annotations.size(); j++) {
-					Annotation annotation = annotations.get(j);
-					cytomine.deleteAnnotation(annotation.getLong("id"));
-				}
-
+				int nb = CytomineUtil.deleteAllRoi(cytomine, image,
+						processFrame);
+				processFrame.println("deleted " + nb
+						+ " annotations for image " + image.getStr("id"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+			processFrame
+					.setGlobalProgress((int) ((double) i / images.size() * 100));
+
 		}
+
+		processFrame.println("delete finished");
+		processFrame.setGlobalProgress(100);
 	}
 
 }

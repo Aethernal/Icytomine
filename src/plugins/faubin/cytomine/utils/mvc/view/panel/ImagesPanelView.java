@@ -11,6 +11,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -19,15 +20,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.utils.mvc.controller.panel.ImagesPanelController;
-import plugins.faubin.cytomine.utils.mvc.view.frames.ProjectsFrame;
+import plugins.faubin.cytomine.utils.mvc.view.frame.ProcessingFrame;
+import plugins.faubin.cytomine.utils.mvc.view.frame.IcytomineFrame;
+import plugins.faubin.cytomine.utils.mvc.view.panel.ProjectsPanelView.NotEditableTableModel;
 import be.cytomine.client.collections.ImageInstanceCollection;
 
 public class ImagesPanelView extends JPanel {
@@ -42,7 +47,6 @@ public class ImagesPanelView extends JPanel {
 	private int currentPage = 0;
 	
 	private ImageInstanceCollection images;
-	
 
 	/**
 	 * Create the panel.
@@ -126,8 +130,11 @@ public class ImagesPanelView extends JPanel {
 				"Width", "Height" };
 
 		model.setColumnIdentifiers(columns);
-		
 		table.getTableHeader().setReorderingAllowed(false);
+		
+		RowSorter<NotEditableTableModel> sorter = new TableRowSorter<NotEditableTableModel>(model);
+		
+		table.setRowSorter(sorter);
 		
 		this.addComponentListener(new ComponentListener() {
 			
@@ -188,45 +195,47 @@ public class ImagesPanelView extends JPanel {
 	}
 
 	public void loadRows(final ImageInstanceCollection instances) {
-		ThreadUtil.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				images = instances;
-				double total = images.size();
-				double actual = 0;
-				// reset table row to clean after a page change
-				int rowCount = model.getRowCount();
-				// Remove rows one by one from the end of the table
-				for (int i = rowCount - 1; i >= 0; i--) {
-					model.removeRow(i);
+		if(instances!=null){
+			ThreadUtil.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					images = instances;
+					double total = images.size();
+					double actual = 0;
+					// reset table row to clean after a page change
+					int rowCount = model.getRowCount();
+					// Remove rows one by one from the end of the table
+					for (int i = rowCount - 1; i >= 0; i--) {
+						model.removeRow(i);
+					}
+	
+					IcytomineFrame.progressBar.setValue(0);
+	
+					// generate row
+					for (int i = 0; i < images.size(); i++) {
+						model.addRow(new Object[] { "LOADING",
+								images.get(i).getLong("id"),
+								images.get(i).getStr("originalFilename"),
+								images.get(i).getLong("user"),
+								images.get(i).getInt("numberOfAnnotations"),
+								images.get(i).getInt("width"),
+								images.get(i).getInt("height") });
+	
+						int size = scrollPane.getSize().height/Config.nbDisplayedImage-4;
+						if(size <= 10){ size = 10;}
+						model.setValueAt(controller.getImageIcon(images.get(i), size), model.getRowCount() - 1, 0);
+						
+						table.setRowHeight(model.getRowCount() - 1, size);
+						actual++;
+	
+						// update progressBar
+						IcytomineFrame.progressBar
+								.setValue((int) (actual / total * 100));
+					}
+	
 				}
-
-				ProjectsFrame.progressBar.setValue(0);
-
-				// generate row
-				for (int i = 0; i < images.size(); i++) {
-					model.addRow(new Object[] { "LOADING",
-							images.get(i).getStr("id"),
-							images.get(i).getStr("originalFilename"),
-							images.get(i).getStr("user"),
-							images.get(i).getStr("numberOfAnnotations"),
-							images.get(i).getStr("width"),
-							images.get(i).getStr("height") });
-
-					int size = scrollPane.getSize().height/Config.nbDisplayedImage-4;
-					if(size <= 10){ size = 10;}
-					model.setValueAt(controller.getImageIcon(images.get(i), size), model.getRowCount() - 1, 0);
-					
-					table.setRowHeight(model.getRowCount() - 1, size);
-					actual++;
-
-					// update progressBar
-					ProjectsFrame.progressBar
-							.setValue((int) (actual / total * 100));
-				}
-
-			}
-		});
+			});
+		}
 
 	}
 
@@ -304,12 +313,41 @@ public class ImagesPanelView extends JPanel {
 		public boolean isCellEditable(int row, int column) {
 			return false;
 		}
+		
+		public Class getColumnClass(int column) {
+	        Class returnValue;
+	        switch(column){
+	        case 0:
+	        	returnValue = ImageIcon.class;
+	        	break;
+	        case 1:
+	        	returnValue = Long.class;
+	        	break;
+	        case 2:
+	        	returnValue = String.class;
+	        	break;
+	        case 3:
+	        	returnValue = Long.class;
+	        	break;
+	        case 4:
+	        	returnValue = Integer.class;
+	        	break;
+	        case 5:
+	        	returnValue = Integer.class;
+	        	break;
+	        case 6:
+	        	returnValue = Integer.class;
+	        	break;
+	        default:
+	        	returnValue = Object.class;
+	        	break;
+	        }
+	        
+	        return returnValue;
+		}
 
 		// Returning the Class of each column will allow different
 		// renderers to be used based on Class
-		public Class getColumnClass(int column) {
-			return getValueAt(0, column).getClass();
-		}
 	}
 
 	public ActionListener actionClose = new ActionListener() {

@@ -7,17 +7,18 @@ public class Config {
 
 	// basic configuration
 	public static boolean debug = true;
-	public static final String version = "1.1.3";
+	public static final String version = "1.2.0";
 
 	// image downloaded
+	public static int glomerulDetectionDefaultMaxSize = 8192;
 	public static int thumbnailDefaultMaxSize = 2048;
-	public static int iconPreviewDefaultMaxSize = 100;
 	public static int previewDefaultMaxSize = 512;
+	public static int iconPreviewDefaultMaxSize = 128;
 
 	// server connection
 	public static final String defaultServer = "http://cytomine.web.pasteur.fr";
-	public static final String defaultPublicKey = "";
-	public static final String defaultPrivateKey = "";
+	public static final String defaultPublicKey = "d42e7fe6-4e84-4c04-82f5-9863d10d590e";
+	public static final String defaultPrivateKey = "d22a6cd4-04cb-4d06-8a46-082379219b4c";
 
 	// imagesPanel
 	public static final int nbDisplayedImage = 5;

@@ -2,6 +2,7 @@ package plugins.faubin.cytomine.utils.cytomine;
 
 import icy.image.IcyBufferedImage;
 import icy.image.IcyBufferedImageUtil;
+import icy.main.Icy;
 import icy.roi.ROI;
 import icy.roi.ROI2D;
 import icy.sequence.Sequence;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import plugins.adufour.thresholder.Thresholder;
 import plugins.faubin.contourdetector.Utils;
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.utils.mvc.view.frame.ProcessingFrame;
@@ -721,11 +723,12 @@ public class CytomineUtil {
 	}
 
 	public static void generateGlomeruleROI(Cytomine cytomine,Sequence seq, ProcessingFrame processFrame, int seuil) {
-		Sequence thresholded = CustomThreshold.threshold(seq, seuil, true);
+		Sequence thresholded = Thresholder.threshold(seq, 0, new double[]{seuil}, false);//CustomThreshold.threshold(seq, seuil, true);
 		if(processFrame!=null){
 			processFrame.println("Detecting glomerules");
 		}
-		GlomeruleDetector.ellipses_detect(thresholded, thresholded, 200, 231000, 255, 2, 10);
+		GlomeruleDetector.ellipses_detect(seq, thresholded, 200, 231000, 1, 2, 10);
+		
 		if(processFrame!=null){
 			processFrame.println("detection done");
 		}

@@ -30,6 +30,9 @@ public class Console {
 	
     public Console() {
     	
+	}
+    
+    public void initialize(){
 		//initialising variables
 		String query = "";
 		Scanner sc = new Scanner(System.in);
@@ -108,7 +111,7 @@ public class Console {
 			
 		}while(!query.equals("exit"));
 		sc.close();
-	}
+    }
     
     private void iniCommands() {
     	//base commands

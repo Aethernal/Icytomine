@@ -7,6 +7,7 @@ import be.cytomine.client.collections.ProjectCollection;
 
 public class ProjectsPanelModel extends Model {
 
+	@SuppressWarnings("unused")
 	private ProjectsPanelController controller;
 
 	/**

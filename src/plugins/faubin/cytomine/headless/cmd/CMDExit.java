@@ -1,9 +1,7 @@
 package plugins.faubin.cytomine.headless.cmd;
 
 import icy.main.Icy;
-import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.headless.Console;
-import be.cytomine.client.Cytomine;
 
 
 public class CMDExit extends CMD{

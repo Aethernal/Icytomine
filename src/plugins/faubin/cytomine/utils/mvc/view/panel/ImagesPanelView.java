@@ -3,13 +3,10 @@ package plugins.faubin.cytomine.utils.mvc.view.panel;
 import icy.system.thread.ThreadUtil;
 
 import java.awt.BorderLayout;
-import java.awt.MouseInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,7 +19,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.RowSorter;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -30,11 +26,10 @@ import javax.swing.table.TableRowSorter;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.utils.mvc.controller.panel.ImagesPanelController;
-import plugins.faubin.cytomine.utils.mvc.view.frame.ProcessingFrame;
 import plugins.faubin.cytomine.utils.mvc.view.frame.IcytomineFrame;
-import plugins.faubin.cytomine.utils.mvc.view.panel.ProjectsPanelView.NotEditableTableModel;
 import be.cytomine.client.collections.ImageInstanceCollection;
 
+@SuppressWarnings("serial")
 public class ImagesPanelView extends JPanel {
 
 	private ImagesPanelController controller;
@@ -314,6 +309,7 @@ public class ImagesPanelView extends JPanel {
 			return false;
 		}
 		
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public Class getColumnClass(int column) {
 	        Class returnValue;
 	        switch(column){

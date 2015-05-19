@@ -2,7 +2,6 @@ package plugins.faubin.cytomine.headless.cmd;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.headless.Console;
-import icy.system.thread.ThreadUtil;
 
 public abstract class CMD {
 	protected Console console;

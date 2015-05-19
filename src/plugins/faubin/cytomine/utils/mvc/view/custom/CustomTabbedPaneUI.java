@@ -1,8 +1,6 @@
 package plugins.faubin.cytomine.utils.mvc.view.custom;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;

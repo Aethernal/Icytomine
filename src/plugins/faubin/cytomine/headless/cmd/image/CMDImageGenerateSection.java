@@ -10,7 +10,6 @@ import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
 import plugins.faubin.cytomine.utils.cytomine.CytomineUtil;
 import plugins.faubin.cytomine.utils.roi.roi2dpolygon.CytomineImportedROI;
-import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
 
 public class CMDImageGenerateSection extends CMD {

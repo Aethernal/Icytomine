@@ -2,13 +2,10 @@ package plugins.faubin.cytomine.utils.mvc.controller.panel;
 
 import icy.system.thread.ThreadUtil;
 
-import java.awt.Color;
-
 import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 
 import plugins.faubin.cytomine.Config;
-import plugins.faubin.cytomine.utils.ConsoleUI;
 import plugins.faubin.cytomine.utils.mvc.model.panel.ImagesPanelModel;
 import plugins.faubin.cytomine.utils.mvc.template.Controller;
 import plugins.faubin.cytomine.utils.mvc.view.panel.ImagesPanelView;
@@ -33,9 +30,6 @@ public class ImagesPanelController extends Controller {
 		ImageInstanceCollection images = model.getImages(idProjet);
 		this.view = new ImagesPanelView(idProjet, images, this);
 
-		tabbedPane.add(view.getName(), view);
-		tabbedPane.setSelectedComponent(view);
-
 		ImageInstanceCollection collection = model.getImagesFromIndexByNb(
 				idProjet, 0, Config.nbDisplayedImage);
 		
@@ -51,8 +45,10 @@ public class ImagesPanelController extends Controller {
 
 			@Override
 			public void run() {
-				ImagePanelController imagePanel = new ImagePanelController(
-						model.getCytomine(), id, tabbedPane);
+				ImagePanelController imagePanel = new ImagePanelController(model.getCytomine(), id, tabbedPane);
+				tabbedPane.add(imagePanel.getView().getName(), imagePanel.getView());
+				tabbedPane.setSelectedComponent(imagePanel.getView());
+				
 			}
 		});
 	}
@@ -87,4 +83,12 @@ public class ImagesPanelController extends Controller {
 		view.loadRows(collection);
 	}
 
+	public ImagesPanelView getView() {
+		return view;
+	}
+	
+	public ImagesPanelModel getModel() {
+		return model;
+	}
+	
 }

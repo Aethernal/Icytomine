@@ -2,11 +2,8 @@ package plugins.faubin.cytomine.headless.cmd;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
-import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.headless.Console;
-import be.cytomine.client.Cytomine;
 
 
 public class CMDHelp extends CMD{
@@ -35,8 +32,8 @@ public class CMDHelp extends CMD{
 				str.append("Listing all commands"+"\n\n");
 				
 				Collection<CMD> commands = console.commands.values();
-				for (Iterator iterator = commands.iterator(); iterator.hasNext();) {
-					CMD cmd = (CMD) iterator.next();
+				for (Iterator<CMD> iterator = commands.iterator(); iterator.hasNext();) {
+					CMD cmd = iterator.next();
 					cmd.nbTab = 1;
 					str.append(cmd.toString()+"\n");
 					

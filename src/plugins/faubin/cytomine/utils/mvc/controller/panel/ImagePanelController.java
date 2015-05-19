@@ -37,8 +37,6 @@ public class ImagePanelController extends Controller {
 			e.printStackTrace();
 		}
 
-		tabbedPane.add(view.getName(), view);
-		tabbedPane.setSelectedComponent(view);
 	}
 
 	public ImageIcon getImageIcon(ImageInstance imageInstance) {
@@ -135,6 +133,14 @@ public class ImagePanelController extends Controller {
 
 	public Cytomine getCytomine() {
 		return model.getCytomine();
+	}
+	
+	public ImagePanelView getView() {
+		return view;
+	}
+	
+	public ImagePanelModel getModel() {
+		return model;
 	}
 
 }

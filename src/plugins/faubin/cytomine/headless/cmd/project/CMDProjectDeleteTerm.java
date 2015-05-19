@@ -1,14 +1,11 @@
 package plugins.faubin.cytomine.headless.cmd.project;
 
-import icy.main.Icy;
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
 import plugins.faubin.cytomine.utils.cytomine.CytomineUtil;
-import be.cytomine.client.Cytomine;
 import be.cytomine.client.collections.ImageInstanceCollection;
-import be.cytomine.client.collections.ProjectCollection;
 import be.cytomine.client.models.ImageInstance;
 
 public class CMDProjectDeleteTerm extends CMD {

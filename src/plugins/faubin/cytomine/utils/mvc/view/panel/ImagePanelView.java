@@ -22,6 +22,7 @@ import utils.CytomineReader;
 import be.cytomine.client.CytomineException;
 import be.cytomine.client.models.ImageInstance;
 
+@SuppressWarnings("serial")
 public class ImagePanelView extends JPanel {
 
 	private ImagePanelController controller;

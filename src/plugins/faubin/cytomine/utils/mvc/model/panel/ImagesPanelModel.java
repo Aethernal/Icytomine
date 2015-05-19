@@ -3,17 +3,9 @@ package plugins.faubin.cytomine.utils.mvc.model.panel;
 import icy.sequence.Sequence;
 import icy.system.thread.ThreadUtil;
 
-import java.awt.Dimension;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import plugins.faubin.cytomine.Config;
@@ -23,13 +15,12 @@ import plugins.faubin.cytomine.utils.mvc.template.Model;
 import plugins.faubin.cytomine.utils.mvc.view.frame.ProcessingFrame;
 import plugins.faubin.cytomine.utils.roi.roi2dpolygon.CytomineImportedROI;
 import be.cytomine.client.Cytomine;
-import be.cytomine.client.collections.AnnotationCollection;
 import be.cytomine.client.collections.ImageInstanceCollection;
-import be.cytomine.client.models.Annotation;
 import be.cytomine.client.models.ImageInstance;
 
 public class ImagesPanelModel extends Model {
 
+	@SuppressWarnings("unused")
 	private ImagesPanelController controller;
 	private ProcessingFrame processFrame;
 
@@ -87,11 +78,6 @@ public class ImagesPanelModel extends Model {
 			List<CytomineImportedROI> rois = CytomineUtil.generateSectionsROI(
 					sequence, processFrame);
 
-			Dimension thumbnailSize = new Dimension(sequence.getWidth(),
-					sequence.getHeight());
-
-			long ID = instance.getLong("id");
-
 			try {
 
 				for (CytomineImportedROI roi : rois) {
@@ -104,7 +90,6 @@ public class ImagesPanelModel extends Model {
 						processFrame);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -130,7 +115,6 @@ public class ImagesPanelModel extends Model {
 					.downloadAbstractImageAsBufferedImage(ID, size);
 			icon = new ImageIcon(image);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -152,7 +136,6 @@ public class ImagesPanelModel extends Model {
 			collection = cytomine.getImageInstancesByOffsetWithMax(idProj,
 					offset, max);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -180,7 +163,6 @@ public class ImagesPanelModel extends Model {
 				processFrame.println("deleted " + nb
 						+ " annotations for image " + image.getStr("id"));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

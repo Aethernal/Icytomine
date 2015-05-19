@@ -3,9 +3,9 @@ package plugins.faubin.cytomine.utils.mvc.template;
 import javax.swing.JTabbedPane;
 
 public abstract class Controller {
-
+	
 	protected JTabbedPane tabbedPane;
-
+	
 	public Controller(JTabbedPane tabbedPane) {
 		this.tabbedPane = tabbedPane;
 	}
@@ -15,5 +15,7 @@ public abstract class Controller {
 	public JTabbedPane getTabbedPane() {
 		return tabbedPane;
 	}
+	
+	
 
 }

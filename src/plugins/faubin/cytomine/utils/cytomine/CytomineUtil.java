@@ -2,12 +2,9 @@ package plugins.faubin.cytomine.utils.cytomine;
 
 import icy.image.IcyBufferedImage;
 import icy.image.IcyBufferedImageUtil;
-import icy.main.Icy;
 import icy.roi.ROI;
 import icy.roi.ROI2D;
 import icy.sequence.Sequence;
-import icy.sequence.SequenceEvent;
-import icy.sequence.SequenceListener;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,20 +15,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.TreeMap;
 
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-
-import plugins.adufour.opencv.OpenCV;
-import plugins.adufour.roi.LabelExtractor;
-import plugins.adufour.roi.LabelExtractor.ExtractionType;
-import plugins.adufour.thresholder.Thresholder;
 import plugins.faubin.contourdetector.Utils;
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.utils.mvc.view.frame.ProcessingFrame;
@@ -40,16 +25,9 @@ import plugins.faubin.cytomine.utils.threshold.CustomThreshold;
 import plugins.faubin.glomeruledetector.GlomeruleDetector;
 import plugins.kernel.roi.roi2d.ROI2DArea;
 import plugins.kernel.roi.roi2d.ROI2DPolygon;
-import plugins.tprovoost.bestthreshold.BestThreshold;
-import plugins.vannary.morphomaths.MorphOp;
-import plugins.ylemontag.histogram.BadHistogramParameters;
-import plugins.ylemontag.histogram.Histogram;
-import utils.CytomineReader;
-import utils.Tile;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.CytomineException;
 import be.cytomine.client.collections.AnnotationCollection;
-import be.cytomine.client.models.Annotation;
 import be.cytomine.client.models.ImageInstance;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -286,7 +264,6 @@ public class CytomineUtil {
 		List<ROI2DPolygon> newRois = new ArrayList<ROI2DPolygon>();
 
 		for (ROI2DArea roi : rois) {
-			Point2D p = roi.getBooleanMask(false).getPoints()[0];
 			ROI2DPolygon poly = (ROI2DPolygon) convertFromArea(roi);
 			if (poly != null) {
 				newRois.add(poly);
@@ -368,7 +345,6 @@ public class CytomineUtil {
 	 * @return converted ROI2DPolygon
 	 */
 	private static ROI2DPolygon convertFromArea(ROI2DArea roi) {
-		ROI2DPolygon poly = new ROI2DPolygon();
 		Point2D[] points = ((ROI2D) roi).getBooleanMask(false)
 				.getContourPoints();
 		int rotation = -1;
@@ -444,7 +420,7 @@ public class CytomineUtil {
 			right = rotatePoints(right, -90 * rotation, roi.getBounds());
 		}
 
-		return poly = new ROI2DPolygon(right);
+		return new ROI2DPolygon(right);
 
 	}
 

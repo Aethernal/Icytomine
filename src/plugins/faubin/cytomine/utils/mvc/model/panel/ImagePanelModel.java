@@ -14,20 +14,13 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.utils.cytomine.AnnotationTerm;
@@ -45,6 +38,11 @@ import be.cytomine.client.CytomineException;
 import be.cytomine.client.collections.AnnotationCollection;
 import be.cytomine.client.models.Annotation;
 import be.cytomine.client.models.ImageInstance;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 public class ImagePanelModel extends Model {
 
@@ -132,8 +130,6 @@ public class ImagePanelModel extends Model {
 	private List<CytomineImportedROI> getAnnotations(ImageInstance instance,
 			Dimension thumbnailSize) {
 
-		long ID = instance.getLong("id");
-
 		ArrayList<CytomineImportedROI> rois = new ArrayList<CytomineImportedROI>();
 
 		try {
@@ -181,7 +177,6 @@ public class ImagePanelModel extends Model {
 
 		long ID = imageInstance.getLong("baseImage");
 
-		URL url;
 		try {
 
 			BufferedImage image = cytomine
@@ -241,7 +236,7 @@ public class ImagePanelModel extends Model {
 	 * @param terms
 	 *            upload all roi of the currently selected sequence
 	 */
-	public void uploadRoi(ImageInstance instance, DefaultListModel termsList) {
+	public void uploadRoi(ImageInstance instance, DefaultListModel<Object> termsList) {
 
 		processFrame.newAction();
 		
@@ -259,22 +254,18 @@ public class ImagePanelModel extends Model {
 				
 				//convert to ROI for cytomine if possible
 				try{
-					ROI2DPolygon polyROI = (ROI2DPolygon) roi;
-					try{
-						CytomineImportedROI cytoROI = (CytomineImportedROI) roi;
-					}catch(Exception e){
-						Annotation annotation = new Annotation();
-						annotation.set("term", terms.toString());
-						
-						CytomineImportedROI newROI = new CytomineImportedROI( ( (ROI2DPolygon) roi).getPoints() , annotation);
-						newROI.setColor(Color.black);
-						sequence.getROI2Ds().set(i, newROI);
-						
-						sequence.removeROI(roi);
-						sequence.addROI(newROI);
-					}
+					@SuppressWarnings("unused")
+					CytomineImportedROI cytoROI = (CytomineImportedROI) roi;
 				}catch(Exception e){
+					Annotation annotation = new Annotation();
+					annotation.set("term", terms.toString());
 					
+					CytomineImportedROI newROI = new CytomineImportedROI( ( (ROI2DPolygon) roi).getPoints() , annotation);
+					newROI.setColor(Color.black);
+					sequence.getROI2Ds().set(i, newROI);
+					
+					sequence.removeROI(roi);
+					sequence.addROI(newROI);
 				}
 			
 				
@@ -296,7 +287,7 @@ public class ImagePanelModel extends Model {
 	 *            delete all the annotations of an ImageInstance then upload all
 	 *            roi of the selected sequence
 	 */
-	public void updateRoi(ImageInstance instance, DefaultListModel terms) {
+	public void updateRoi(ImageInstance instance, DefaultListModel<Object> terms) {
 		deleteRoi(instance);
 		uploadRoi(instance, terms);
 		

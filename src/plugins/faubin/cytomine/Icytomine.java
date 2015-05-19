@@ -9,10 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import plugins.faubin.cytomine.headless.Console;
-import plugins.faubin.cytomine.utils.mvc.view.frame.LoginFrame;
 import plugins.faubin.cytomine.utils.mvc.view.frame.IcytomineFrame;
+import plugins.faubin.cytomine.utils.mvc.view.frame.LoginFrame;
 import be.cytomine.client.Cytomine;
-import be.cytomine.client.CytomineException;
 
 public class Icytomine extends PluginActionable {
 	public Cytomine cytomine;
@@ -28,6 +27,7 @@ public class Icytomine extends PluginActionable {
 		if (Icy.getMainInterface().isHeadLess()) {
 			// start in headless
 			Console console = new Console();
+			console.initialize();
 		} else {
 			// start with GUI
 			initialize();

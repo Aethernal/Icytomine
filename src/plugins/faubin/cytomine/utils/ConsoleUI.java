@@ -11,6 +11,7 @@ import javax.swing.text.StyleContext;
 
 import plugins.faubin.cytomine.Config;
 
+@SuppressWarnings("serial")
 public class ConsoleUI extends JTextPane {
 
 	public JScrollPane scroll;

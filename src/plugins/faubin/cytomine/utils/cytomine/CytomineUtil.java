@@ -546,7 +546,7 @@ public class CytomineUtil {
 		
 		int seuil = CustomThreshold.generateSeuil(histo, seq.getWidth(), seq.getHeight());
 
-		Sequence thresholded = Thresholder.threshold(seq, 0, new double[]{seuil}, false);//CustomThreshold.threshold(seq, seuil, inversed);
+		Sequence thresholded = Thresholder.threshold(seq, 0, new double[]{seuil}, false);/**/ /*CustomThreshold.threshold(seq, seuil, inversed);/**/
 
 		if(processFrame!=null){
 			processFrame.println("thresholding done");

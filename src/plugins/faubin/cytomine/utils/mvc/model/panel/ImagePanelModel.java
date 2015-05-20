@@ -279,7 +279,7 @@ public class ImagePanelModel extends Model {
 
 			}
 
-			CytomineUtil.uploadRoi(cytomine, instance, sequence, processFrame);
+			CytomineUtil.uploadROI(cytomine, instance, sequence, processFrame);
 
 			processFrame.setGlobalProgress(100);
 
@@ -310,7 +310,7 @@ public class ImagePanelModel extends Model {
 		try {
 			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
 			filter.put("image", "" + instance.getLong("id"));
-			filter.put("term", "" + Config.globalID.get("ontology_section"));
+			filter.put("term", "" + Config.IDMap.get("ontology_section"));
 
 			AnnotationCollection collection = cytomine.getAnnotations(filter);
 
@@ -361,13 +361,16 @@ public class ImagePanelModel extends Model {
 					int delta = zoom;
 					double ratio = Math.pow(2, -delta);
 
-					final Point position = new Point((int) (x * ratio),
+					final Point2D position = new Point2D.Double((int) (x * ratio),
 							(int) (y * ratio));
 					final Dimension size = new Dimension((int) (width * ratio),
 							(int) (height * ratio));
 
+					
+					processFrame.println("generating tiles of section");
 					List<Tile> tiles = preview.getCrop(position, size, zoom);
-
+					processFrame.println("generation done");
+					
 					// buffered image for rendering tiles
 					BufferedImage img = new BufferedImage(size.width,
 							size.height, BufferedImage.TYPE_INT_RGB);
@@ -377,16 +380,15 @@ public class ImagePanelModel extends Model {
 					graph.fillRect(0, 0, size.width, size.height);
 
 					final Sequence sequence = new Sequence();
-					processFrame
-							.println("Collecting tiles of sections annotations");
+					processFrame.println("Downloading tiles");
 					for (int j = 0; j < tiles.size(); j++) {
 						Tile tile = tiles.get(j);
 						BufferedImage image = cytomine
 								.downloadPictureAsBufferedImage(tile.getUrl());
 						tile.image = image;
 
-						graph.drawImage(image, tile.getC() - position.x,
-								tile.getR() - position.y, null);
+						graph.drawImage(image, (int)(tile.getC() - position.getX()),
+								(int)(tile.getR() - position.getY()), null);
 
 						processFrame.setActionProgress((int) ((double) (j + 1)
 								/ tiles.size() * 100));
@@ -394,7 +396,7 @@ public class ImagePanelModel extends Model {
 
 					// generate sequence with tiles assembled in a BufferedImage
 					sequence.setImage(0, 0, img);
-					processFrame.println("collecting done");
+					processFrame.println("download done");
 
 					Sequence chan0 = SequenceUtil.extractChannel(sequence, 0);
 
@@ -405,8 +407,9 @@ public class ImagePanelModel extends Model {
 							histogramme, chan0.getWidth(), chan0.getHeight());
 
 					// show result
-					Icy.getMainInterface().addSequence(sequence);
+//					Icy.getMainInterface().addSequence(sequence);
 
+					// pool variable for multi thread calcul
 					Stack<Runnable> runnablePool = new Stack<Runnable>();
 					ThreadForRunnablePool threadPool[] = new ThreadForRunnablePool[8];
 
@@ -414,27 +417,29 @@ public class ImagePanelModel extends Model {
 					for (int j = 0; j < tiles.size(); j++) {
 						final Tile tile = tiles.get(j);
 
-						// List<Point2D> pts = new ArrayList<Point2D>();
-						// pts.add(new
-						// Point2D.Double(tile.getC()-position.x,tile.getR()-position.y));
-						// pts.add(new
-						// Point2D.Double(tile.getC()-position.x+256,tile.getR()-position.y));
-						// pts.add(new
-						// Point2D.Double(tile.getC()-position.x+256,tile.getR()-position.y+256));
-						// pts.add(new
-						// Point2D.Double(tile.getC()-position.x,tile.getR()-position.y+256));
-						// ROI2DPolygon tileROI = new ROI2DPolygon();
-						// tileROI.setPoints(pts);
-						// tileROI.setColor(Color.GREEN);
-						// tileROI.setName("Tile ["+tile.getC()/256+"]["+tile.getR()/256+"]");
-						//
-						// sequence.addROI(tileROI);
-
 						if (tile.image != null) {
 							Runnable runnable = new Runnable() {
 
 								@Override
 								public void run() {
+									
+//									// show an roi for all tiles
+//									 List<Point2D> pts = new ArrayList<Point2D>();
+//									 pts.add(new
+//									 Point2D.Double(tile.getC()-position.x,tile.getR()-position.y));
+//									 pts.add(new
+//									 Point2D.Double(tile.getC()-position.x+256,tile.getR()-position.y));
+//									 pts.add(new
+//									 Point2D.Double(tile.getC()-position.x+256,tile.getR()-position.y+256));
+//									 pts.add(new
+//									 Point2D.Double(tile.getC()-position.x,tile.getR()-position.y+256));
+//									 ROI2DPolygon tileROI = new ROI2DPolygon();
+//									 tileROI.setPoints(pts);
+//									 tileROI.setColor(Color.GREEN);
+//									 tileROI.setName("Tile ["+tile.getC()/256+"]["+tile.getR()/256+"]");
+//									
+//									 sequence.addROI(tileROI);
+									
 									// start glomeruli detection
 									Sequence seq = new Sequence(tile.image);
 									seq = SequenceUtil.extractChannel(seq, 0);
@@ -444,15 +449,11 @@ public class ImagePanelModel extends Model {
 									List<ROI2D> rois = seq.getROI2Ds();
 									for (int k = 0; k < rois.size(); k++) {
 										ROI2D roi = rois.get(k);
-										roi.setPosition2D(new Point2D.Double(
-												tile.getC()
-														- position.x
-														+ roi.getPosition2D()
-																.getX(), tile
-														.getR()
-														- position.y
-														+ roi.getPosition2D()
-																.getY()));
+										
+										double posX = tile.getC() - position.getX() + roi.getPosition2D().getX();
+										double posY = tile.getR() - position.getY() + roi.getPosition2D().getY();
+										
+										roi.setPosition2D( new Point2D.Double( posX, posY ) );
 										sequence.addROI(roi);
 
 									}
@@ -475,17 +476,38 @@ public class ImagePanelModel extends Model {
 							threadPool[k].join();
 
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						processFrame.setActionProgress((int) ((double) (k + 1)
 								/ threadPool.length * 100));
 					}
 
+					//uploading generated roi
+					List<ROI2DPolygon> polygonList = new ArrayList<ROI2DPolygon>();
+					
+					List<ROI2D> rois = sequence.getROI2Ds();
+					
+					for (int j = 0; j < rois.size(); j++) {
+						try{
+							ROI2DPolygon polygon = (ROI2DPolygon) rois.get(j);
+							
+							polygonList.add(polygon);
+							
+						}catch(Exception e){
+						}
+					}
+					
+					processFrame.println("Uploading roi");
+					
+					List<Long> terms = new ArrayList<Long>();
+					terms.add(Config.IDMap.get("ontology_glomerule"));
+					
+					CytomineUtil.uploadROI(cytomine, controller.getView().getInstance(),polygonList, 1/ratio, (int) (instance.getInt("height")), new Point2D.Double(position.getX(), position.getY() ), terms);
+					processFrame.println("Uploading done");
+					
 					processFrame.println("processing done");
 
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				processFrame.setGlobalProgress((int) ((double) (i + 1)
@@ -495,7 +517,6 @@ public class ImagePanelModel extends Model {
 			}
 
 		} catch (CytomineException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

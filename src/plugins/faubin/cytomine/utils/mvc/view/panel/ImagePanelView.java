@@ -50,7 +50,7 @@ public class ImagePanelView extends JPanel {
 		panel.add(info_scroll);
 
 		try {
-			preview = new CytomineReader(controller.getCytomine(), instance,
+			preview = new CytomineReader(controller.getCytomine(), getInstance(),
 					getSize());
 			preview.setBounds(0, 0, 400, 400);
 
@@ -237,11 +237,15 @@ public class ImagePanelView extends JPanel {
 		return i;
 	}
 
+	public ImageInstance getInstance() {
+		return instance;
+	}
+
 	public ActionListener actionGenerateSection = new ActionListener() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.generateSection(instance);
+			controller.generateSection(getInstance());
 
 		}
 
@@ -251,7 +255,7 @@ public class ImagePanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.generateGlomerule(instance,preview);
+			controller.generateGlomerule(getInstance(),preview);
 
 		}
 
@@ -261,7 +265,7 @@ public class ImagePanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.deleteRoi(instance);
+			controller.deleteRoi(getInstance());
 		}
 
 	};
@@ -270,7 +274,7 @@ public class ImagePanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.UpdateRoi(instance);
+			controller.UpdateRoi(getInstance());
 		}
 
 	};
@@ -279,7 +283,7 @@ public class ImagePanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.uploadRoi(instance);
+			controller.uploadRoi(getInstance());
 		}
 
 	};
@@ -297,7 +301,7 @@ public class ImagePanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.openInIcy(instance);
+			controller.openInIcy(getInstance());
 		}
 
 	};
@@ -306,7 +310,7 @@ public class ImagePanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.openInIcyWithAnnotations(instance);
+			controller.openInIcyWithAnnotations(getInstance());
 		}
 
 	};

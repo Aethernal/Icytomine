@@ -56,7 +56,7 @@ public class CMDImageGenerateSection extends CMD {
 								for (int j = 0; j < rois.size(); j++) {
 									seq.addROI(rois.get(j));
 								}
-								nbAnnotations += CytomineUtil.uploadRoi(
+								nbAnnotations += CytomineUtil.uploadROI(
 										console.cytomine, instance, seq, null);
 
 							} catch (Exception e) {

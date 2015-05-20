@@ -159,7 +159,7 @@ public class CytomineUtil {
 	 * @param term
 	 * @return the number of uploaded roi
 	 */
-	public static int uploadRoi(Cytomine cytomine, ImageInstance instance, Sequence sequence, ProcessingFrame processFrame) {
+	public static int uploadROI(Cytomine cytomine, ImageInstance instance, Sequence sequence, ProcessingFrame processFrame) {
 		int nbUploaded = 0;
 
 		if (sequence != null) {
@@ -192,8 +192,7 @@ public class CytomineUtil {
 					Point2D ratio = CytomineUtil.getScaleRatio(thumbnailSize,
 							imageSize);
 
-					String polygon = CytomineUtil.ROItoWKT(roi, ratio,
-							imageSizeY);
+					String polygon = CytomineUtil.ROItoWKT(roi, ratio, imageSizeY);
 
 					if (!roi.terms.isEmpty()) {
 						try {
@@ -229,6 +228,43 @@ public class CytomineUtil {
 			}
 		}
 		return nbUploaded;
+	}
+	
+	public static void uploadROI(Cytomine cytomine, ImageInstance instance, List<ROI2DPolygon> rois, double ratio, int height, Point2D translation, List<Long> termID){
+		List<CytomineImportedROI> annotations = CytomineUtil.Roi2DPolyToCytomineImportedROI(rois);
+		
+		long ID = instance.getLong("id");
+		
+		for (int i = 0; i < annotations.size(); i++) {
+			CytomineImportedROI polygon = annotations.get(i);
+			
+			polygon.terms = termID;
+			polygon.translate(translation.getX(), translation.getY());
+			Point2D ratioAsP2D = new Point2D.Double(ratio, ratio);
+			try {
+				String WKTPolygon = CytomineUtil.ROItoWKT(polygon, ratioAsP2D, height);
+				try{
+					if (!polygon.terms.isEmpty()) {
+						
+						try {
+							cytomine.addAnnotationWithTerms(WKTPolygon, ID, polygon.terms);
+						} catch (Exception e) {
+							cytomine.addAnnotation(WKTPolygon, ID);
+						}
+	
+					} else {
+						cytomine.addAnnotation(WKTPolygon, ID);
+					}
+				} catch (CytomineException e) {
+					e.printStackTrace();
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
 	}
 
 	/**
@@ -438,7 +474,7 @@ public class CytomineUtil {
 		
 		List<CytomineImportedROI> result = new ArrayList<CytomineImportedROI>();
 
-		Sequence thresholded = SeqRGB2SeqBINARY(seq, processFrame, false);
+		Sequence thresholded = SeqRGB2SeqBINARY(seq, processFrame, true);
 		// extract image label to generate roi
 
 		if(processFrame!=null){
@@ -466,7 +502,7 @@ public class CytomineUtil {
 			
 			// section term id
 			List<Long> terms = new ArrayList<Long>();
-			terms.add(Config.globalID.get("ontology_section"));
+			terms.add(Config.IDMap.get("ontology_section"));
 			
 			int count = 0;
 			for (CytomineImportedROI roi : roisConvex) {
@@ -510,7 +546,7 @@ public class CytomineUtil {
 		
 		int seuil = CustomThreshold.generateSeuil(histo, seq.getWidth(), seq.getHeight());
 
-		Sequence thresholded = CustomThreshold.threshold(seq, seuil, inversed);
+		Sequence thresholded = Thresholder.threshold(seq, 0, new double[]{seuil}, false);//CustomThreshold.threshold(seq, seuil, inversed);
 
 		if(processFrame!=null){
 			processFrame.println("thresholding done");
@@ -618,17 +654,17 @@ public class CytomineUtil {
 			qpts.add(new Point2D.Double(poly.xpoints[i], poly.ypoints[i]));
 		}
 
-		// Scales points to transfer from the thumbil to Cytomine
+		// Scales points to transfer from the thumbnail to Cytomine
 		qpts = ConvertPointsForCytomine(qpts, ratio, imageSizeY);
 
-		// add points to the point list in the polygon
+		// add points to the point list in the polygon with the translation
 		for (int i = 0; i < qpts.size(); i++) {
-			points += qpts.get(i).getX() + " " + qpts.get(i).getY();
+			points += (qpts.get(i).getX()) + " " + (qpts.get(i).getY());
 			points += ",";
 		}
 
 		// add the first point again to close the polygon
-		points += qpts.get(0).getX() + " " + qpts.get(0).getY();
+		points += (qpts.get(0).getX()) + " " + (qpts.get(0).getY());
 
 		return base + points + end;
 

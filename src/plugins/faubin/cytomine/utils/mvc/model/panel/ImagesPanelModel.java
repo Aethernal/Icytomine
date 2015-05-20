@@ -86,7 +86,7 @@ public class ImagesPanelModel extends Model {
 
 				processFrame.setGlobalProgress((int) ((double) i
 						/ images.size() * 100));
-				CytomineUtil.uploadRoi(cytomine, instance, sequence,
+				CytomineUtil.uploadROI(cytomine, instance, sequence,
 						processFrame);
 
 			} catch (Exception e) {

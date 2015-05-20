@@ -10,7 +10,7 @@ public class Config {
 	public static final String version = "1.2.0";
 
 	// image downloaded
-	public static int glomerulDetectionDefaultMaxSize = 8192;
+	public static int glomerulDetectionDefaultZoom = 1; // depth - this value
 	public static int thumbnailDefaultMaxSize = 2048;
 	public static int previewDefaultMaxSize = 512;
 	public static int iconPreviewDefaultMaxSize = 128;
@@ -27,12 +27,13 @@ public class Config {
 	public static Map<String, String> messages  = new TreeMap<String, String>();
 	
 	// ID MAP
-	public static Map<String, Long> globalID = new TreeMap<String, Long>();
+	public static Map<String, Long> IDMap = new TreeMap<String, Long>();
 
 	
 	public static void initialize() {
 		//ID ontology
-		globalID.put("ontology_section", new Long(12237));
+		IDMap.put("ontology_section", new Long(12237));
+		IDMap.put("ontology_glomerule", new Long(12224));
 		
 		//Errors messages
 		

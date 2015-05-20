@@ -9,7 +9,7 @@ import plugins.faubin.cytomine.utils.mvc.model.panel.ImagePanelModel;
 import plugins.faubin.cytomine.utils.mvc.template.Controller;
 import plugins.faubin.cytomine.utils.mvc.view.frame.TermFrame;
 import plugins.faubin.cytomine.utils.mvc.view.panel.ImagePanelView;
-import utils.CytomineReader;
+import plugins.faubin.cytomine.utils.tileViewer.CytomineReader;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.models.ImageInstance;
 

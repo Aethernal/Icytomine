@@ -18,7 +18,7 @@ import javax.swing.text.DefaultCaret;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.utils.mvc.controller.panel.ImagePanelController;
-import utils.CytomineReader;
+import plugins.faubin.cytomine.utils.tileViewer.CytomineReader;
 import be.cytomine.client.CytomineException;
 import be.cytomine.client.models.ImageInstance;
 

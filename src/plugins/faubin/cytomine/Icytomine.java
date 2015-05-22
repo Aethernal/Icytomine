@@ -8,9 +8,9 @@ import icy.system.thread.ThreadUtil;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import plugins.faubin.cytomine.gui.mvc.view.frame.IcytomineFrame;
+import plugins.faubin.cytomine.gui.mvc.view.frame.LoginFrame;
 import plugins.faubin.cytomine.headless.Console;
-import plugins.faubin.cytomine.utils.mvc.view.frame.IcytomineFrame;
-import plugins.faubin.cytomine.utils.mvc.view.frame.LoginFrame;
 import be.cytomine.client.Cytomine;
 
 public class Icytomine extends PluginActionable {

@@ -5,11 +5,11 @@ import icy.sequence.Sequence;
 import java.util.List;
 
 import plugins.faubin.cytomine.Config;
+import plugins.faubin.cytomine.gui.cytomine.CytomineUtil;
+import plugins.faubin.cytomine.gui.roi.roi2dpolygon.CytomineImportedROI;
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
-import plugins.faubin.cytomine.utils.cytomine.CytomineUtil;
-import plugins.faubin.cytomine.utils.roi.roi2dpolygon.CytomineImportedROI;
 import be.cytomine.client.models.ImageInstance;
 
 public class CMDImageGenerateSection extends CMD {

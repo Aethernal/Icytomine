@@ -578,4 +578,8 @@ public class CytomineReader extends JPanel {
 		}
 	}
 
+	public Sequence getSequence() {
+		return sequence;
+	}
+	
 }

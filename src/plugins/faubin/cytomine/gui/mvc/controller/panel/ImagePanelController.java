@@ -80,6 +80,7 @@ public class ImagePanelController extends Controller {
 	@Override
 	public void close() {
 		tabbedPane.remove(view);
+		
 	}
 
 	public void generateSection(final ImageInstance instance) {

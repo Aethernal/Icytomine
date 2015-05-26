@@ -160,7 +160,7 @@ public class ImagePanelModel extends Model {
 						thumbnailSize);
 
 				rois.add(CytomineImportedROI.build(
-						CytomineUtil.WKTtoROI(polygon, ratio, imageSizeY),
+						CytomineUtil.WKTtoPoint2D(polygon, ratio, imageSizeY),
 						annotation, cytomine));
 
 			}
@@ -304,6 +304,8 @@ public class ImagePanelModel extends Model {
 
 	public void generateGlomerule(ImageInstance instance) {
 
+		processFrame.newAction();
+		
 		CytomineUtil.generateGlomerule(cytomine, instance, processFrame);
 		
 		processFrame.setGlobalProgress(100);

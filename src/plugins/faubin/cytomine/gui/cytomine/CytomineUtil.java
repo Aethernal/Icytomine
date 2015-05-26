@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
 
+import javax.swing.JFrame;
+
 import plugins.adufour.thresholder.Thresholder;
 import plugins.faubin.contourdetector.Utils;
 import plugins.faubin.cytomine.Config;
@@ -555,7 +557,7 @@ public class CytomineUtil {
 
 		int seuil = CustomThreshold.generateSeuil(histo, seq.getWidth(), seq.getHeight());
 
-		Sequence thresholded = Thresholder.threshold(seq, 0, new double[]{seuil}, false);/**/ /*CustomThreshold.threshold(seq, seuil, inversed);/**/
+		Sequence thresholded = /*Thresholder.threshold(seq, 0, new double[]{seuil}, false);/**/ CustomThreshold.threshold(seq, seuil, inversed);/**/
 
 		if(processFrame!=null){
 			processFrame.println("thresholding done");
@@ -685,7 +687,7 @@ public class CytomineUtil {
 	 * @param imageSizeY
 	 * @return a list of points representing the roi
 	 */
-	public static List<Point2D> WKTtoROI(String polygon, Point2D ratio,
+	public static List<Point2D> WKTtoPoint2D(String polygon, Point2D ratio,
 			int imageSizeY) {
 		WKTReader reader = new WKTReader();
 		try {
@@ -768,6 +770,7 @@ public class CytomineUtil {
 	}
 
 	public static void generateGlomeruleROI(Cytomine cytomine,Sequence seq, ProcessingFrame processFrame, int seuil) {
+		
 		Sequence thresholded = Thresholder.threshold(seq, 0, new double[]{seuil}, false);//CustomThreshold.threshold(seq, seuil, true);
 		if(processFrame!=null){
 			processFrame.println("Detecting glomerules");
@@ -781,7 +784,12 @@ public class CytomineUtil {
 	}
 	
 	public static void generateGlomerule(final Cytomine cytomine, final ImageInstance instance, final ProcessingFrame processFrame){
-		processFrame.newAction();
+		
+		//compteurs
+		long startExecutionTime = System.currentTimeMillis();
+		int nbAnnotations = 0;
+		int nbSection = 0;
+		
 		
 		CytomineReader preview;
 		try {
@@ -798,13 +806,19 @@ public class CytomineUtil {
 					processFrame.println("Generating glomerule for sections annotations");
 				}
 				
-				for (int i = 0; i < 1/**//*collection.size()/**/; i++) {
+				for (int i = 0; i < /*1/**/collection.size()/**/; i++) {
+					nbSection++;
 					Annotation annotation = cytomine.getAnnotation(collection
 							.get(i).getLong("id"));
 					if(processFrame!=null){
 						processFrame.println("generating bounding box");
 					}
-					Rectangle rect = CytomineUtil.SectionROI2Rectangle(annotation);
+					
+					String poly = annotation.getStr("location");
+					
+					List<Point2D> points = WKTtoPoint2D(poly, new Point2D.Double(1, 1), instance.getInt("height"));
+					
+					Rectangle rect = CytomineUtil.SectionROI2Rectangle(points);
 					if(processFrame!=null){
 						processFrame.println("bounding box generation done");
 					}
@@ -822,6 +836,15 @@ public class CytomineUtil {
 							(int) (y * ratio));
 					final Dimension size = new Dimension((int) (width * ratio),
 							(int) (height * ratio));
+					
+					for (int j = 0; j < points.size(); j++) {
+						Point2D p = points.get(j);
+						p.setLocation((p.getX()*ratio)-position.getX(), (p.getY()*ratio)-position.getY());
+					}
+					
+					ROI2DPolygon section = new ROI2DPolygon(points);
+					section.setColor(Color.blue);
+					
 	
 					if(processFrame!=null){
 						processFrame.println("generating tiles of section");
@@ -835,36 +858,43 @@ public class CytomineUtil {
 						processFrame.println("Downloading tiles");
 					}
 					
-					// buffered image used to calcul histogramme
 					BufferedImage img = new BufferedImage(size.width,size.height, BufferedImage.TYPE_INT_RGB);
 					Graphics2D graph = img.createGraphics();
 					final Sequence sequence = new Sequence();
 
+//					sequence.addROI(section);
+					
 					BufferedImage image;
 					for (int j = 0; j < tiles.size(); j++) {
 						Tile tile = tiles.get(j);
-						image = cytomine
-								.downloadPictureAsBufferedImage(tile.getUrl());
+						image = cytomine.downloadPictureAsBufferedImage(tile.getUrl());
 						tile.image = image;
-	
+						
 						if(processFrame!=null){
 							processFrame.setActionProgress((int) ((double) (j + 1)/ tiles.size() * 100));
 						}
 						
-						double rectX = tile.getC()-position.getX();
-						double rectY = tile.getR()-position.getY();
-						double rectWidth = preview.image.getTile_size();
-						double rectHeight = preview.image.getTile_size();
+//						double rectX = tile.getC()-position.getX();
+//						double rectY = tile.getR()-position.getY();
+//						double rectWidth = preview.image.getTile_size();
+//						double rectHeight = preview.image.getTile_size();
+//						
+//						List<Point2D> pts = new ArrayList<Point2D>();
+//						
+//						pts.add(new Point2D.Double(rectX, rectY));
+//						pts.add(new Point2D.Double(rectX+rectWidth, rectY));
+//						pts.add(new Point2D.Double(rectX+rectWidth, rectY+rectHeight));
+//						pts.add(new Point2D.Double(rectX, rectY+rectHeight));
 						
-						List<Point2D> pts = new ArrayList<Point2D>();
+//						ROI tileROI = new ROI2DPolygon(pts);
+//						sequence.addROI(tileROI);
 						
-						pts.add(new Point2D.Double(rectX, rectY));
-						pts.add(new Point2D.Double(rectX+rectWidth, rectY));
-						pts.add(new Point2D.Double(rectX+rectWidth, rectY+rectHeight));
-						pts.add(new Point2D.Double(rectX, rectY+rectHeight));
-						
-						ROI tileROI = new ROI2DPolygon(pts);
-						sequence.addROI(tileROI);
+//						if(tileROI.intersects(section)){
+//							tileROI.setColor(Color.green);
+//						}else{
+//							tileROI.setColor(Color.red);
+//							tiles.remove(tile);
+//						}
 						
 					}
 					
@@ -874,6 +904,8 @@ public class CytomineUtil {
 					}
 	
 					sequence.setImage(0, 0, img);
+					
+					testFrame test = new testFrame(img);
 					
 					Sequence chan0 = SequenceUtil.extractChannel(sequence, 0);
 
@@ -887,7 +919,7 @@ public class CytomineUtil {
 					}
 	
 					// show result
-					Icy.getMainInterface().addSequence(sequence);
+//					Icy.getMainInterface().addSequence(sequence);
 	
 					// pool variable for multi thread calcul
 					Stack<Runnable> runnablePool = new Stack<Runnable>();
@@ -899,8 +931,8 @@ public class CytomineUtil {
 					
 					for (int j = 0; j < tiles.size(); j++) {
 						final Tile tile = tiles.get(j);
-	
 						if (tile.image != null) {
+							
 							Runnable runnable = new Runnable() {
 	
 								@Override
@@ -908,11 +940,13 @@ public class CytomineUtil {
 									
 									// start glomeruli detection
 									Sequence seq = new Sequence(tile.image);
+									
 									seq = SequenceUtil.extractChannel(seq, 0);
 									CytomineUtil.generateGlomeruleROI(cytomine,
 											seq, processFrame, seuil);
 	
 									List<ROI2D> rois = seq.getROI2Ds();
+									
 									for (int k = 0; k < rois.size(); k++) {
 										ROI2D roi = rois.get(k);
 										
@@ -923,7 +957,6 @@ public class CytomineUtil {
 										sequence.addROI(roi);
 	
 									}
-	
 								}
 							};
 	
@@ -959,8 +992,9 @@ public class CytomineUtil {
 							ROI2DPolygon polygon = (ROI2DPolygon) rois.get(j);
 							
 							polygonList.add(polygon);
-							
+							nbAnnotations++;
 						}catch(Exception e){
+							e.printStackTrace();
 						}
 					}
 					
@@ -992,45 +1026,41 @@ public class CytomineUtil {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		long endExecutionTime = System.currentTimeMillis();
+		
+		long time = endExecutionTime-startExecutionTime;
+		
+		long id = instance.getLong("id");
+		
+		System.out.println(id+","+nbSection+","+nbAnnotations+","+time);
 	}
 	
-	public static Rectangle SectionROI2Rectangle(Annotation annotation){
+	public static Rectangle SectionROI2Rectangle(List<Point2D> points){
 		Rectangle boundingBox = new Rectangle();
 		
-		String poly = annotation.getStr("location");
-
 		int minX = 0, maxX = 0, minY = 0, maxY = 0;
 
 		WKTReader reader = new WKTReader();
 
 			// create bounding box of the annotation
-			Geometry geo;
-			try {
-				geo = reader.read(poly);
-				
-				Coordinate coords[] = geo.getCoordinates();
+			minX = (int) points.get(0).getX();
+			minY = (int) points.get(0).getY();
+			maxX = (int) points.get(0).getX();
+			maxY = (int) points.get(0).getY();
 
-				minX = (int) coords[0].x;
-				minY = (int) coords[0].y;
-				maxX = (int) coords[0].x;
-				maxY = (int) coords[0].y;
+			for (int j = 0; j < points.size(); j++) {
+				maxX = (int) Math.max(maxX, points.get(j).getX());
+				maxY = (int) Math.max(maxY, points.get(j).getY());
 
-				for (int j = 0; j < coords.length; j++) {
-					maxX = (int) Math.max(maxX, coords[j].x);
-					maxY = (int) Math.max(maxY, coords[j].y);
+				minX = (int) Math.min(minX, points.get(j).getX());
+				minY = (int) Math.min(minY, points.get(j).getY());
 
-					minX = (int) Math.min(minX, coords[j].x);
-					minY = (int) Math.min(minY, coords[j].y);
-
-				}
-
-				// generated bounding box
-				boundingBox = new Rectangle(minX, minY, maxX - minX,
-						maxY - minY);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+
+			// generated bounding box
+			boundingBox = new Rectangle(minX, minY, maxX - minX,
+					maxY - minY);
 		
 		return boundingBox;
 	}

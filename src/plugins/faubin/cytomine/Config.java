@@ -17,9 +17,11 @@ public class Config {
 
 	// server connection
 	public static final String defaultServer = "http://cytomine.web.pasteur.fr";
-	public static final String defaultPublicKey = "d42e7fe6-4e84-4c04-82f5-9863d10d590e";
-	public static final String defaultPrivateKey = "d22a6cd4-04cb-4d06-8a46-082379219b4c";
+	public static final String defaultPublicKey = "6e66b588-eb89-4efb-86b3-2f59ed19e2f7" ; //"d42e7fe6-4e84-4c04-82f5-9863d10d590e";
+	public static final String defaultPrivateKey = "5d8a13db-fff5-4096-b1a7-d4baaccfa925"; //"d22a6cd4-04cb-4d06-8a46-082379219b4c";
 
+	
+	
 	// imagesPanel
 	public static final int nbDisplayedImage = 5;
 
@@ -39,7 +41,7 @@ public class Config {
 		
 		messages.put("args_invalid_length", "The number of arguments is invalid !");
 		messages.put("args_invalid_type", "One or more arguments have an invalid type !");
-		messages.put("args_invalid_container_length", "This is a container command, you should provide another command right after it !");
+		messages.put("args_invalid_container_length", "This is a command container, you should provide another command right after it !");
 		
 		messages.put("console_welcome","Welcome to Icytomine, write 'help' for a list of commands");
 		messages.put("connection_failed", "The connection to cytomine failed !");

@@ -1,5 +1,7 @@
 package plugins.faubin.cytomine.gui.mvc.view.panel;
 
+import icy.main.Icy;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -21,10 +23,13 @@ import plugins.faubin.cytomine.gui.mvc.controller.panel.ImagePanelController;
 import plugins.faubin.cytomine.gui.tileViewer.CytomineReader;
 import be.cytomine.client.CytomineException;
 import be.cytomine.client.models.ImageInstance;
+
 import javax.swing.JButton;
 import javax.swing.BoxLayout;
 import javax.swing.SwingConstants;
+
 import java.awt.Color;
+
 import javax.swing.JDesktopPane;
 
 @SuppressWarnings("serial")
@@ -153,7 +158,8 @@ public class ImagePanelView extends JPanel {
 		lblDynamicViewer.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblDynamicViewer);
 		
-		JButton btnShowSequence = new JButton("toggle sequence");
+		JButton btnShowSequence = new JButton("show sequence");
+		btnShowSequence.addActionListener(actionToggleSequence);
 		panel_1.add(btnShowSequence);
 		
 		JButton btnSave = new JButton("save");
@@ -351,4 +357,13 @@ public class ImagePanelView extends JPanel {
 
 	};
 
+	public ActionListener actionToggleSequence = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Icy.getMainInterface().addSequence(preview.getSequence());
+		}
+
+	};
+	
 }

@@ -905,7 +905,6 @@ public class CytomineUtil {
 	
 					sequence.setImage(0, 0, img);
 					
-					testFrame test = new testFrame(img);
 					
 					Sequence chan0 = SequenceUtil.extractChannel(sequence, 0);
 

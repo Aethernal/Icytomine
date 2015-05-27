@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.gui.cytomine;
+package plugins.faubin.cytomine;
 
 public class AnnotationTerm {
 	private String name;

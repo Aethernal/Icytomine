@@ -25,9 +25,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 
 import ome.xml.model.Image;
+import plugins.faubin.cytomine.AnnotationTerm;
 import plugins.faubin.cytomine.Config;
-import plugins.faubin.cytomine.gui.cytomine.AnnotationTerm;
-import plugins.faubin.cytomine.gui.cytomine.CytomineUtil;
+import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.gui.mvc.controller.panel.ImagePanelController;
 import plugins.faubin.cytomine.gui.mvc.model.utils.ThreadForRunnablePool;
 import plugins.faubin.cytomine.gui.mvc.template.Model;
@@ -93,7 +93,7 @@ public class ImagePanelModel extends Model {
 		processFrame.newAction();
 
 		processFrame.setGlobalProgress(50);
-		Sequence seq = CytomineUtil.loadImage(instance, cytomine,
+		Sequence seq = IcytomineUtil.loadImage(instance, cytomine,
 				controller.getMaxSize(), processFrame);
 
 		Icy.getMainInterface().addSequence(seq);
@@ -110,7 +110,7 @@ public class ImagePanelModel extends Model {
 
 		processFrame.newAction();
 
-		Sequence sequence = CytomineUtil.loadImage(instance, cytomine,
+		Sequence sequence = IcytomineUtil.loadImage(instance, cytomine,
 				controller.getMaxSize(), processFrame);
 
 		Dimension thumbnailSize = new Dimension(sequence.getWidth(),
@@ -156,11 +156,11 @@ public class ImagePanelModel extends Model {
 						instance.getInt("height"));
 				int imageSizeY = instance.getInt("height");
 
-				Point2D ratio = CytomineUtil.getScaleRatio(imageSize,
+				Point2D ratio = IcytomineUtil.getScaleRatio(imageSize,
 						thumbnailSize);
 
 				rois.add(CytomineImportedROI.build(
-						CytomineUtil.WKTtoPoint2D(polygon, ratio, imageSizeY),
+						IcytomineUtil.WKTtoPoint2D(polygon, ratio, imageSizeY),
 						annotation, cytomine));
 
 			}
@@ -206,7 +206,7 @@ public class ImagePanelModel extends Model {
 
 		processFrame.newAction();
 
-		CytomineUtil.deleteAllRoi(cytomine, image, processFrame);
+		IcytomineUtil.deleteAllRoi(cytomine, image, processFrame);
 
 		processFrame.setGlobalProgress(100);
 
@@ -221,10 +221,10 @@ public class ImagePanelModel extends Model {
 
 		processFrame.newAction();
 
-		Sequence seq = CytomineUtil.loadImage(instance, cytomine,
+		Sequence seq = IcytomineUtil.loadImage(instance, cytomine,
 				controller.getMaxSize(), processFrame);
 
-		List<CytomineImportedROI> rois = CytomineUtil.generateSectionsROI(seq,
+		List<CytomineImportedROI> rois = IcytomineUtil.generateSectionsROI(seq,
 				processFrame);
 
 		for (int i = 0; i < rois.size(); i++) {
@@ -279,7 +279,7 @@ public class ImagePanelModel extends Model {
 
 			}
 
-			CytomineUtil.uploadROI(cytomine, instance, sequence, processFrame);
+			IcytomineUtil.uploadROI(cytomine, instance, sequence, processFrame);
 
 			processFrame.setGlobalProgress(100);
 
@@ -306,7 +306,7 @@ public class ImagePanelModel extends Model {
 
 		processFrame.newAction();
 		
-		CytomineUtil.generateGlomerule(cytomine, instance, processFrame);
+		IcytomineUtil.generateGlomerule(cytomine, instance, processFrame);
 		
 		processFrame.setGlobalProgress(100);
 		

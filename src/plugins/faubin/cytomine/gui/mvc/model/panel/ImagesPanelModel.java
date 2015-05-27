@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import javax.swing.ImageIcon;
 
 import plugins.faubin.cytomine.Config;
-import plugins.faubin.cytomine.gui.cytomine.CytomineUtil;
+import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.gui.mvc.controller.panel.ImagesPanelController;
 import plugins.faubin.cytomine.gui.mvc.model.utils.ThreadForRunnablePool;
 import plugins.faubin.cytomine.gui.mvc.template.Model;
@@ -91,10 +91,10 @@ public class ImagesPanelModel extends Model {
 		for (int i = 0; i < images.size(); i++) {
 			ImageInstance instance = images.get(i);
 
-			Sequence sequence = CytomineUtil.loadImage(instance, cytomine,
+			Sequence sequence = IcytomineUtil.loadImage(instance, cytomine,
 					Config.thumbnailDefaultMaxSize, processFrame);
 
-			List<CytomineImportedROI> rois = CytomineUtil.generateSectionsROI(
+			List<CytomineImportedROI> rois = IcytomineUtil.generateSectionsROI(
 					sequence, processFrame);
 
 			try {
@@ -105,7 +105,7 @@ public class ImagesPanelModel extends Model {
 
 				processFrame.setGlobalProgress((int) ((double) i
 						/ images.size() * 100));
-				CytomineUtil.uploadROI(cytomine, instance, sequence,
+				IcytomineUtil.uploadROI(cytomine, instance, sequence,
 						processFrame);
 
 			} catch (Exception e) {
@@ -177,7 +177,7 @@ public class ImagesPanelModel extends Model {
 			ImageInstance image = images.get(i);
 
 			try {
-				int nb = CytomineUtil.deleteAllRoi(cytomine, image,
+				int nb = IcytomineUtil.deleteAllRoi(cytomine, image,
 						processFrame);
 				processFrame.println("deleted " + nb
 						+ " annotations for image " + image.getStr("id"));
@@ -198,7 +198,7 @@ public class ImagesPanelModel extends Model {
 		for (int i = 0; i < instances.size(); i++) {
 			ImageInstance instance = instances.get(i);
 		
-			CytomineUtil.generateGlomerule(cytomine, instance, processFrame);
+			IcytomineUtil.generateGlomerule(cytomine, instance, processFrame);
 			
 			System.gc();
 			

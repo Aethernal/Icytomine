@@ -134,7 +134,7 @@ public class CytomineReader extends JPanel {
 
 		repaint.setRepeats(true);
 		repaint.start();
-
+		
 	}
 
 	public Point2D getCenter() {
@@ -248,8 +248,9 @@ public class CytomineReader extends JPanel {
 			throws CytomineException {
 		int tile_group = ViewerTool.findTileGroup(image, zoom, col, row);
 
-		String baseUrl = cytomine.getImageServersFromAbstractImage(image.image
+		String baseUrl = cytomine.getImageServersOfAbstractImage(image.image
 				.getLong("id"));
+		
 
 		String url = baseUrl + "&tileGroup=" + tile_group + "&z="
 				+ (image.depth - zoom) + "&x=" + col + "&y=" + row

@@ -22,5 +22,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ContourDetector"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GlomeruleDetector"/>
 	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/nchenouard/spot/DetectionResult.jar"/>
+	<classpathentry kind="lib" path="/Users/faubin/Desktop/icy/plugins/adufour/quickhull/QuickHull.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

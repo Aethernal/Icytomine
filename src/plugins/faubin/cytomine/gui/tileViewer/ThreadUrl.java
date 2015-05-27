@@ -33,7 +33,7 @@ public class ThreadUrl extends Thread{
 				BufferedImage downloaded = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
 				
 				try {
-					downloaded = cytomine.downloadPictureAsBufferedImage(url);
+					downloaded = cytomine.downloadPictureAsBufferedImage(url,"");
 					
 				} catch (CytomineException e) {
 					// TODO Auto-generated catch block

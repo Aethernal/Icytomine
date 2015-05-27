@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.gui.cytomine;
+package plugins.faubin.cytomine;
 
 import icy.image.IcyBufferedImage;
 import icy.image.IcyBufferedImageUtil;
@@ -25,7 +25,6 @@ import javax.swing.JFrame;
 
 import plugins.adufour.thresholder.Thresholder;
 import plugins.faubin.contourdetector.Utils;
-import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.gui.mvc.model.utils.ThreadForRunnablePool;
 import plugins.faubin.cytomine.gui.mvc.view.frame.ProcessingFrame;
 import plugins.faubin.cytomine.gui.roi.roi2dpolygon.CytomineImportedROI;
@@ -40,13 +39,16 @@ import be.cytomine.client.CytomineException;
 import be.cytomine.client.collections.AnnotationCollection;
 import be.cytomine.client.models.Annotation;
 import be.cytomine.client.models.ImageInstance;
+import be.cytomine.client.models.Job;
+import be.cytomine.client.models.JobTemplate;
+import be.cytomine.client.models.Software;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class CytomineUtil {
+public class IcytomineUtil {
 
 	/**
 	 * download an image from the ID
@@ -179,8 +181,8 @@ public class CytomineUtil {
 
 			try {
 
-				List<CytomineImportedROI> rois = CytomineUtil
-						.Roi2DPolyToCytomineImportedROI(CytomineUtil
+				List<CytomineImportedROI> rois = IcytomineUtil
+						.Roi2DPolyToCytomineImportedROI(IcytomineUtil
 								.roiListToRoi2DPolygonList(
 										new ArrayList<ROI>(
 												sequence.getROI2Ds() 
@@ -198,10 +200,10 @@ public class CytomineUtil {
 							instance.getInt("width"), instance.getInt("height"));
 					int imageSizeY = instance.getInt("height");
 
-					Point2D ratio = CytomineUtil.getScaleRatio(thumbnailSize,
+					Point2D ratio = IcytomineUtil.getScaleRatio(thumbnailSize,
 							imageSize);
 
-					String polygon = CytomineUtil.ROItoWKT(roi, ratio, imageSizeY);
+					String polygon = IcytomineUtil.ROItoWKT(roi, ratio, imageSizeY);
 
 					if (!roi.terms.isEmpty()) {
 						try {
@@ -240,7 +242,7 @@ public class CytomineUtil {
 	}
 	
 	public static void uploadROI(Cytomine cytomine, ImageInstance instance, List<ROI2DPolygon> rois, double ratio, int height, Point2D translation, List<Long> termID, ProcessingFrame processFrame){
-		List<CytomineImportedROI> annotations = CytomineUtil.Roi2DPolyToCytomineImportedROI(rois);
+		List<CytomineImportedROI> annotations = IcytomineUtil.Roi2DPolyToCytomineImportedROI(rois);
 		
 		long ID = instance.getLong("id");
 		
@@ -251,7 +253,7 @@ public class CytomineUtil {
 			polygon.translate(translation.getX(), translation.getY());
 			Point2D ratioAsP2D = new Point2D.Double(ratio, ratio);
 			try {
-				String WKTPolygon = CytomineUtil.ROItoWKT(polygon, ratioAsP2D, height);
+				String WKTPolygon = IcytomineUtil.ROItoWKT(polygon, ratioAsP2D, height);
 				try{
 					if (!polygon.terms.isEmpty()) {
 						
@@ -503,7 +505,7 @@ public class CytomineUtil {
 		try {
 
 			// process generated points
-			List<CytomineImportedROI> roisConvex = CytomineUtil
+			List<CytomineImportedROI> roisConvex = IcytomineUtil
 					.Roi2DPolyToCytomineImportedROI(rois);
 
 			if(processFrame!=null){
@@ -790,7 +792,6 @@ public class CytomineUtil {
 		int nbAnnotations = 0;
 		int nbSection = 0;
 		
-		
 		CytomineReader preview;
 		try {
 			preview = new CytomineReader(cytomine, instance, new Dimension(10,10));
@@ -818,24 +819,26 @@ public class CytomineUtil {
 					
 					List<Point2D> points = WKTtoPoint2D(poly, new Point2D.Double(1, 1), instance.getInt("height"));
 					
-					Rectangle rect = CytomineUtil.SectionROI2Rectangle(points);
+					Rectangle rect = IcytomineUtil.SectionROI2Rectangle(points);
 					if(processFrame!=null){
 						processFrame.println("bounding box generation done");
 					}
+
 					// variables
 					int x = rect.x;
 					int y = rect.y;
 					int width = rect.width;
 					int height = rect.height;
 					int zoom = 2;
-	
+
 					int delta = zoom;
+					
 					double ratio = Math.pow(2, -delta);
 	
 					final Point2D position = new Point2D.Double((int) (x * ratio),
 							(int) (y * ratio));
-					final Dimension size = new Dimension((int) (width * ratio),
-							(int) (height * ratio));
+					final Dimension size = new Dimension((int) Math.max(1, (width * ratio)),
+							(int) Math.max(1, (height * ratio)) );
 					
 					for (int j = 0; j < points.size(); j++) {
 						Point2D p = points.get(j);
@@ -867,7 +870,7 @@ public class CytomineUtil {
 					BufferedImage image;
 					for (int j = 0; j < tiles.size(); j++) {
 						Tile tile = tiles.get(j);
-						image = cytomine.downloadPictureAsBufferedImage(tile.getUrl());
+						image = cytomine.downloadPictureAsBufferedImage(tile.getUrl(),"");
 						tile.image = image;
 						
 						if(processFrame!=null){
@@ -941,7 +944,7 @@ public class CytomineUtil {
 									Sequence seq = new Sequence(tile.image);
 									
 									seq = SequenceUtil.extractChannel(seq, 0);
-									CytomineUtil.generateGlomeruleROI(cytomine,
+									IcytomineUtil.generateGlomeruleROI(cytomine,
 											seq, processFrame, seuil);
 	
 									List<ROI2D> rois = seq.getROI2Ds();
@@ -1004,7 +1007,7 @@ public class CytomineUtil {
 					List<Long> terms = new ArrayList<Long>();
 					terms.add(Config.IDMap.get("ontology_glomerule"));
 					
-					CytomineUtil.uploadROI(cytomine, instance,polygonList, 1/ratio, (int) (instance.getInt("height")), new Point2D.Double(position.getX(), position.getY() ), terms, processFrame);
+					IcytomineUtil.uploadROI(cytomine, instance,polygonList, 1/ratio, (int) (instance.getInt("height")), new Point2D.Double(position.getX(), position.getY() ), terms, processFrame);
 					
 					if(processFrame!=null){
 						processFrame.println("Uploading done");
@@ -1033,6 +1036,9 @@ public class CytomineUtil {
 		long id = instance.getLong("id");
 		
 		System.out.println(id+","+nbSection+","+nbAnnotations+","+time);
+		
+		System.gc();
+		
 	}
 	
 	public static Rectangle SectionROI2Rectangle(List<Point2D> points){
@@ -1064,4 +1070,20 @@ public class CytomineUtil {
 		return boundingBox;
 	}
 
+	public Software createSectionGenerationSoftware(Cytomine cytomine) throws CytomineException{
+		Software soft = cytomine.addSoftware("SectionGeneration", "SectionGenerationService", "Annotations", "");
+		
+		cytomine.addSoftwareParameter("imageID", "Number", soft.getId(), "0", true, 100);
+		cytomine.addSoftwareParameter("maxSize", "Number", soft.getId(), "0", true, 200);
+		
+		JobTemplate job = cytomine.addJobTemplate("generationSection", (long)93, soft.getId());
+		
+		job.addParams("imageID", "XX");
+		job.addParams("maxSize", "2048");
+		
+//		cytomine.addUserJob(soft.getId(), cytomine.getCurrentUser());
+		
+		return soft;
+	}
+	
 }

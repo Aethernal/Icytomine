@@ -20,7 +20,7 @@ import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
-import plugins.faubin.cytomine.gui.cytomine.AnnotationTerm;
+import plugins.faubin.cytomine.AnnotationTerm;
 import be.cytomine.client.collections.TermCollection;
 
 public class TermFrame extends IcyFrame {

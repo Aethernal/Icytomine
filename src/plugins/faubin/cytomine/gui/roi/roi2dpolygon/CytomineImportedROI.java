@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import plugins.faubin.cytomine.gui.cytomine.CytomineUtil;
+import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.kernel.roi.roi2d.ROI2DPolygon;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.models.Annotation;
@@ -56,7 +56,7 @@ public class CytomineImportedROI extends ROI2DPolygon {
 			String color;
 			try {
 				color = cytomine.getTerm(ID).getStr("color");
-				roi.setColor(CytomineUtil.hexToColor(color));
+				roi.setColor(IcytomineUtil.hexToColor(color));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

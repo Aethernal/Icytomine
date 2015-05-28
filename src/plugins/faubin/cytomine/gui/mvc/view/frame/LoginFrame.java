@@ -39,7 +39,7 @@ public class LoginFrame extends IcyFrame {
 		contentPane.add(panel);
 		panel.setLayout(new GridLayout(7, 1, 0, 0));
 
-		JLabel lblNewLabel = new JLabel("Username");
+		JLabel lblNewLabel = new JLabel("Public Key");
 		panel.add(lblNewLabel);
 
 		publicKeyField = new JTextField();
@@ -47,7 +47,7 @@ public class LoginFrame extends IcyFrame {
 		panel.add(publicKeyField);
 		publicKeyField.setColumns(10);
 
-		JLabel lblNewLabel_1 = new JLabel("password");
+		JLabel lblNewLabel_1 = new JLabel("Private Key");
 		panel.add(lblNewLabel_1);
 
 		privateKeyField = new JPasswordField();
@@ -55,7 +55,7 @@ public class LoginFrame extends IcyFrame {
 		panel.add(privateKeyField);
 		privateKeyField.setColumns(10);
 
-		JLabel lblNewLabel_2 = new JLabel("Server");
+		JLabel lblNewLabel_2 = new JLabel("Host");
 		panel.add(lblNewLabel_2);
 
 		txtHttpbetacytominebe = new JTextField();

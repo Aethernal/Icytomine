@@ -5,7 +5,7 @@ import icy.sequence.Sequence;
 import java.util.List;
 
 import plugins.faubin.cytomine.Config;
-import plugins.faubin.cytomine.gui.cytomine.CytomineUtil;
+import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.gui.roi.roi2dpolygon.CytomineImportedROI;
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.headless.cmd.CMD;
@@ -47,17 +47,11 @@ public class CMDImageGenerateSection extends CMD {
 								System.out.println("generating ROIs ...");
 								
 								// downloading image
-								Sequence seq = CytomineUtil.loadImage(instance,
+								Sequence seq = IcytomineUtil.loadImage(instance,
 										console.cytomine, maxSize, null);
 								// creating rois
-								List<CytomineImportedROI> rois = CytomineUtil
-										.generateSectionsROI(seq, null);
-								// adding roi to sequence
-								for (int j = 0; j < rois.size(); j++) {
-									seq.addROI(rois.get(j));
-								}
-								nbAnnotations += CytomineUtil.uploadROI(
-										console.cytomine, instance, seq, null);
+								IcytomineUtil
+										.generateSectionsROI(console.cytomine, instance, seq, null);
 
 							} catch (Exception e) {
 								e.printStackTrace();

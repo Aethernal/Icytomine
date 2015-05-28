@@ -30,7 +30,7 @@ public class WholeSlide {
 		this.depth = image.getInt("depth");
 		this.width = image.getInt("width");
 		this.height = image.getInt("height");
-		this.server_urls = cytomine.getImageServersFromAbstractImage(imageID);
+		this.server_urls = cytomine.getImageServersOfAbstractImage(imageID);
 		this.num_tiles = 0;
 		this.levels = new Map[depth];
 		this.mime = image.getStr("mime");

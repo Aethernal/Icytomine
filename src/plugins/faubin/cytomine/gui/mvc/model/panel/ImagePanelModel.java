@@ -224,13 +224,8 @@ public class ImagePanelModel extends Model {
 		Sequence seq = IcytomineUtil.loadImage(instance, cytomine,
 				controller.getMaxSize(), processFrame);
 
-		List<CytomineImportedROI> rois = IcytomineUtil.generateSectionsROI(seq,
+		IcytomineUtil.generateSectionsROI(cytomine, instance, seq,
 				processFrame);
-
-		for (int i = 0; i < rois.size(); i++) {
-
-			seq.addROI(rois.get(i));
-		}
 
 		Icy.getMainInterface().addSequence(seq);
 
@@ -306,7 +301,7 @@ public class ImagePanelModel extends Model {
 
 		processFrame.newAction();
 		
-		IcytomineUtil.generateGlomerule(cytomine, instance, processFrame);
+		IcytomineUtil.generateGlomerule(cytomine, instance, 2, processFrame);
 		
 		processFrame.setGlobalProgress(100);
 		

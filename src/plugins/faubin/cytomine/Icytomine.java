@@ -58,11 +58,12 @@ public class Icytomine extends PluginActionable {
 				String passwd = logins[1];
 				String url = logins[2];
 
-				try {
+				
 					// connect to cytomine
 					cytomine = new Cytomine(url, username, passwd);
+				try {
 					// test connection
-					cytomine.getProjects();
+					cytomine.getCurrentUser();
 
 					ThreadUtil.invokeLater(new Runnable() {
 

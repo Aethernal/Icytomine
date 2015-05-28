@@ -1,7 +1,7 @@
 package plugins.faubin.cytomine.headless.cmd.project;
 
 import plugins.faubin.cytomine.Config;
-import plugins.faubin.cytomine.gui.cytomine.CytomineUtil;
+import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
@@ -44,7 +44,7 @@ public class CMDProjectGenerateGlomerule extends CMD {
 	
 									ImageInstance instance = collection.get(i);
 								
-									CytomineUtil.generateGlomerule(console.cytomine, instance, null);
+									IcytomineUtil.generateGlomerule(console.cytomine, instance, 2, null);
 									
 									System.gc();
 									

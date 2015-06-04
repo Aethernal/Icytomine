@@ -12,6 +12,7 @@ import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
+import be.cytomine.client.models.User;
 
 public class CMDProjectGenerateSection extends CMD {
 
@@ -57,8 +58,11 @@ public class CMDProjectGenerateSection extends CMD {
 											.loadImage(instance,
 													console.cytomine, maxSize, null);
 									// creating rois
+									long idSoftware = Config.IDMap.get("SectionGenerationSoftware");
+									User job = IcytomineUtil.generateNewUserJob(console.cytomine, idSoftware,projectID);
+									
 									IcytomineUtil
-											.generateSectionsROI(console.cytomine, instance, seq, null);
+											.generateSectionsROI(console.cytomine, job, projectID, instance, seq, null);
 
 								} catch (Exception e) {
 									e.printStackTrace();

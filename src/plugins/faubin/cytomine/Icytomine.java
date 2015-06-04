@@ -7,7 +7,10 @@ import icy.system.thread.ThreadUtil;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.gui.mvc.view.frame.IcytomineFrame;
 import plugins.faubin.cytomine.gui.mvc.view.frame.LoginFrame;
 import plugins.faubin.cytomine.headless.Console;
@@ -35,7 +38,9 @@ public class Icytomine extends PluginActionable {
 	}
 
 	protected void initialize() {
-
+//		LOG
+//		BasicConfigurator.configure();
+		
 		// initialise login frame
 		loginFrame = new LoginFrame();
 		loginFrame.getBtnNewButton().addActionListener(connectionListener);
@@ -54,9 +59,9 @@ public class Icytomine extends PluginActionable {
 
 			@Override
 			public void run() {
-				String username = logins[0];
-				String passwd = logins[1];
-				String url = logins[2];
+				final String username = logins[0];
+				final String passwd = logins[1];
+				final String url = logins[2];
 
 				
 					// connect to cytomine
@@ -69,6 +74,22 @@ public class Icytomine extends PluginActionable {
 
 						@Override
 						public void run() {
+							Configuration config = Configuration.getConfiguration();
+							
+							config.publicKey = username;
+							config.privateKey = passwd;
+							config.host = url;
+							
+							try {
+								config.save();
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
 							logged();
 						}
 					});

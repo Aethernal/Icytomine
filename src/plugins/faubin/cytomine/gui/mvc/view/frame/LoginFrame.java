@@ -15,18 +15,21 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import plugins.faubin.cytomine.Config;
+import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
 
 public class LoginFrame extends IcyFrame {
 
 	private JPanel contentPane;
 	private JTextField publicKeyField;
 	private JPasswordField privateKeyField;
-	private JTextField txtHttpbetacytominebe;
+	private JTextField hostField;
 	private JButton btnNewButton;
 
 	public LoginFrame() {
 		super("Icytomine: login", true, true, false, false);
 
+		
+		
 		setTitle("Icytomine: login");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(new Rectangle(100, 100, 289, 300));
@@ -43,7 +46,7 @@ public class LoginFrame extends IcyFrame {
 		panel.add(lblNewLabel);
 
 		publicKeyField = new JTextField();
-		publicKeyField.setText(Config.defaultPublicKey);
+		
 		panel.add(publicKeyField);
 		publicKeyField.setColumns(10);
 
@@ -51,29 +54,37 @@ public class LoginFrame extends IcyFrame {
 		panel.add(lblNewLabel_1);
 
 		privateKeyField = new JPasswordField();
-		privateKeyField.setText(Config.defaultPrivateKey);
+
 		panel.add(privateKeyField);
 		privateKeyField.setColumns(10);
 
 		JLabel lblNewLabel_2 = new JLabel("Host");
 		panel.add(lblNewLabel_2);
 
-		txtHttpbetacytominebe = new JTextField();
-		txtHttpbetacytominebe.setText(Config.defaultServer);
-		panel.add(txtHttpbetacytominebe);
-		txtHttpbetacytominebe.setColumns(10);
+		hostField = new JTextField();
+
+		panel.add(hostField);
+		hostField.setColumns(10);
 
 		btnNewButton = new JButton("Connection");
 		panel.add(btnNewButton);
 
 		addToDesktopPane();
+		
+		Configuration config = Configuration.getConfiguration();
+		if(config.rememberMe){
+			hostField.setText(config.host);
+			publicKeyField.setText(config.publicKey);
+			privateKeyField.setText(config.privateKey);
+		}
+		
 	}
 
 	public String[] getInputs() {
 		String[] inputs = new String[3];
 		inputs[0] = publicKeyField.getText();
 		inputs[1] = new String(privateKeyField.getPassword());
-		inputs[2] = txtHttpbetacytominebe.getText();
+		inputs[2] = hostField.getText();
 		return inputs;
 	}
 

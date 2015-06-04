@@ -11,14 +11,16 @@ import plugins.faubin.cytomine.gui.mvc.view.frame.TermFrame;
 import plugins.faubin.cytomine.gui.mvc.view.panel.ImagePanelView;
 import plugins.faubin.cytomine.gui.tileViewer.CytomineReader;
 import be.cytomine.client.Cytomine;
+import be.cytomine.client.CytomineException;
 import be.cytomine.client.models.ImageInstance;
 
 public class ImagePanelController extends Controller {
 	private ImagePanelModel model;
 	private ImagePanelView view;
 	private TermFrame terms;
+	private long ProjectID;
 
-	public ImagePanelController(Cytomine cytomine, long idImage,
+	public ImagePanelController(Cytomine cytomine, long ProjectID,long idImage,
 			JTabbedPane tabbedPane) {
 		super(tabbedPane);
 
@@ -27,6 +29,8 @@ public class ImagePanelController extends Controller {
 		ImageInstance image = model.getImage(idImage);
 		this.view = new ImagePanelView(idImage, image, this);
 
+		this.ProjectID = ProjectID;
+		
 		try {
 			Long projectOntologyID = cytomine.getProject(
 					image.getLong("project")).getLong("ontology");
@@ -87,7 +91,12 @@ public class ImagePanelController extends Controller {
 		ThreadUtil.bgRun(new Runnable() {
 			@Override
 			public void run() {
-				model.generateSection(instance);
+				try {
+					model.generateSection(instance);
+				} catch (CytomineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -125,7 +134,12 @@ public class ImagePanelController extends Controller {
 
 			@Override
 			public void run() {
-				model.generateGlomerule(instance);
+				try {
+					model.generateGlomerule(instance);
+				} catch (CytomineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 		});
@@ -144,4 +158,8 @@ public class ImagePanelController extends Controller {
 		return model;
 	}
 
+	public long getProjectID() {
+		return ProjectID;
+	}
+	
 }

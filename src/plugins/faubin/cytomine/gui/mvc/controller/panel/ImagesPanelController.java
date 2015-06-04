@@ -7,9 +7,11 @@ import javax.swing.JTabbedPane;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.gui.mvc.model.panel.ImagesPanelModel;
+import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.gui.mvc.template.Controller;
 import plugins.faubin.cytomine.gui.mvc.view.panel.ImagesPanelView;
 import be.cytomine.client.Cytomine;
+import be.cytomine.client.CytomineException;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
 
@@ -17,7 +19,8 @@ public class ImagesPanelController extends Controller {
 	private ImagesPanelModel model;
 	private ImagesPanelView view;
 
-	private long idProjet;
+	private long ProjectID;
+	static Configuration configuration = Configuration.getConfiguration();
 
 	public ImagesPanelController(Cytomine cytomine, long idProjet,
 			JTabbedPane tabbedPane) {
@@ -25,13 +28,13 @@ public class ImagesPanelController extends Controller {
 
 		this.model = new ImagesPanelModel(cytomine, this);
 
-		this.idProjet = idProjet;
+		this.ProjectID = idProjet;
 
 		ImageInstanceCollection images = model.getImages(idProjet);
 		this.view = new ImagesPanelView(idProjet, images, this);
 
 		ImageInstanceCollection collection = model.getImagesFromIndexByNb(
-				idProjet, 0, Config.nbDisplayedImage);
+				idProjet, 0, configuration.nbRowPerPage);
 		
 		view.loadRows(collection);
 	}
@@ -45,7 +48,7 @@ public class ImagesPanelController extends Controller {
 
 			@Override
 			public void run() {
-				ImagePanelController imagePanel = new ImagePanelController(model.getCytomine(), id, tabbedPane);
+				ImagePanelController imagePanel = new ImagePanelController(model.getCytomine(), ProjectID,id, tabbedPane);
 				tabbedPane.add(imagePanel.getView().getName(), imagePanel.getView());
 				tabbedPane.setSelectedComponent(imagePanel.getView());
 				
@@ -62,7 +65,26 @@ public class ImagesPanelController extends Controller {
 		ThreadUtil.bgRun(new Runnable() {
 			@Override
 			public void run() {
-				model.generateAndUploadSectionROI(model.getImages(idProjet));
+				try {
+					model.generateAndUploadSectionROI(model.getImages(ProjectID));
+				} catch (CytomineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public void generateSectionAndGlomerules() {
+		ThreadUtil.bgRun(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					model.generateSectionAndGlomerules(model.getImages(ProjectID));
+				} catch (CytomineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 	}
@@ -71,7 +93,7 @@ public class ImagesPanelController extends Controller {
 		ThreadUtil.bgRun(new Runnable() {
 			@Override
 			public void run() {
-				model.deleteAllAnnotations(model.getImages(idProjet));
+				model.deleteAllAnnotations(model.getImages(ProjectID));
 			}
 		});
 
@@ -79,7 +101,7 @@ public class ImagesPanelController extends Controller {
 
 	public void loadImageFromOffset(int offset, int length) {
 		ImageInstanceCollection collection = model.getImagesFromIndexByNb(
-				idProjet, offset, length);
+				ProjectID, offset, length);
 		view.loadRows(collection);
 	}
 
@@ -95,9 +117,17 @@ public class ImagesPanelController extends Controller {
 		ThreadUtil.bgRun(new Runnable() {
 			@Override
 			public void run() {
-				model.generateGlomerule(model.getImages(idProjet));
+				try {
+					model.generateGlomerule(model.getImages(ProjectID));
+				} catch (CytomineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 	}
 	
+	public long getProjectID() {
+		return ProjectID;
+	}
 }

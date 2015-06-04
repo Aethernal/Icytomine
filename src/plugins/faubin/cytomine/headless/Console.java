@@ -19,6 +19,7 @@ import plugins.faubin.cytomine.headless.cmd.project.CMDProjectDeleteTerm;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateGlomerule;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateGlomeruleStartingFrom;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateSection;
+import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateSectionAndGlomerule;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateSectionStartingFrom;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectList;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectListTerm;
@@ -138,6 +139,8 @@ public class Console {
 			CMDProjectGenerateGlomerule cmdProjectGenerateGlomerule = new CMDProjectGenerateGlomerule(this);
 			CMDProjectGenerateGlomeruleStartingFrom cmdProjectGenerateGlomeruleWithOffset = new CMDProjectGenerateGlomeruleStartingFrom(this);
 			
+			CMDProjectGenerateSectionAndGlomerule cmdProjectGenerateSectionAndGlomerule = new CMDProjectGenerateSectionAndGlomerule(this);
+			
 			cmdProject.add(cmdProjectDeleteAll);
 			cmdProject.add(cmdProjectDeleteTerm);
 			cmdProject.add(cmdProjectList);
@@ -146,6 +149,7 @@ public class Console {
 			cmdProject.add(cmdProjectListTerms);
 			cmdProject.add(cmdProjectGenerateGlomerule);
 			cmdProject.add(cmdProjectGenerateGlomeruleWithOffset);
+			cmdProject.add(cmdProjectGenerateSectionAndGlomerule);
 			
 		CMDContainer cmdImage = new CMDContainer(this, "image"); 	
 			CMDImageGenerateSection cmdImageGenerateSections = new CMDImageGenerateSection(this);

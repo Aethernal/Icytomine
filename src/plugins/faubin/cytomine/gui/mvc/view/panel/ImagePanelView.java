@@ -20,6 +20,7 @@ import javax.swing.text.DefaultCaret;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.gui.mvc.controller.panel.ImagePanelController;
+import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.gui.tileViewer.CytomineReader;
 import be.cytomine.client.CytomineException;
 import be.cytomine.client.models.ImageInstance;
@@ -37,7 +38,6 @@ public class ImagePanelView extends JPanel {
 
 	private ImagePanelController controller;
 	private ImageInstance instance;
-	private JTextField maxSize;
 	private CytomineReader preview;
 	
 	/**
@@ -48,6 +48,8 @@ public class ImagePanelView extends JPanel {
 		this.controller = controller;
 		this.instance = image;
 
+		Configuration configuration = Configuration.getConfiguration();
+		
 		setName("Image: " + idProj + "   ");
 		setLayout(new BorderLayout(0, 0));
 
@@ -194,11 +196,6 @@ public class ImagePanelView extends JPanel {
 				.setToolTipText("define the maximum size of the imported images, other function might use this value");
 		mnOpen.add(lblImageMaxSize);
 
-		maxSize = new JTextField();
-		maxSize.setText("" + Config.thumbnailDefaultMaxSize);
-		mnOpen.add(maxSize);
-		maxSize.setColumns(10);
-
 		JMenu mnSave = new JMenu("Export");
 		mnFile.add(mnSave);
 
@@ -261,13 +258,7 @@ public class ImagePanelView extends JPanel {
 	}
 
 	public int getMaxSize() {
-		int i = 2048;
-		try {
-			i = Integer.parseInt(maxSize.getText());
-		} catch (Exception e) {
-
-		}
-		return i;
+		return Configuration.getConfiguration().thumbnailMaxSize;
 	}
 
 	public ImageInstance getInstance() {

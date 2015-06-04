@@ -26,12 +26,15 @@ import javax.swing.table.TableRowSorter;
 
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.gui.mvc.controller.panel.ImagesPanelController;
+import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.gui.mvc.view.frame.IcytomineFrame;
 import be.cytomine.client.collections.ImageInstanceCollection;
 
 @SuppressWarnings("serial")
 public class ImagesPanelView extends JPanel {
 
+	Configuration configuration = Configuration.getConfiguration();
+	
 	private ImagesPanelController controller;
 	private JTable table;
 
@@ -50,12 +53,14 @@ public class ImagesPanelView extends JPanel {
 			final ImagesPanelController controller) {
 		this.controller = controller;
 
+		
+		
 		if (instances.size() % 10 != 0) {
 			totalPages = (int) Math.floor(instances.size()
-					/ Config.nbDisplayedImage) + 1;
+					/ configuration.nbRowPerPage) + 1;
 		} else {
 			totalPages = (int) Math.floor(instances.size()
-					/ Config.nbDisplayedImage);
+					/ configuration.nbRowPerPage);
 		}
 
 		setName("Projet: " + idProj + "   ");
@@ -197,8 +202,8 @@ public class ImagesPanelView extends JPanel {
 	private void loadPage(int nb) {
 		if (nb >= 0 && nb < totalPages) {
 			currentPage = nb;
-			controller.loadImageFromOffset(nb * Config.nbDisplayedImage,
-					Config.nbDisplayedImage);
+			controller.loadImageFromOffset(nb * configuration.nbRowPerPage,
+					configuration.nbRowPerPage);
 		} else if (nb > totalPages) {
 			page.setText("" + (totalPages - 1));
 		} else if (nb < 0) {
@@ -235,7 +240,7 @@ public class ImagesPanelView extends JPanel {
 								images.get(i).getInt("width"),
 								images.get(i).getInt("height") });
 	
-						int size = scrollPane.getSize().height/Config.nbDisplayedImage-4;
+						int size = scrollPane.getSize().height/configuration.nbRowPerPage-4;
 						if(size <= 10){ size = 10;}
 						model.setValueAt(controller.getImageIcon(images.get(i), size), model.getRowCount() - 1, 0);
 						
@@ -387,7 +392,7 @@ public class ImagesPanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			controller.generateAndUploadGlomeruleROI();
+			controller.generateSectionAndGlomerules();
 		}
 
 	};

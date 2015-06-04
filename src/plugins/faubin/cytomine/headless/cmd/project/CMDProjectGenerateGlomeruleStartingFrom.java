@@ -7,6 +7,7 @@ import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
+import be.cytomine.client.models.User;
 
 public class CMDProjectGenerateGlomeruleStartingFrom extends CMD {
 
@@ -43,9 +44,14 @@ public class CMDProjectGenerateGlomeruleStartingFrom extends CMD {
 								System.out.println("generating ROIs ...");
 								for (int i = offset; i < collection.size(); i++) {
 	
+									long idSection = Config.IDMap.get("SectionGenerationSoftware");
+									long idGlomerule = Config.IDMap.get("GlomeruleGenerationSoftware");
+									User jobSection = IcytomineUtil.generateNewUserJob(console.cytomine, idSection, projectID);
+									User jobGlomerule = IcytomineUtil.generateNewUserJob(console.cytomine, idGlomerule, projectID);
+									
 									ImageInstance instance = collection.get(i);
 								
-									IcytomineUtil.generateGlomerule(console.cytomine, instance, 2, null);
+									IcytomineUtil.generateGlomerule(console.cytomine, jobSection, jobGlomerule, instance, 2, null);
 									
 									System.gc();
 									

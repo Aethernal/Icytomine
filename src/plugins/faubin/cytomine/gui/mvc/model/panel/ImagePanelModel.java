@@ -29,6 +29,7 @@ import plugins.faubin.cytomine.AnnotationTerm;
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.gui.mvc.controller.panel.ImagePanelController;
+import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.gui.mvc.model.utils.ThreadForRunnablePool;
 import plugins.faubin.cytomine.gui.mvc.template.Model;
 import plugins.faubin.cytomine.gui.mvc.view.frame.ProcessingFrame;
@@ -42,6 +43,7 @@ import be.cytomine.client.CytomineException;
 import be.cytomine.client.collections.AnnotationCollection;
 import be.cytomine.client.models.Annotation;
 import be.cytomine.client.models.ImageInstance;
+import be.cytomine.client.models.User;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -52,6 +54,8 @@ public class ImagePanelModel extends Model {
 
 	private ImagePanelController controller;
 	private ProcessingFrame processFrame;
+	
+	static Configuration configuration = Configuration.getConfiguration();
 
 	/**
 	 * @param cytomine
@@ -185,9 +189,7 @@ public class ImagePanelModel extends Model {
 
 		try {
 
-			BufferedImage image = cytomine
-					.downloadAbstractImageAsBufferedImage(ID,
-							Config.previewDefaultMaxSize);
+			BufferedImage image = cytomine.downloadAbstractImageAsBufferedImage(ID, configuration.previewMaxSize);
 
 			icon = new ImageIcon(image);
 		} catch (Exception e) {
@@ -216,15 +218,19 @@ public class ImagePanelModel extends Model {
 	 * @param instance
 	 *            generate annotation for the ImageInstance then open the image
 	 *            in Cytomine as a Sequence with ROI
+	 * @throws CytomineException 
 	 */
-	public void generateSection(ImageInstance instance) {
+	public void generateSection(ImageInstance instance) throws CytomineException {
 
 		processFrame.newAction();
 
 		Sequence seq = IcytomineUtil.loadImage(instance, cytomine,
 				controller.getMaxSize(), processFrame);
 
-		IcytomineUtil.generateSectionsROI(cytomine, instance, seq,
+		long idSoftware = Config.IDMap.get("SectionGenerationSoftware");
+		User job = IcytomineUtil.generateNewUserJob(cytomine, idSoftware,controller.getProjectID());
+		
+		IcytomineUtil.generateSectionsROI(cytomine, job, controller.getProjectID(), instance, seq,
 				processFrame);
 
 		Icy.getMainInterface().addSequence(seq);
@@ -297,14 +303,17 @@ public class ImagePanelModel extends Model {
 
 	}
 
-	public void generateGlomerule(ImageInstance instance) {
-
+	public void generateGlomerule(ImageInstance instance) throws CytomineException {
+		long idSection = Config.IDMap.get("SectionGenerationSoftware");
+		long idGlomerule = Config.IDMap.get("GlomeruleGenerationSoftware");
+		User jobSection = IcytomineUtil.generateNewUserJob(cytomine, idSection, controller.getProjectID());
+		User jobGlomerule = IcytomineUtil.generateNewUserJob(cytomine, idGlomerule, controller.getProjectID());
+		
 		processFrame.newAction();
 		
-		IcytomineUtil.generateGlomerule(cytomine, instance, 2, processFrame);
+		IcytomineUtil.generateGlomerule(cytomine, jobSection, jobGlomerule, instance, 2, processFrame);
 		
 		processFrame.setGlobalProgress(100);
-		
 	}
 
 }

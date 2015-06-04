@@ -22,6 +22,7 @@ import javax.swing.ImageIcon;
 import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.gui.mvc.controller.panel.ImagesPanelController;
+import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.gui.mvc.model.utils.ThreadForRunnablePool;
 import plugins.faubin.cytomine.gui.mvc.template.Model;
 import plugins.faubin.cytomine.gui.mvc.view.frame.ProcessingFrame;
@@ -36,6 +37,7 @@ import be.cytomine.client.collections.AnnotationCollection;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.Annotation;
 import be.cytomine.client.models.ImageInstance;
+import be.cytomine.client.models.User;
 
 public class ImagesPanelModel extends Model {
 
@@ -43,6 +45,8 @@ public class ImagesPanelModel extends Model {
 	private ImagesPanelController controller;
 	private ProcessingFrame processFrame;
 
+	static Configuration configuration = Configuration.getConfiguration();
+	
 	/**
 	 * @param cytomine
 	 * @param controller
@@ -80,8 +84,9 @@ public class ImagesPanelModel extends Model {
 	 * @param images
 	 *            take all the images in the list and generate section roi then
 	 *            upload them to cytomine
+	 * @throws CytomineException 
 	 */
-	public void generateAndUploadSectionROI(ImageInstanceCollection images) {
+	public void generateAndUploadSectionROI(ImageInstanceCollection images) throws CytomineException {
 
 		processFrame.newAction();
 
@@ -92,9 +97,12 @@ public class ImagesPanelModel extends Model {
 			ImageInstance instance = images.get(i);
 
 			Sequence sequence = IcytomineUtil.loadImage(instance, cytomine,
-					Config.thumbnailDefaultMaxSize, processFrame);
+					configuration.iconPreviewMaxSize, processFrame);
 
-			IcytomineUtil.generateSectionsROI(cytomine, instance, 
+			long idSoftware = Config.IDMap.get("SectionGenerationSoftware");
+			User job = IcytomineUtil.generateNewUserJob(cytomine, idSoftware,controller.getProjectID());
+			
+			IcytomineUtil.generateSectionsROI(cytomine, job, controller.getProjectID(),instance, 
 					sequence, processFrame);
 
 			
@@ -180,14 +188,64 @@ public class ImagesPanelModel extends Model {
 		processFrame.setGlobalProgress(100);
 	}
 	
-	public void generateGlomerule(ImageInstanceCollection instances) {
+	public void generateGlomerule(ImageInstanceCollection instances) throws CytomineException {
 
+		processFrame.newAction();
+		
 		for (int i = 0; i < instances.size(); i++) {
+			
+			long idSection = Config.IDMap.get("SectionGenerationSoftware");
+			long idGlomerule = Config.IDMap.get("GlomeruleGenerationSoftware");
+			User jobSection = IcytomineUtil.generateNewUserJob(cytomine, idSection, controller.getProjectID());
+			User jobGlomerule = IcytomineUtil.generateNewUserJob(cytomine, idGlomerule, controller.getProjectID());
+			
 			ImageInstance instance = instances.get(i);
 		
-			IcytomineUtil.generateGlomerule(cytomine, instance, 2, processFrame);
+			IcytomineUtil.generateGlomerule(cytomine, jobSection, jobGlomerule, instance, 2, processFrame);
 			
 			System.gc();
+			
+			processFrame.setGlobalProgress((int) ((double) (i+1) / instances.size()*100));
+		}
+		
+		processFrame.setGlobalProgress(100);
+		
+	}
+
+	public void generateSectionAndGlomerules(ImageInstanceCollection instances) throws CytomineException {
+		
+
+		processFrame.newAction();
+
+		processFrame.println("Generating sections and glomerules then uploading to Cytomine for "
+				+ instances.size() + " images");
+
+		for (int i = 0; i < instances.size(); i++) {
+			
+			long idSection = Config.IDMap.get("SectionGenerationSoftware");
+			User jobSection = IcytomineUtil.generateNewUserJob(cytomine, idSection, controller.getProjectID());
+			
+			cytomine.changeStatus(jobSection.getLong("job"), Cytomine.JobStatus.RUNNING, 0);
+			
+			ImageInstance instance = instances.get(i);
+
+			Sequence sequence = IcytomineUtil.loadImage(instance, cytomine, configuration.thumbnailMaxSize, processFrame);
+
+			IcytomineUtil.generateSectionsROI(cytomine, jobSection, controller.getProjectID(),instance, 
+					sequence, processFrame);
+		
+			
+			cytomine.changeStatus(jobSection.getLong("job"), Cytomine.JobStatus.SUCCESS, 100);
+			
+			long idGlomerule = Config.IDMap.get("GlomeruleGenerationSoftware");
+			User jobGlomerule = IcytomineUtil.generateNewUserJob(cytomine, idGlomerule, controller.getProjectID());
+			
+			IcytomineUtil.generateGlomerule(cytomine, jobSection, jobGlomerule, instance, 2, processFrame);
+			
+			
+			System.gc();
+			
+			processFrame.println(i+" of " + instances.size() + " images");
 			
 			processFrame.setGlobalProgress((int) ((double) (i+1) / instances.size()*100));
 		}

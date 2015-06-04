@@ -11,6 +11,7 @@ import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
 import be.cytomine.client.models.ImageInstance;
+import be.cytomine.client.models.User;
 
 public class CMDImageGenerateSection extends CMD {
 
@@ -19,7 +20,7 @@ public class CMDImageGenerateSection extends CMD {
 
 		String command = "generate_section";
 		String description = "Generate the sections ROIs of the image and upload them to cytomine";
-		String[] arguments = new String[] { "(long) imageID",
+		String[] arguments = new String[] { "(long) projectID", "(long) imageID",
 				"(int) image_max_size" };
 
 		super.initialize(command, description, arguments);
@@ -36,7 +37,8 @@ public class CMDImageGenerateSection extends CMD {
 			public Object call() {
 				int nbAnnotations = 0;
 				try {
-					long imageID = Long.parseLong(args[0]);
+					long projectID = Long.parseLong(args[0]);
+					long imageID = Long.parseLong(args[1]);
 					try {
 						final int maxSize = Integer.parseInt(args[1]);
 						try {
@@ -50,8 +52,11 @@ public class CMDImageGenerateSection extends CMD {
 								Sequence seq = IcytomineUtil.loadImage(instance,
 										console.cytomine, maxSize, null);
 								// creating rois
+								long idSoftware = Config.IDMap.get("SectionGenerationSoftware");
+								User job = IcytomineUtil.generateNewUserJob(console.cytomine, idSoftware,projectID);
+								
 								IcytomineUtil
-										.generateSectionsROI(console.cytomine, instance, seq, null);
+										.generateSectionsROI(console.cytomine, job,projectID, instance, seq, null);
 
 							} catch (Exception e) {
 								e.printStackTrace();

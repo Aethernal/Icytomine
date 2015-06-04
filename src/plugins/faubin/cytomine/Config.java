@@ -10,20 +10,7 @@ public class Config {
 	public static final String version = "1.2.0";
 
 	// image downloaded
-	public static int glomerulDetectionDefaultZoom = 1; // depth - this value
-	public static int thumbnailDefaultMaxSize = 2048;
-	public static int previewDefaultMaxSize = 512;
-	public static int iconPreviewDefaultMaxSize = 128;
-
-	// server connection
-	public static final String defaultServer = "http://cytomine.web.pasteur.fr";
-	public static final String defaultPublicKey = /*"6e66b588-eb89-4efb-86b3-2f59ed19e2f7" ;/**/ "d42e7fe6-4e84-4c04-82f5-9863d10d590e"; /**/
-	public static final String defaultPrivateKey = /*"5d8a13db-fff5-4096-b1a7-d4baaccfa925";/**/ "d22a6cd4-04cb-4d06-8a46-082379219b4c"; /**/
-
-	
-	
-	// imagesPanel
-	public static final int nbDisplayedImage = 5;
+	public static int glomerulDetectionDefaultZoom = 1; 
 
 	//pre-defined messages
 	public static Map<String, String> messages  = new TreeMap<String, String>();
@@ -34,8 +21,24 @@ public class Config {
 	
 	public static void initialize() {
 		//ID ontology
-		IDMap.put("ontology_section", new Long(12237));
-		IDMap.put("ontology_glomerule", new Long(12224));
+		IDMap.put("ontology_section", 12237l);
+		IDMap.put("ontology_glomerule", 12224l);
+		
+		//ID Software
+		IDMap.put("software_SectionGeneration3", 6571943l);
+		IDMap.put("SectionGenerationSoftware", 8334270l);
+			IDMap.put("SectionGenerationSoftware_param1", 8334278l);
+			IDMap.put("SectionGenerationSoftware_param2", 8334284l);
+			IDMap.put("SectionGenerationSoftware_param3", 8334290l);
+		
+		IDMap.put("GlomeruleGenerationSoftware", 8424480l);
+			IDMap.put("GlomeruleGenerationSoftware_param1", 8424490l);
+			IDMap.put("GlomeruleGenerationSoftware_param2", 8424496l);
+			IDMap.put("GlomeruleGenerationSoftware_param3", 8424502l);
+			IDMap.put("GlomeruleGenerationSoftware_param4", 8424508l);
+			IDMap.put("GlomeruleGenerationSoftware_param5", 8424514l);
+			IDMap.put("GlomeruleGenerationSoftware_param6", 8424520l);
+			IDMap.put("GlomeruleGenerationSoftware_param7", 8424526l);
 		
 		//Errors messages
 		

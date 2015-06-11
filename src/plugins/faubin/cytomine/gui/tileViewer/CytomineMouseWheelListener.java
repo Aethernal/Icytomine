@@ -1,7 +1,11 @@
 package plugins.faubin.cytomine.gui.tileViewer;
 
+import icy.system.thread.ThreadUtil;
+
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+
+import be.cytomine.client.CytomineException;
 
 public class CytomineMouseWheelListener implements MouseWheelListener{
 
@@ -16,15 +20,16 @@ public class CytomineMouseWheelListener implements MouseWheelListener{
 		if (!e.isConsumed()) {
 			switch (e.getWheelRotation()) {
 			case 1:
-				reader.inc_zoom(e.getPoint());
+				reader.inc_zoom();
 				break;
 			case -1:
-				reader.dec_zoom(e.getPoint());
+				reader.dec_zoom();
 				break;
 
 			default:
 				break;
 			}
+			
 			e.consume();
 		}
 

@@ -54,6 +54,7 @@ public class OverlayCytomine extends Overlay{
 		super.keyPressed(e, imagePoint, canvas);
 		if (e.getKeyCode() == 32) {
 			reader.locked = !reader.locked;
+			reader.mouseGrabbed = false;
 		}
 	}
 	

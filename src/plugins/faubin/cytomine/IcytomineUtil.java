@@ -11,6 +11,7 @@ import icy.sequence.SequenceUtil;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
@@ -34,6 +35,7 @@ import plugins.faubin.cytomine.gui.mvc.view.frame.ProcessingFrame;
 import plugins.faubin.cytomine.gui.roi.roi2dpolygon.CytomineImportedROI;
 import plugins.faubin.cytomine.gui.tileViewer.CytomineReader;
 import plugins.faubin.cytomine.gui.tileViewer.Tile;
+import plugins.faubin.cytomine.utils.CropInformations;
 import plugins.faubin.cytomine.utils.threshold.CustomThreshold;
 import plugins.faubin.glomeruledetector.GlomeruleDetector;
 import plugins.kernel.roi.roi2d.ROI2DArea;
@@ -205,7 +207,7 @@ public class IcytomineUtil {
 							instance.getInt("width"), instance.getInt("height"));
 					int imageSizeY = instance.getInt("height");
 
-					Point2D ratio = IcytomineUtil.getScaleRatio(thumbnailSize,
+					Point2D.Double ratio = IcytomineUtil.getScaleRatio(thumbnailSize,
 							imageSize);
 
 					String polygon = IcytomineUtil.ROItoWKT(roi, ratio, imageSizeY);
@@ -248,7 +250,7 @@ public class IcytomineUtil {
 		return nbUploaded;
 	}
 	
-	public static void uploadROI(Cytomine cytomine, ImageInstance instance, List<ROI2DPolygon> rois, double ratio, int height, Point2D translation, List<Long> termID, ProcessingFrame processFrame){
+	public static void uploadROI(Cytomine cytomine, ImageInstance instance, List<ROI2DPolygon> rois, double ratio, int height, Point2D.Double translation, List<Long> termID, ProcessingFrame processFrame){
 		List<CytomineImportedROI> annotations = IcytomineUtil.Roi2DPolyToCytomineImportedROI(rois);
 		
 		long ID = instance.getLong("id");
@@ -258,19 +260,15 @@ public class IcytomineUtil {
 			
 			polygon.terms = termID;
 			polygon.translate(translation.getX(), translation.getY());
-			Point2D ratioAsP2D = new Point2D.Double(ratio, ratio);
+			Point2D.Double ratioAsP2D = new Point2D.Double(ratio, ratio);
 			try {
 				String WKTPolygon = IcytomineUtil.ROItoWKT(polygon, ratioAsP2D, height);
 				try{
 					if (!polygon.terms.isEmpty()) {
 						
-						try {
-							Annotation annotation = cytomine.addAnnotation(WKTPolygon, ID);
-							for (int j = 0; j < polygon.terms.size(); j++) {
-								cytomine.addAnnotationTerm(annotation.getId(), polygon.terms.get(j));
-							}
-						} catch (Exception e) {
-							cytomine.addAnnotation(WKTPolygon, ID);
+						Annotation annotation = cytomine.addAnnotation(WKTPolygon, ID);
+						for (int j = 0; j < polygon.terms.size(); j++) {
+							cytomine.addAnnotationTerm(annotation.getId(), polygon.terms.get(j));
 						}
 	
 					} else {
@@ -286,6 +284,36 @@ public class IcytomineUtil {
 			if(processFrame!=null){
 				processFrame.setActionProgress((int) ((double) (i + 1)/ annotations.size() * 100));
 			}
+		}
+		
+	}
+	
+	public static void uploadROI(Cytomine cytomine, ImageInstance instance, CytomineImportedROI polygon, Point2D.Double ratio, int height, Point2D.Double translation, List<Long> termID, ProcessingFrame processFrame){
+		
+		long ID = instance.getLong("id");
+			
+		polygon.terms = termID;
+		polygon.translate(translation.getX(), translation.getY());
+		
+		try {
+			String WKTPolygon = IcytomineUtil.ROItoWKT(polygon, ratio, height);
+			try{
+				if (!polygon.terms.isEmpty()) {
+					
+					Annotation annotation = cytomine.addAnnotation(WKTPolygon, ID);
+					for (int j = 0; j < polygon.terms.size(); j++) {
+						cytomine.addAnnotationTerm(annotation.getId(), polygon.terms.get(j));
+					}
+
+				} else {
+					cytomine.addAnnotation(WKTPolygon, ID);
+				}
+			} catch (CytomineException e) {
+				e.printStackTrace();
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
@@ -338,7 +366,7 @@ public class IcytomineUtil {
 	 * @param pointslist
 	 * @param degree
 	 * @param bound
-	 * @return rotated points as a List<Point2D>
+	 * @return rotated points as a List<Point2D.Double>
 	 */
 	private static List<Point2D> rotatePoints(List<Point2D> pointslist,
 			double degree, Rectangle bound) {
@@ -488,13 +516,13 @@ public class IcytomineUtil {
 	
 
 	
-	static User current=null;
+	static User currentUser=null;
 	public static Cytomine switchUser(Cytomine cytomine, User job){
 		String pbKey="";
 		String pvKey="";
-		if(current==null){
+		if(currentUser==null){
 			try {
-				current = cytomine.getCurrentUser();
+				currentUser = cytomine.getCurrentUser();
 			} catch (CytomineException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -505,8 +533,8 @@ public class IcytomineUtil {
 			pvKey = job.getStr("privateKey");
 			pbKey = job.getStr("publicKey");
 		}else{
-			pvKey = current.getStr("privateKey");
-			pbKey = current.getStr("publicKey");
+			pvKey = currentUser.getStr("privateKey");
+			pbKey = currentUser.getStr("publicKey");
 		}
 		
 		
@@ -532,7 +560,6 @@ public class IcytomineUtil {
 	 * @param f
 	 */
 	public static void logInFile(String str, File f){
-		System.out.println(str);
 		
 		try {
 			PrintWriter writer = new PrintWriter(new FileOutputStream(f, true), true);
@@ -561,7 +588,8 @@ public class IcytomineUtil {
 	public static int generateSectionsROI(Cytomine cytomine, User job, long projectID, ImageInstance instance, Sequence seq, ProcessingFrame processFrame) {
 
 		int nbAnnotation=0;
-		
+		long startTime = System.currentTimeMillis();
+		logInFile("image, job, nbAnnotation, time", new File("result/sectionGeneration.txt"));
 		try {
 			
 			//switch the user for a job
@@ -646,6 +674,8 @@ public class IcytomineUtil {
 				e.printStackTrace();
 			}
 		
+			long time = System.currentTimeMillis()-startTime;
+			
 			//switch the user back
 			cytomine = switchUser(cytomine, null);
 			
@@ -653,7 +683,7 @@ public class IcytomineUtil {
 			cytomine.addJobParameter(job.getLong("job"), Config.IDMap.get("SectionGenerationSoftware_param2"), ""+configuration.thumbnailMaxSize);
 			cytomine.addJobParameter(job.getLong("job"), Config.IDMap.get("SectionGenerationSoftware_param3"), ""+threshold);
 			
-			logInFile(instance.getId()+","+job.getLong("job")+","+nbAnnotation, new File("result/sectionGeneration.txt"));
+			logInFile(instance.getId()+","+job.getLong("job")+","+nbAnnotation+","+time, new File("result/sectionGeneration.txt"));
 			
 			cytomine.changeStatus(job.getLong("job"), Cytomine.JobStatus.SUCCESS, 100);
 			
@@ -701,10 +731,10 @@ public class IcytomineUtil {
 	 * @param imageSize
 	 * @return
 	 */
-	public static Point2D getScaleRatio(Dimension thumbSize, Dimension imageSize) {
-		Point2D ratio;
+	public static Point2D.Double getScaleRatio(Dimension thumbSize, Dimension imageSize) {
+		Point2D.Double ratio;
 
-		ratio = new Point2D.Double(imageSize.getWidth() / thumbSize.getWidth(),
+		ratio = new Point2D.Double.Double(imageSize.getWidth() / thumbSize.getWidth(),
 				imageSize.getHeight() / thumbSize.getHeight());
 
 		return ratio;
@@ -873,6 +903,25 @@ public class IcytomineUtil {
 		return newList;
 
 	}
+	
+	public static CytomineImportedROI ROI2D2CytomineROI(ROI2D roi){
+		try {
+			ROI2DPolygon r = (ROI2DPolygon) roi;
+			return ROI2DPoly2CytomineROI(r);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static CytomineImportedROI ROI2DPoly2CytomineROI(ROI2DPolygon roi){
+		try {
+			CytomineImportedROI r = (CytomineImportedROI) roi;
+			return r;
+		} catch (Exception e) {
+			CytomineImportedROI r = new CytomineImportedROI(roi.getPoints(), null);
+			return r;
+		}
+	}
 
 	/**
 	 * @param hexColor
@@ -936,9 +985,57 @@ public class IcytomineUtil {
 		
 		cytomine.addSoftwareProject(soft.getId(), projectID);
 		
-		System.out.println(soft.getId());
-		
 		return soft;
+	}
+	
+	public static CropInformations getCropAtZoom(Cytomine cytomine, Annotation annotation, ImageInstance instance, int zoom) throws CytomineException{
+		
+			CytomineReader preview = new CytomineReader(cytomine, instance, new Dimension(10,10),false);
+			
+			String poly = annotation.getStr("location");
+			
+			List<Point2D> points = WKTtoPoint2D(poly, new Point2D.Double(1, 1), instance.getInt("height"));
+			
+			Rectangle rect = IcytomineUtil.SectionROI2Rectangle(points);
+			
+			// variables
+
+			double ratio = Math.pow(2, -zoom);
+
+			Point position = new Point( (int)(rect.x * ratio),	(int)(rect.y * ratio) );
+			Dimension size = new Dimension( (int) Math.max(1, (rect.width * ratio)), (int) Math.max(1, (rect.height * ratio)) );
+			
+			Rectangle scaled = new Rectangle(position, size);
+			
+			for (int j = 0; j < points.size(); j++) {
+				Point2D p = points.get(j);
+				p.setLocation((p.getX()*ratio)-position.getX(), (p.getY()*ratio)-position.getY());
+			}
+			
+			List<Tile> tiles = preview.getCrop(position, size, zoom);
+			
+			BufferedImage img = new BufferedImage(size.width,size.height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D graph = img.createGraphics();
+			Sequence sequence = new Sequence();
+
+			BufferedImage image;
+			for (int j = 0; j < tiles.size(); j++) {
+				Tile tile = tiles.get(j);
+				image = cytomine.downloadPictureAsBufferedImage(tile.getUrl(),"");
+				tile.image = image;
+				
+			}
+			
+			for (int j = 0; j < tiles.size(); j++) {
+				Tile tile = tiles.get(j);
+				graph.drawImage(tile.image, (int)(tile.getC()*256-position.getX()), (int)(tile.getR()*256-position.getY()), null);
+			}
+
+			sequence.setImage(0, 0, img);
+			
+			CropInformations data = new CropInformations(rect, scaled, ratio, points, tiles, sequence);
+				
+			return data;
 	}
 	
 	public static int generateGlomerule(Cytomine cytomine, User jobSection, User jobGlomerule, final ImageInstance instance, int zoom, final ProcessingFrame processFrame){
@@ -947,9 +1044,7 @@ public class IcytomineUtil {
 		final int maxSize = configuration.maxSize;
 		final int cValue = configuration.cValue;
 		final int valRatioAxis = configuration.valRatioAxis;
-		final int vMinLong = configuration.vMinLong;
-		
-		
+		final int vMinLong = configuration.vMinLong;		
 		
 		try {
 			cytomine.addJobParameter(jobGlomerule.getLong("job"), Config.IDMap.get("GlomeruleGenerationSoftware_param1"), ""+instance.getId());
@@ -973,129 +1068,54 @@ public class IcytomineUtil {
 		int nbAnnotations = 0;
 		int nbSection = 0;
 		
-		CytomineReader preview;
+		Map<String, String> filter = new TreeMap<String, String>();
 		try {
+			filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
+			filter.put("image", "" + instance.getLong("id"));
+			filter.put("term", "" + Config.IDMap.get("ontology_section"));
+
+			//switch the user for a job
+			cytomine = switchUser(cytomine, jobSection);
 			
-			preview = new CytomineReader(cytomine, instance, new Dimension(10,10));
-		
-			Map<String, String> filter = new TreeMap<String, String>();
-			try {
-				filter.put("user", "" + cytomine.getCurrentUser().getLong("id"));
-				filter.put("image", "" + instance.getLong("id"));
-				filter.put("term", "" + Config.IDMap.get("ontology_section"));
-	
-				//switch the user for a job
-				cytomine = switchUser(cytomine, jobSection);
-				
-				AnnotationCollection collection = cytomine.getAnnotations(filter);
-				
-				//switch back
-				cytomine = switchUser(cytomine, null);
-				
+			AnnotationCollection collection = cytomine.getAnnotations(filter);
+			
+			//switch back
+			cytomine = switchUser(cytomine, null);
+			
+			if(processFrame!=null){
+				processFrame.println("Generating glomerule for sections annotations");
+			}
+			
+			for (int i = 0; i < /*1/**/collection.size()/**/; i++) {
+				nbSection++;
+				Annotation annotation = cytomine.getAnnotation(collection.get(i).getLong("id"));
 				if(processFrame!=null){
-					processFrame.println("Generating glomerule for sections annotations");
+					processFrame.println("generating bounding box");
 				}
 				
-				for (int i = 0; i < /*1/**/collection.size()/**/; i++) {
-					nbSection++;
-					Annotation annotation = cytomine.getAnnotation(collection.get(i).getLong("id"));
-					if(processFrame!=null){
-						processFrame.println("generating bounding box");
-					}
-					
-					String poly = annotation.getStr("location");
-					
-					List<Point2D> points = WKTtoPoint2D(poly, new Point2D.Double(1, 1), instance.getInt("height"));
-					
-					Rectangle rect = IcytomineUtil.SectionROI2Rectangle(points);
-					if(processFrame!=null){
-						processFrame.println("bounding box generation done");
-					}
+				CropInformations data = getCropAtZoom(cytomine, annotation, instance, zoom);
+				
+				Sequence chan0 = SequenceUtil.extractChannel(data.getSequence(), 0);
 
-					// variables
-					int x = rect.x;
-					int y = rect.y;
-					int width = rect.width;
-					int height = rect.height;
+				// generate histogramme and seuil for threshold
+				int[] histogramme = CustomThreshold.getHistogram(chan0.getFirstImage());
+				final int threshold = CustomThreshold.generateSeuil(histogramme, chan0.getWidth(), chan0.getHeight());
+				
+				// generate sequence with tiles assembled in a BufferedImage
+				if(processFrame!=null){
+					processFrame.println("download done");
+				}
 
-					int delta = zoom;
-					
-					double ratio = Math.pow(2, -delta);
-	
-					final Point2D position = new Point2D.Double((int) (x * ratio),
-							(int) (y * ratio));
-					final Dimension size = new Dimension((int) Math.max(1, (width * ratio)),
-							(int) Math.max(1, (height * ratio)) );
-					
-					for (int j = 0; j < points.size(); j++) {
-						Point2D p = points.get(j);
-						p.setLocation((p.getX()*ratio)-position.getX(), (p.getY()*ratio)-position.getY());
-					}
-					
-					ROI2DPolygon section = new ROI2DPolygon(points);
-					section.setColor(Color.blue);
-					
-	
-					if(processFrame!=null){
-						processFrame.println("generating tiles of section");
-					}
-					List<Tile> tiles = preview.getCrop(position, size, zoom);
-					if(processFrame!=null){
-						processFrame.println("generation done");
-					}
-					
-					if(processFrame!=null){
-						processFrame.println("Downloading tiles");
-					}
-					
-					BufferedImage img = new BufferedImage(size.width,size.height, BufferedImage.TYPE_INT_RGB);
-					Graphics2D graph = img.createGraphics();
-					final Sequence sequence = new Sequence();
-
-//					sequence.addROI(section);
-					
-					BufferedImage image;
-					for (int j = 0; j < tiles.size(); j++) {
-						Tile tile = tiles.get(j);
-						image = cytomine.downloadPictureAsBufferedImage(tile.getUrl(),"");
-						tile.image = image;
-						
-						if(processFrame!=null){
-							processFrame.setActionProgress((int) ((double) (j + 1)/ tiles.size() * 100));
-						}
-						
-					}
-					
-					for (int j = 0; j < tiles.size(); j++) {
-						Tile tile = tiles.get(j);
-						graph.drawImage(tile.image, (int)(tile.getC()-position.getX()), (int)(tile.getR()-position.getY()), null);
-					}
-	
-					sequence.setImage(0, 0, img);
-					
-					
-					Sequence chan0 = SequenceUtil.extractChannel(sequence, 0);
-
-					// generate histogramme and seuil for threshold
-					int[] histogramme = CustomThreshold.getHistogram(chan0.getFirstImage());
-					final int threshold = CustomThreshold.generateSeuil(histogramme, chan0.getWidth(), chan0.getHeight());
-					
-					// generate sequence with tiles assembled in a BufferedImage
-					if(processFrame!=null){
-						processFrame.println("download done");
-					}
-	
-					// pool variable for multi thread calcul
-					Stack<Runnable> runnablePool = new Stack<Runnable>();
-					ThreadForRunnablePool threadPool[] = new ThreadForRunnablePool[8];
-					
-					if(processFrame!=null){
-						processFrame.println("processing tiles of sections");
-					}
-					
-					for (int j = 0; j < tiles.size(); j++) {
-						final Tile tile = tiles.get(j);
-					
+				// pool variable for multi thread calcul
+				Stack<Runnable> runnablePool = new Stack<Runnable>();
+				
+				if(processFrame!=null){
+					processFrame.println("processing tiles of sections");
+				}
+				
+				for (int j = 0; j < data.getTiles().size(); j++) {
+					final Tile tile = data.getTiles().get(j);
+				
 //						Tuiles annotations
 //						List<Point2D> pts = new ArrayList<Point2D>();
 //						pts.add(new Point2D.Double(		tile.getC()-position.getX(), tile.getR()-position.getY()));
@@ -1106,121 +1126,103 @@ public class IcytomineUtil {
 //						ROI2DPolygon tuile = new ROI2DPolygon(pts);
 //						tuile.setColor(Color.GREEN);
 //						sequence.addROI(tuile);
-					
-						if (tile.image != null) {
-							
-							final Cytomine tempCytomine = cytomine;
-							Runnable runnable = new Runnable() {
-	
-								@Override
-								public void run() {
+				
+					if (tile.image != null) {
+						
+						final Cytomine tempCytomine = cytomine;
+						final double scaledPosX = data.getScaledBoundingBox().getX();
+						final double scaledPosY = data.getScaledBoundingBox().getY();
+						final Sequence tempSequence = data.getSequence();
+						
+						Runnable runnable = new Runnable() {
+
+							@Override
+							public void run() {
+								
+								// start glomeruli detection
+								Sequence seq = new Sequence(tile.image);
+								
+								seq = SequenceUtil.extractChannel(seq, 0);
+								IcytomineUtil.generateGlomeruleROI(tempCytomine, seq, processFrame, threshold, minSize, maxSize, cValue, valRatioAxis, vMinLong);
+
+								List<ROI2D> rois = seq.getROI2Ds();
+								
+								for (int k = 0; k < rois.size(); k++) {
+									ROI2D roi = rois.get(k);
 									
-									// start glomeruli detection
-									Sequence seq = new Sequence(tile.image);
+									double posX = tile.getC()*256 - scaledPosX + roi.getPosition2D().getX();
+									double posY = tile.getR()*256 - scaledPosY + roi.getPosition2D().getY();
 									
-									seq = SequenceUtil.extractChannel(seq, 0);
-									IcytomineUtil.generateGlomeruleROI(tempCytomine,seq, processFrame, threshold, minSize, maxSize, cValue, valRatioAxis, vMinLong);
-	
-									List<ROI2D> rois = seq.getROI2Ds();
-									
-									for (int k = 0; k < rois.size(); k++) {
-										ROI2D roi = rois.get(k);
-										
-										double posX = tile.getC() - position.getX() + roi.getPosition2D().getX();
-										double posY = tile.getR() - position.getY() + roi.getPosition2D().getY();
-										
-										roi.setPosition2D( new Point2D.Double( posX, posY ) );
-										sequence.addROI(roi);
-	
-									}
+									roi.setPosition2D( new Point2D.Double( posX, posY ) );
+									tempSequence.addROI(roi);
+
 								}
-							};
-	
-							runnablePool.push(runnable);
-						}
-	
+							}
+						};
+
+						runnablePool.push(runnable);
 					}
-	
-					for (int j = 0; j < threadPool.length; j++) {
-						threadPool[j] = new ThreadForRunnablePool(runnablePool);
-						threadPool[j].start();
-					}
-	
-					for (int k = 0; k < threadPool.length; k++) {
-						try {
-							threadPool[k].join();
-	
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						if(processFrame!=null){
-							processFrame.setActionProgress((int) ((double) (k + 1)/ threadPool.length * 100));
-						}
-					}
-					
-					//show on icy
-					Icy.getMainInterface().addSequence(sequence);
-	
-					//uploading generated roi
-					List<ROI2DPolygon> polygonList = new ArrayList<ROI2DPolygon>();
-					
-					List<ROI2D> rois = sequence.getROI2Ds();
-					
-					for (int j = 0; j < rois.size(); j++) {
-						try{
-							ROI2DPolygon polygon = (ROI2DPolygon) rois.get(j);
-							
-							polygonList.add(polygon);
-							nbAnnotations++;
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-					
-					if(processFrame!=null){
-						processFrame.println("Uploading roi");
-					}
-					
-					List<Long> terms = new ArrayList<Long>();
-					terms.add(Config.IDMap.get("ontology_glomerule"));
-					
-					//switch the user for a job
-					cytomine = switchUser(cytomine, jobGlomerule);
-					
-					IcytomineUtil.uploadROI(cytomine, instance,polygonList, 1/ratio, (int) (instance.getInt("height")), new Point2D.Double(position.getX(), position.getY() ), terms, processFrame);
-					
-					//switch back
-					cytomine = switchUser(cytomine, null);
-					
-					if(processFrame!=null){
-						processFrame.println("Uploading done");
-					}
-					
-					if(processFrame!=null){
-						processFrame.println("processing done");
-					}
-	
-					System.gc();
+
 				}
+				
+				
+
+				startRunnablePool(runnablePool);
+				
+				//uploading generated roi
+				List<ROI2DPolygon> polygonList = new ArrayList<ROI2DPolygon>();
+				
+				List<ROI2D> rois = data.getSequence().getROI2Ds();
+				
+				for (int j = 0; j < rois.size(); j++) {
+					try{
+						ROI2DPolygon polygon = (ROI2DPolygon) rois.get(j);
+						
+						polygonList.add(polygon);
+						nbAnnotations++;
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				
+////					show on icy
+//					Icy.getMainInterface().addSequence(sequence);
+				
+				if(processFrame!=null){
+					processFrame.println("Uploading roi");
+				}
+				
+				List<Long> terms = new ArrayList<Long>();
+				terms.add(Config.IDMap.get("ontology_glomerule"));
+				
+				//switch the user for a job
+				cytomine = switchUser(cytomine, jobGlomerule);
+				
+				IcytomineUtil.uploadROI(cytomine, instance,polygonList, 1/data.getRatio(), (int) (instance.getInt("height")), new Point2D.Double(data.getScaledBoundingBox().getX(), data.getScaledBoundingBox().getY() ), terms, processFrame);
+				
+				//switch back
+				cytomine = switchUser(cytomine, null);
+				
+				if(processFrame!=null){
+					processFrame.println("Uploading done");
+				}
+				
+				if(processFrame!=null){
+					processFrame.println("processing done");
+				}
+
+				System.gc();
+			}
 				
 			} catch (CytomineException e) {
 				e.printStackTrace();
 			}
 
-
-			
-		} catch (CytomineException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
 		long endExecutionTime = System.currentTimeMillis();
 		
 		long time = endExecutionTime-startExecutionTime;
 		
 		long id = instance.getLong("id");
-		
-		System.out.println(id+","+nbSection+","+nbAnnotations+","+time);
 		
 		try {
 
@@ -1240,6 +1242,26 @@ public class IcytomineUtil {
 		
 	}
 	
+	private static void startRunnablePool(Stack<Runnable> runnablePool) {
+		
+		ThreadForRunnablePool threadPool[] = new ThreadForRunnablePool[8];
+
+		for (int j = 0; j < threadPool.length; j++) {
+			threadPool[j] = new ThreadForRunnablePool(runnablePool);
+			threadPool[j].start();
+		}
+
+		for (int k = 0; k < threadPool.length; k++) {
+			try {
+				threadPool[k].join();
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
 	public static Rectangle SectionROI2Rectangle(List<Point2D> points){
 		Rectangle boundingBox = new Rectangle();
 		
@@ -1269,4 +1291,6 @@ public class IcytomineUtil {
 		return boundingBox;
 	}
 
+	public static void sleep(long ms){ long d = System.currentTimeMillis(); while(d+ms>System.currentTimeMillis()); }
+	
 }

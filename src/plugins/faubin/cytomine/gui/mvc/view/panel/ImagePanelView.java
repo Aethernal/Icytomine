@@ -63,7 +63,7 @@ public class ImagePanelView extends JPanel {
 
 		try {
 			preview = new CytomineReader(controller.getCytomine(), getInstance(),
-					getSize());
+					getSize(), true);
 			preview.setBounds(0, 0, 400, 400);
 
 		} catch (CytomineException e) {
@@ -165,9 +165,11 @@ public class ImagePanelView extends JPanel {
 		panel_1.add(btnShowSequence);
 		
 		JButton btnSave = new JButton("save");
+		btnSave.addActionListener(actionSaveSequence);
 		panel_1.add(btnSave);
 		
 		JButton btnLoad = new JButton("load");
+		btnLoad.addActionListener(actionLoadSequence);
 		panel_1.add(btnLoad);
 		JMenuBar menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.NORTH);
@@ -353,6 +355,29 @@ public class ImagePanelView extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Icy.getMainInterface().addSequence(preview.getSequence());
+		}
+
+	};
+	
+	public ActionListener actionLoadSequence = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				preview.loadAnnotations();
+			} catch (CytomineException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+
+	};
+	
+	public ActionListener actionSaveSequence = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			preview.saveAnnotations();
 		}
 
 	};

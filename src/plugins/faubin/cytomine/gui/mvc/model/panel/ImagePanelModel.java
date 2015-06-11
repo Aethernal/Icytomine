@@ -306,12 +306,16 @@ public class ImagePanelModel extends Model {
 	public void generateGlomerule(ImageInstance instance) throws CytomineException {
 		long idSection = Config.IDMap.get("SectionGenerationSoftware");
 		long idGlomerule = Config.IDMap.get("GlomeruleGenerationSoftware");
-		User jobSection = IcytomineUtil.generateNewUserJob(cytomine, idSection, controller.getProjectID());
+		User user = cytomine.getCurrentUser();
+		
+		IcytomineUtil.sleep(1000);
+		
 		User jobGlomerule = IcytomineUtil.generateNewUserJob(cytomine, idGlomerule, controller.getProjectID());
 		
 		processFrame.newAction();
 		
-		IcytomineUtil.generateGlomerule(cytomine, jobSection, jobGlomerule, instance, 2, processFrame);
+		
+		IcytomineUtil.generateGlomerule(cytomine, user, jobGlomerule, instance, 2, processFrame);
 		
 		processFrame.setGlobalProgress(100);
 	}

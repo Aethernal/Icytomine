@@ -35,8 +35,6 @@ public class ViewerTool {
 		
 		polygon.setPoints(points);
 		
-		polygon.setPosition2D(polygonPos);
-		
 	}
 
 }

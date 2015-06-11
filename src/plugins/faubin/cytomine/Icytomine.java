@@ -17,7 +17,7 @@ import plugins.faubin.cytomine.headless.Console;
 import be.cytomine.client.Cytomine;
 
 public class Icytomine extends PluginActionable {
-	public Cytomine cytomine;
+	public static Cytomine cytomine;
 	private IcytomineFrame frame;
 	private LoginFrame loginFrame;
 

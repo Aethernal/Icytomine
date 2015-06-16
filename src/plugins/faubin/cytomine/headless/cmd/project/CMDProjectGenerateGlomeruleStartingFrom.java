@@ -1,10 +1,10 @@
 package plugins.faubin.cytomine.headless.cmd.project;
 
-import plugins.faubin.cytomine.Config;
-import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
+import plugins.faubin.cytomine.utils.Config;
+import plugins.faubin.cytomine.utils.IcytomineUtil;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
 import be.cytomine.client.models.User;

@@ -2,8 +2,8 @@ package plugins.faubin.cytomine.headless.cmd;
 
 import java.util.TreeMap;
 
-import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.headless.Console;
+import plugins.faubin.cytomine.utils.Config;
 
 public class CMDContainer extends CMD {
 	private TreeMap<String, CMD> commands;

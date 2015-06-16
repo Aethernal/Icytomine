@@ -6,14 +6,15 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDConnect;
 import plugins.faubin.cytomine.headless.cmd.CMDContainer;
 import plugins.faubin.cytomine.headless.cmd.CMDExit;
 import plugins.faubin.cytomine.headless.cmd.CMDHelp;
 import plugins.faubin.cytomine.headless.cmd.CMDProjects;
+import plugins.faubin.cytomine.headless.cmd.image.CMDImageGenerateGlomerule;
 import plugins.faubin.cytomine.headless.cmd.image.CMDImageGenerateSection;
+import plugins.faubin.cytomine.headless.cmd.image.CMDImageGenerateSectionAndGlomerule;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectDeleteAll;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectDeleteTerm;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateGlomerule;
@@ -23,6 +24,7 @@ import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateSectionAnd
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectGenerateSectionStartingFrom;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectList;
 import plugins.faubin.cytomine.headless.cmd.project.CMDProjectListTerm;
+import plugins.faubin.cytomine.utils.Config;
 import be.cytomine.client.Cytomine;
 
 
@@ -153,8 +155,12 @@ public class Console {
 			
 		CMDContainer cmdImage = new CMDContainer(this, "image"); 	
 			CMDImageGenerateSection cmdImageGenerateSections = new CMDImageGenerateSection(this);
+			CMDImageGenerateGlomerule cmdImageGenerateGlomerules = new CMDImageGenerateGlomerule(this);
+			CMDImageGenerateSectionAndGlomerule cmdImageGenerateSectionsAndGlomerules = new CMDImageGenerateSectionAndGlomerule(this);
 			
 			cmdImage.add(cmdImageGenerateSections);
+			cmdImage.add(cmdImageGenerateGlomerules);
+			cmdImage.add(cmdImageGenerateSectionsAndGlomerules);
 			
 		addCMD(cmdProjects);
 		addCMD(cmdProject);

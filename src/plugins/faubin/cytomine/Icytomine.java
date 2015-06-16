@@ -10,10 +10,11 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import plugins.faubin.cytomine.gui.mvc.model.utils.Configuration;
-import plugins.faubin.cytomine.gui.mvc.view.frame.IcytomineFrame;
-import plugins.faubin.cytomine.gui.mvc.view.frame.LoginFrame;
 import plugins.faubin.cytomine.headless.Console;
+import plugins.faubin.cytomine.module.main.IcytomineFrame;
+import plugins.faubin.cytomine.module.main.mvc.frame.LoginFrame;
+import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
+import plugins.faubin.cytomine.utils.Config;
 import be.cytomine.client.Cytomine;
 
 public class Icytomine extends PluginActionable {
@@ -26,6 +27,7 @@ public class Icytomine extends PluginActionable {
 	public void run() {
 
 		Config.initialize();
+		
 
 		if (Icy.getMainInterface().isHeadLess()) {
 			// start in headless
@@ -118,7 +120,8 @@ public class Icytomine extends PluginActionable {
 		// show the plugin panel
 		loginFrame.setVisible(false);
 
-		frame = new IcytomineFrame(cytomine);
+		IcytomineFrame.cytomine = cytomine;
+		IcytomineFrame frame = IcytomineFrame.getIcytomineFrame();
 		frame.setVisible(true);
 	}
 

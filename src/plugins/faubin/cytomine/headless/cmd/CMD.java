@@ -1,7 +1,7 @@
 package plugins.faubin.cytomine.headless.cmd;
 
-import plugins.faubin.cytomine.Config;
 import plugins.faubin.cytomine.headless.Console;
+import plugins.faubin.cytomine.utils.Config;
 
 public abstract class CMD {
 	protected Console console;

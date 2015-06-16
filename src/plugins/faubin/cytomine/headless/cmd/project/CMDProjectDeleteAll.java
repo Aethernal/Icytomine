@@ -1,10 +1,10 @@
 package plugins.faubin.cytomine.headless.cmd.project;
 
-import plugins.faubin.cytomine.Config;
-import plugins.faubin.cytomine.IcytomineUtil;
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
+import plugins.faubin.cytomine.utils.Config;
+import plugins.faubin.cytomine.utils.IcytomineUtil;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
 
@@ -40,7 +40,7 @@ public class CMDProjectDeleteAll extends CMD{
 						for (int i = 0; i < collection.size(); i++) {
 							ImageInstance instance = collection.get(i);
 
-							nbAnnotations += IcytomineUtil.deleteAllRoi(
+							nbAnnotations += IcytomineUtil.deleteAllAnnotation(
 									console.cytomine, instance, null);
 							count++;
 							System.out.println(count+ " of " + collection.size());

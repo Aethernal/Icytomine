@@ -1,7 +1,9 @@
-package plugins.faubin.cytomine.module.tileViewer;
+package plugins.faubin.cytomine.module.tileViewer.utils;
 
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+
+import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
 
 public class CytomineMouseWheelListener implements MouseWheelListener{
 

@@ -27,7 +27,7 @@ import javax.swing.ImageIcon;
 import ome.xml.model.Image;
 import plugins.faubin.cytomine.module.main.mvc.frame.ProcessingFrame;
 import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
-import plugins.faubin.cytomine.module.tileViewer.Tile;
+import plugins.faubin.cytomine.module.tileViewer.utils.Tile;
 import plugins.faubin.cytomine.oldgui.mvc.controller.panel.ImagePanelController;
 import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.oldgui.mvc.model.utils.ThreadForRunnablePool;

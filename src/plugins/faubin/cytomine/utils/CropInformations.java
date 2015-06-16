@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.List;
 
-import plugins.faubin.cytomine.module.tileViewer.Tile;
+import plugins.faubin.cytomine.module.tileViewer.utils.Tile;
 
 public class CropInformations {
 	private Rectangle originalBoundingBox;

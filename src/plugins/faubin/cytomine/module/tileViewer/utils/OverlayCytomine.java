@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.module.tileViewer;
+package plugins.faubin.cytomine.module.tileViewer.utils;
 
 import icy.canvas.IcyCanvas;
 import icy.painter.Overlay;
@@ -7,6 +7,8 @@ import icy.type.point.Point5D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+
+import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
 
 /*
  * this overlay receive user interaction on the sequence like mouse click and mouse wheel interaction

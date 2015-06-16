@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
 
 import plugins.faubin.cytomine.module.main.mvc.Model;
 import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
+import plugins.faubin.cytomine.module.tileViewer.toolbar.Toolbar;
 import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.utils.Config;
 import plugins.faubin.cytomine.utils.IcytomineUtil;
@@ -86,6 +87,8 @@ public class ProjectModel extends Model {
 		try {
 			ImageInstance instance = cytomine.getImageInstance(ID);
 			CytomineReader reader = new CytomineReader(cytomine, instance, configuration.dynamicViewerDim, true);
+			Toolbar toolbar = new Toolbar(reader);
+			toolbar.setVisible(true);
 			
 			return reader;
 		} catch (CytomineException e) {

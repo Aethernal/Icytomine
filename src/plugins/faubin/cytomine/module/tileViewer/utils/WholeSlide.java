@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.module.tileViewer;
+package plugins.faubin.cytomine.module.tileViewer.utils;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -8,15 +8,15 @@ import be.cytomine.client.CytomineException;
 import be.cytomine.client.models.AbstractImage;
 
 public class WholeSlide {
-	AbstractImage image;
-	int depth;
-	int width;
-	int height;
-	String server_urls;
-	int tile_size;
-	int num_tiles;
-	Map<String, Integer> levels[];
-	String mime;
+	public AbstractImage image;
+	public int depth;
+	public int width;
+	public int height;
+	public String server_urls;
+	public int tile_size;
+	public int num_tiles;
+	public Map<String, Integer> levels[];
+	public String mime;
 	
 	@SuppressWarnings("unchecked")
 	public WholeSlide(Cytomine cytomine, long imageID, int tile_size) throws CytomineException {

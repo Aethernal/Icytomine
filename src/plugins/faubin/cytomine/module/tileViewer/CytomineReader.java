@@ -35,6 +35,13 @@ import java.util.TreeMap;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import plugins.faubin.cytomine.module.tileViewer.utils.CytomineMouseListener;
+import plugins.faubin.cytomine.module.tileViewer.utils.CytomineMouseWheelListener;
+import plugins.faubin.cytomine.module.tileViewer.utils.OverlayCytomine;
+import plugins.faubin.cytomine.module.tileViewer.utils.ThreadUrl;
+import plugins.faubin.cytomine.module.tileViewer.utils.Tile;
+import plugins.faubin.cytomine.module.tileViewer.utils.ViewerTool;
+import plugins.faubin.cytomine.module.tileViewer.utils.WholeSlide;
 import plugins.faubin.cytomine.utils.CytomineImportedROI;
 import plugins.faubin.cytomine.utils.IcytomineUtil;
 import plugins.kernel.roi.roi2d.ROI2DPolygon;
@@ -71,16 +78,16 @@ public class CytomineReader extends JPanel {
 	boolean reload;
 	
 	// mouse mouvement
-	protected boolean mouseGrabbed;
-	protected double oldMouseX;
-	protected double oldMouseY;
+	public boolean mouseGrabbed;
+	public double oldMouseX;
+	public double oldMouseY;
 	Point2D.Double view_position;
 
 	// sequence
 	ImageInstance instance;
 	Sequence sequence;
 	Overlay overlay;
-	boolean locked;
+	public boolean locked;
 	boolean listenerActive;
 
 	@SuppressWarnings({ "unchecked" })
@@ -495,7 +502,7 @@ public class CytomineReader extends JPanel {
 		}
 	}
 
-	boolean inc_zoom() {
+	public boolean inc_zoom() {
 		int previous_zoom = zoom;
 		zoom = Math.max(0, zoom - 1);
 		if (previous_zoom != zoom) {
@@ -508,7 +515,7 @@ public class CytomineReader extends JPanel {
 		return previous_zoom != zoom;
 	}
 
-	boolean dec_zoom() {
+	public boolean dec_zoom() {
 		int previous_zoom = zoom;
 		zoom = Math.min(image.depth - 1, zoom + 1);
 		if (previous_zoom != zoom) {
@@ -527,11 +534,11 @@ public class CytomineReader extends JPanel {
 		
 	}
 
-	MouseWheelListener wheelListener = new CytomineMouseWheelListener(this);
+	public MouseWheelListener wheelListener = new CytomineMouseWheelListener(this);
 
-	MouseListener mouseListener = new CytomineMouseListener(this);
+	public MouseListener mouseListener = new CytomineMouseListener(this);
 
-	void mouseMove() {
+	public void mouseMove() {
 		Thread mouseThread = new Thread() {
 			public void run() {
 				while (mouseGrabbed) {

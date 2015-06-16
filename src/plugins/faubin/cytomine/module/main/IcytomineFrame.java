@@ -1,6 +1,7 @@
 package plugins.faubin.cytomine.module.main;
 
 import icy.gui.frame.IcyFrame;
+import icy.system.thread.ThreadUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -49,6 +50,7 @@ import be.cytomine.client.Cytomine;
 import plugins.faubin.cytomine.module.main.mvc.Controller;
 import plugins.faubin.cytomine.module.main.mvc.custom.CustomTabbedPaneUI;
 import plugins.faubin.cytomine.module.main.mvc.frame.ConfigurationFrame;
+import plugins.faubin.cytomine.module.main.mvc.frame.InputID;
 import plugins.faubin.cytomine.module.main.mvc.panel.Workspace;
 import plugins.faubin.cytomine.module.project.ProjectController;
 import plugins.faubin.cytomine.module.projects.ProjectsController;
@@ -90,7 +92,7 @@ public class IcytomineFrame extends IcyFrame {
 	public IcytomineFrame() {
 		super("Icytomine",true,true,false,false);
 		addToDesktopPane();
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(new Rectangle(100, 100, 450, 300));
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -237,7 +239,12 @@ public class IcytomineFrame extends IcyFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			ProjectController project = new ProjectController(cytomine,93);
+				
+			InputID inputID = new InputID();
+			
+			while(!inputID.isFinished()){}
+			
+			ProjectController project = new ProjectController(cytomine, inputID.getID());
 			project.applyToFrame();
 		}
 		

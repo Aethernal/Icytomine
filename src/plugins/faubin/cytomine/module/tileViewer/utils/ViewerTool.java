@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.module.tileViewer;
+package plugins.faubin.cytomine.module.tileViewer.utils;
 
 import java.awt.geom.Point2D;
 import java.util.List;

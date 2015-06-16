@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.module.tileViewer;
+package plugins.faubin.cytomine.module.tileViewer.utils;
 
 
 
@@ -6,8 +6,9 @@ import java.awt.image.BufferedImage;
 
 public class Tile {
 	
-	String url;
-	int c,r;
+	public String url;
+	public int c;
+	public int r;
 	public BufferedImage image;
 	
 	public Tile(String url, int c, int r) {

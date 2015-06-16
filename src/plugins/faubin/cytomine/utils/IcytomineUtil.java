@@ -31,7 +31,7 @@ import plugins.adufour.thresholder.Thresholder;
 import plugins.faubin.contourdetector.Utils;
 import plugins.faubin.cytomine.module.main.mvc.frame.ProcessingFrame;
 import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
-import plugins.faubin.cytomine.module.tileViewer.Tile;
+import plugins.faubin.cytomine.module.tileViewer.utils.Tile;
 import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.oldgui.mvc.model.utils.ThreadForRunnablePool;
 import plugins.faubin.cytomine.utils.threshold.CustomThreshold;

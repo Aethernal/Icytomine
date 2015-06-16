@@ -1,8 +1,9 @@
-package plugins.faubin.cytomine.module.tileViewer;
+package plugins.faubin.cytomine.module.tileViewer.utils;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
 import be.cytomine.client.CytomineException;
 
 public class CytomineMouseListener implements MouseListener{

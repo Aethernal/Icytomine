@@ -1001,8 +1001,6 @@ public class IcytomineUtil {
 	 */
 	public static CropInformations getCropAtZoom(Cytomine cytomine, Annotation annotation, ImageInstance instance, int zoom, ProcessingFrame processFrame) throws CytomineException{
 		
-			//Initialize cytomine reader, it will be used to download tiles
-			CytomineReader preview = new CytomineReader(cytomine, instance, new Dimension(10,10),false);
 			
 			//get the String representation of the polygon
 			String poly = annotation.getStr("location");
@@ -1011,72 +1009,74 @@ public class IcytomineUtil {
 			List<Point2D> points = WKTtoPoint2D(poly, new Point2D.Double(1, 1), instance.getInt("height"));
 			
 			Rectangle rect = IcytomineUtil.SectionROI2Rectangle(points);
-			
-			// variables
 
-			double ratio = Math.pow(2, -zoom);
-
-			if(processFrame!=null){
-				processFrame.println("Generating scaled annotation");
-				processFrame.setActionProgress(10);
-			}
-			
-			//defining position and size of the scaled annotation bounding box by multiplying the original by the ratio between the zoom and the source image
-			Point position = new Point( (int)(rect.x * ratio),	(int)(rect.y * ratio) );
-			Dimension size = new Dimension( (int) Math.max(1, (rect.width * ratio)), (int) Math.max(1, (rect.height * ratio)) );
-			Rectangle scaled = new Rectangle(position, size);
-			
-			//Subtracting by the position to get the annotations at the correct position for the downloaded tiles; 0,0
-			for (int j = 0; j < points.size(); j++) {
-				Point2D p = points.get(j);
-				p.setLocation((p.getX()*ratio)-position.getX(), (p.getY()*ratio)-position.getY());
-			}
-			
-			//generating tiles object with the col and row and an empty tile waiting to be downloaded
-			List<Tile> tiles = preview.getCrop(position, size, zoom);
-			
-			BufferedImage img = new BufferedImage(size.width,size.height, BufferedImage.TYPE_INT_RGB);
-			Graphics2D graph = img.createGraphics();
-			Sequence sequence = new Sequence();
-
-			if(processFrame!=null){
-				processFrame.println("downloading tiles");
-				processFrame.setActionProgress(20);
-			}
-			
-			BufferedImage image;
-			//downloading tiles
-			for (int j = 0; j < tiles.size(); j++) {
-				Tile tile = tiles.get(j);
-				image = cytomine.downloadPictureAsBufferedImage(tile.getUrl(),"");
-				tile.image = image;
-				
-				if(processFrame!=null){
-					processFrame.setActionProgress(20+(60*(int)((double)j/tiles.size())));
-				}
-			}
-			if(processFrame!=null){
-				processFrame.println("Drawing image");
-				processFrame.setActionProgress(80);
-			}
-			//drawing tiles at the correct position on the bufferedImage
-			for (int j = 0; j < tiles.size(); j++) {
-				Tile tile = tiles.get(j);
-				graph.drawImage(tile.image, (int)(tile.getC()*256-position.getX()), (int)(tile.getR()*256-position.getY()), null);
-			}
-
-			//set the bufferedImage to be the image shown in the sequence
-			sequence.setImage(0, 0, img);
-			
-			//generating object to store all results
-			CropInformations data = new CropInformations(rect, scaled, ratio, points, tiles, sequence);
-				
-			if(processFrame!=null){
-				processFrame.setActionProgress(100);
-			}
-			
-			return data;
+			return getCropAtZoom(cytomine, rect, instance,zoom, processFrame);
 	}
+	
+	public static CropInformations getCropAtZoom(Cytomine cytomine, Rectangle rect, ImageInstance instance, int zoom, ProcessingFrame processFrame) throws CytomineException{
+		
+		//Initialize cytomine reader, it will be used to download tiles
+		CytomineReader preview = new CytomineReader(cytomine, instance, new Dimension(10,10),false);
+		
+		// variables
+
+		double ratio = Math.pow(2, -zoom);
+
+		if(processFrame!=null){
+			processFrame.println("Generating scaled annotation");
+			processFrame.setActionProgress(10);
+		}
+		
+		//defining position and size of the scaled annotation bounding box by multiplying the original by the ratio between the zoom and the source image
+		Point position = new Point( (int)(rect.x * ratio),	(int)(rect.y * ratio) );
+		Dimension size = new Dimension( (int) Math.max(1, (rect.width * ratio)), (int) Math.max(1, (rect.height * ratio)) );
+		Rectangle scaled = new Rectangle(position, size);
+		
+		//generating tiles object with the col and row and an empty tile waiting to be downloaded
+		List<Tile> tiles = preview.getCrop(position, size, zoom);
+		
+		BufferedImage img = new BufferedImage(size.width,size.height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D graph = img.createGraphics();
+		Sequence sequence = new Sequence();
+
+		if(processFrame!=null){
+			processFrame.println("downloading tiles");
+			processFrame.setActionProgress(20);
+		}
+		
+		BufferedImage image;
+		//downloading tiles
+		for (int j = 0; j < tiles.size(); j++) {
+			Tile tile = tiles.get(j);
+			image = cytomine.downloadPictureAsBufferedImage(tile.getUrl(),"");
+			tile.image = image;
+			
+			if(processFrame!=null){
+				processFrame.setActionProgress(20+(60*(int)((double)j/tiles.size())));
+			}
+		}
+		if(processFrame!=null){
+			processFrame.println("Drawing image");
+			processFrame.setActionProgress(80);
+		}
+		//drawing tiles at the correct position on the bufferedImage
+		for (int j = 0; j < tiles.size(); j++) {
+			Tile tile = tiles.get(j);
+			graph.drawImage(tile.image, (int)(tile.getC()*256-position.getX()), (int)(tile.getR()*256-position.getY()), null);
+		}
+
+		//set the bufferedImage to be the image shown in the sequence
+		sequence.setImage(0, 0, img);
+		
+		//generating object to store all results
+		CropInformations data = new CropInformations(instance, rect, scaled, ratio, tiles, sequence);
+			
+		if(processFrame!=null){
+			processFrame.setActionProgress(100);
+		}
+		
+		return data;
+}
 	
 	public static int generateGlomerule(Cytomine cytomine, User jobSection, User jobGlomerule, final ImageInstance instance, int zoom, final ProcessingFrame processFrame){
 		

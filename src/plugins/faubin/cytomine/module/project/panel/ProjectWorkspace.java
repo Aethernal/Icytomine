@@ -76,7 +76,7 @@ public class ProjectWorkspace extends Workspace {
 		add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
-		JSplitPane splitPane = new JSplitPane();
+		final JSplitPane splitPane = new JSplitPane();
 		splitPane.setBackground(Color.DARK_GRAY);
 		panel_1.add(splitPane, BorderLayout.CENTER);
 		

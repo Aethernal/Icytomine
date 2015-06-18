@@ -1,6 +1,7 @@
 package plugins.faubin.cytomine.module.main;
 
 import icy.gui.frame.IcyFrame;
+import icy.main.Icy;
 import icy.system.thread.ThreadUtil;
 
 import java.awt.BorderLayout;
@@ -43,10 +44,13 @@ import javax.swing.JMenuItem;
 import javax.swing.ScrollPaneConstants;
 
 import java.awt.SystemColor;
+import java.util.concurrent.Callable;
 
 import javax.swing.JLayeredPane;
 
 import be.cytomine.client.Cytomine;
+import be.cytomine.client.CytomineException;
+import be.cytomine.client.models.ImageInstance;
 import plugins.faubin.cytomine.module.main.mvc.Controller;
 import plugins.faubin.cytomine.module.main.mvc.custom.CustomTabbedPaneUI;
 import plugins.faubin.cytomine.module.main.mvc.frame.ConfigurationFrame;
@@ -54,30 +58,19 @@ import plugins.faubin.cytomine.module.main.mvc.frame.InputID;
 import plugins.faubin.cytomine.module.main.mvc.panel.Workspace;
 import plugins.faubin.cytomine.module.project.ProjectController;
 import plugins.faubin.cytomine.module.projects.ProjectsController;
+import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
+import plugins.faubin.cytomine.module.tileViewer.toolbar.Toolbar;
+import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
 
 public class IcytomineFrame extends IcyFrame {
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					IcytomineFrame frame = IcytomineFrame.getIcytomineFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 	
 	public static IcytomineFrame frame = new IcytomineFrame();
 	
 	public static IcytomineFrame getIcytomineFrame() {
 		return frame;
 	}
+	
+	protected Configuration configuration = Configuration.getConfiguration();
 	
 	public static Cytomine cytomine;
 	
@@ -119,6 +112,10 @@ public class IcytomineFrame extends IcyFrame {
 		
 		JMenuItem mntmOpenById_1 = new JMenuItem("open by ID");
 		mnImage.add(mntmOpenById_1);
+		mntmOpenById_1.addActionListener(actionOpenImageID);
+		
+		JMenuItem mntmLoadLocalCrop = new JMenuItem("load local cytomine crop");
+		mnImage.add(mntmLoadLocalCrop);
 		
 		JMenuItem mntmConfiguration = new JMenuItem("Configuration");
 		mntmConfiguration.addActionListener(actionConfiguration);
@@ -146,7 +143,7 @@ public class IcytomineFrame extends IcyFrame {
 		workspace_area.setLayout(new BorderLayout(0, 0));
 		contentPane.add(workspace_area, BorderLayout.CENTER);
 		
-		JSplitPane splitPane = new JSplitPane();
+		final JSplitPane splitPane = new JSplitPane();
 		splitPane.setBackground(Color.DARK_GRAY);
 		workspace_area.add(splitPane, BorderLayout.CENTER);
 		
@@ -198,6 +195,7 @@ public class IcytomineFrame extends IcyFrame {
 		
 		tabbedPane.addChangeListener(chList);
 		
+		
 	}
 	
 	private void setMenu(JPanel panel){
@@ -239,13 +237,65 @@ public class IcytomineFrame extends IcyFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+
+
+			final InputID input = new InputID();
+			
+			Runnable runnable = new Runnable(){
+
+				@Override
+				public void run() {
+					long ID = input.getID();
+					ProjectController project = new ProjectController(cytomine, ID);
+					project.applyToFrame();
+				}
 				
-			InputID inputID = new InputID();
+			};
 			
-			while(!inputID.isFinished()){}
+			input.setRunnable(runnable);
 			
-			ProjectController project = new ProjectController(cytomine, inputID.getID());
-			project.applyToFrame();
+			input.setVisible(true);
+			
+		}
+		
+	};
+	
+	ActionListener actionOpenImageID = new ActionListener(){
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+
+			final InputID input = new InputID();
+			
+			Runnable runnable = new Runnable(){
+
+				@Override
+				public void run() {
+					long ID = input.getID();
+					
+					ImageInstance instance;
+					try {
+						instance = cytomine.getImageInstance(ID);
+						CytomineReader reader = new CytomineReader(cytomine, instance, configuration.dynamicViewerDim, true);
+						Toolbar toolbar = new Toolbar(reader);
+						toolbar.setVisible(true);
+						
+						Icy.getMainInterface().addSequence(reader.getSequence());
+						
+					} catch (CytomineException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+				
+			};
+			
+			input.setRunnable(runnable);
+			
+			input.setVisible(true);
+			
 		}
 		
 	};

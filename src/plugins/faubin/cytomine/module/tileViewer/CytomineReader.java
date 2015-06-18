@@ -18,6 +18,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
@@ -35,6 +36,11 @@ import java.util.TreeMap;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+
 import plugins.faubin.cytomine.module.tileViewer.utils.CytomineMouseListener;
 import plugins.faubin.cytomine.module.tileViewer.utils.CytomineMouseWheelListener;
 import plugins.faubin.cytomine.module.tileViewer.utils.OverlayCytomine;
@@ -42,6 +48,8 @@ import plugins.faubin.cytomine.module.tileViewer.utils.ThreadUrl;
 import plugins.faubin.cytomine.module.tileViewer.utils.Tile;
 import plugins.faubin.cytomine.module.tileViewer.utils.ViewerTool;
 import plugins.faubin.cytomine.module.tileViewer.utils.WholeSlide;
+import plugins.faubin.cytomine.utils.CropInformations;
+import plugins.faubin.cytomine.utils.CytomineCrop;
 import plugins.faubin.cytomine.utils.CytomineImportedROI;
 import plugins.faubin.cytomine.utils.IcytomineUtil;
 import plugins.kernel.roi.roi2d.ROI2DPolygon;
@@ -144,11 +152,10 @@ public class CytomineReader extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cleanOutsidTiles();
+ 				cleanTiles();
 				
 				// sequence load
-				BufferedImage image = new BufferedImage(getWidth(),
-						getHeight(), BufferedImage.TYPE_INT_RGB);
+				BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB); 
 				image.createGraphics().setColor(Color.white);
 				image.createGraphics().fillRect(0, 0, getWidth(), getHeight());
 				paintComponent(image.createGraphics());
@@ -163,26 +170,14 @@ public class CytomineReader extends JPanel {
 		
 	}
 	
-	public void cleanOutsidTiles(){
-		int[] colsANDrows = getColsAndRows(window_position, window_size, zoom);
-
-		int cols = colsANDrows[0];
-		int rows = colsANDrows[1];
-		int col0 = colsANDrows[2];
-		int row0 = colsANDrows[3];
+	public void cleanTiles(){
 		
 		//clean out_queue from outside tiles
 		for (int i = 0; i < out_queue[zoom].size(); i++) {
 			Tile tile = out_queue[zoom].get(i);
 			
-			int col = tile.getC();
-			int row = tile.getR();
-			
-			if(col < col0 || col > col0+cols || row < row0 || row > row0+rows){
-				
-				out_queue[zoom].remove(i);
-				i--;
-					
+			if(tile.time>20){
+				out_queue[zoom].remove(tile);
 			}
 			
 		}
@@ -225,9 +220,7 @@ public class CytomineReader extends JPanel {
 					moveROI(dist.getX()/2, dist.getY()/2);
 				}
 				
-				int[] colsANDrows = getColsAndRows(
-						window_position,
-						window_size, zoom);
+				int[] colsANDrows = getColsAndRows(window_position,window_size, zoom);
 
 				int cols = colsANDrows[0];
 				int rows = colsANDrows[1];
@@ -291,7 +284,6 @@ public class CytomineReader extends JPanel {
 		int rows = row1 - row0 + 1;
 
 		return new int[] { cols, rows, col0, row0 };
-
 	}
 
 	public Tile generateTile(int row, int col, int zoom)
@@ -340,7 +332,6 @@ public class CytomineReader extends JPanel {
 		}
 
 		return tiles;
-
 	}
 
 	public List<Tile> getCrop(Point2D position, Dimension size, int zoom) {
@@ -368,9 +359,9 @@ public class CytomineReader extends JPanel {
 
 			}
 		}
+		
 
 		return tiles;
-
 	}
 
 	@Override
@@ -388,21 +379,29 @@ public class CytomineReader extends JPanel {
 			Tile tile = out_queue[zoom].get(i);
 
 			if (tile.image != null) {
-				g2.drawImage(tile.image, tile.c * image.tile_size, tile.r * image.tile_size, image.tile_size,
-						image.tile_size, null);
+				
+				//print only visible tile
+				if(tile.c * image.tile_size + image.tile_size > window_position.getX() && tile.r * image.tile_size + image.tile_size > window_position.getY()){
+					if(tile.c * image.tile_size < window_position.getX() + window_size.getWidth() && tile.r * image.tile_size < window_position.getY() + window_size.getHeight() ){
+						g2.drawImage(tile.image, tile.c * image.tile_size, tile.r * image.tile_size, image.tile_size, image.tile_size, null);
+						tile.resetTime();
+					}
+				}
 			}
+			
 			//show tiles
 //			g2.setColor(Color.RED);
 //			g2.drawRect(tile.c * image.tile_size, tile.r * image.tile_size, image.tile_size,image.tile_size);
-
+			
 		}
 
 		// zoom
 		if (locked) {
-			double percent = ((double)(image.depth - zoom)/image.depth*100);
+			double percent = (instance.getInt("magnification") * Math.pow(2, -zoom));
+			
 			NumberFormat ft = new DecimalFormat("#0.00");
 			
-			String msg = ft.format(percent) + "%";
+			String msg = ft.format(percent) + "X";
 			int msgWidth = font.stringWidth(msg);
 			int msgHeight = font.getHeight();
 			g3.setColor(Color.black);
@@ -638,8 +637,10 @@ public class CytomineReader extends JPanel {
 		
 	}
 	
-	public void saveAnnotations(){
-		IcytomineUtil.deleteAllAnnotation(cytomine, instance, null);
+	public void saveAnnotations(boolean replace){
+		if(replace){
+			IcytomineUtil.deleteAllAnnotation(cytomine, instance, null);
+		}
 		
 		List<Long> terms = new ArrayList<Long>();
 		
@@ -684,6 +685,66 @@ public class CytomineReader extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void cropAnnotation(){
+		
+		ROI2D roi = sequence.getSelectedROI2D();
+		
+		if(roi != null && roi instanceof CytomineImportedROI){
+			
+			CytomineImportedROI r = (CytomineImportedROI) roi;
+			
+			Point2D.Double translation = new Point2D.Double(-(getWidth()/2 + view_position.getX()) , -(getHeight()/2 + view_position.getY()));
+			
+			int width = instance.getInt("width");
+			int height = instance.getInt("height");
+			int levelWidth = image.getLevels()[zoom].get("level_width");
+			int levelHeight = image.getLevels()[zoom].get("level_height");
+			
+			Point2D ratio = new Point2D.Double(width / levelWidth, height / levelHeight);
+			
+			
+			
+			CytomineImportedROI annotation = new CytomineImportedROI(r.getPoints());
+			annotation.translate(translation.getX(), translation.getY());
+			
+			try {
+				String polygon = IcytomineUtil.ROItoWKT(annotation, ratio, height);
+				WKTReader reader = new WKTReader();
+				Geometry geo = reader.read(polygon);
+				Coordinate coords[] = geo.getCoordinates();
+				
+				List<Point2D> pts = new ArrayList<Point2D>();
+				
+				for (int i = 0; i < coords.length; i++) {
+					Coordinate coord = coords[i];
+					pts.add(new Point2D.Double(coord.x,height-coord.y));
+				}
+				
+				Rectangle boundingBox = IcytomineUtil.SectionROI2Rectangle(pts);
+				
+				try {
+					CropInformations data = IcytomineUtil.getCropAtZoom(cytomine, boundingBox, instance, zoom, null);
+					CytomineCrop crop = new CytomineCrop(data);
+					
+					System.out.println(data.getOriginalBoundingBox());
+					
+					crop.addToDesktopPane();
+					
+					
+				} catch (CytomineException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
 	}
 	
 	SequenceListener sequenceListener = new SequenceListener() {

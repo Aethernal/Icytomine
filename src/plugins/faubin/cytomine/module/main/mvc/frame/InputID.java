@@ -22,6 +22,7 @@ public class InputID extends IcyFrame {
 	private JSpinner spinner;
 	
 	private boolean finished = false;
+	private Runnable runnable;
 	
 	/**
 	 * Create the frame.
@@ -57,7 +58,7 @@ public class InputID extends IcyFrame {
 	}
 	
 	public long getID(){
-		return (Long) spinner.getValue();
+		return (long) ((Integer) spinner.getValue()).intValue();
 	}
 	
 	ActionListener validate = new ActionListener(){
@@ -66,8 +67,17 @@ public class InputID extends IcyFrame {
 		public void actionPerformed(ActionEvent e) {
 			finished = true;
 			setVisible(false);
+			
+			if(runnable != null){
+				runnable.run();
+			}
+			
 		}
 		
 	};
+
+	public void setRunnable(Runnable runnable) {
+		this.runnable = runnable;
+	}
 
 }

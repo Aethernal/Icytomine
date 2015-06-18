@@ -368,7 +368,7 @@ public class ImagePanelView extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			preview.saveAnnotations();
+			preview.saveAnnotations(true);
 		}
 
 	};

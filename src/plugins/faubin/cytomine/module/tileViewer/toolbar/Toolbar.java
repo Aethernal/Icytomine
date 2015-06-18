@@ -33,8 +33,10 @@ public class Toolbar extends IcyFrame {
 
 	private JPanel contentPane;
 	
-	private JButton btnSave;
+	private JButton btnUpload;
+	private JButton btnReplace;
 	private JButton btnLoad;
+	private JButton btnCrop;
 	
 	CytomineReader reader;
 
@@ -57,13 +59,23 @@ public class Toolbar extends IcyFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(1, 0, 0, 0));
 		
-		btnSave = new JButton("Save");
-		contentPane.add(btnSave);
-		btnSave.addActionListener(actionSave);
+		btnUpload = new JButton("Upload");
+		contentPane.add(btnUpload);
+		btnUpload.addActionListener(actionUpload);
+		
+		btnReplace = new JButton("Replace");
+		contentPane.add(btnReplace);
+		btnReplace.addActionListener(actionReplace);
+		
+		btnCrop = new JButton("Crop annotation");
+		contentPane.add(btnCrop);
+		btnCrop.addActionListener(actionCrop);
 		
 		btnLoad = new JButton("Load");
 		contentPane.add(btnLoad);
 		btnLoad.addActionListener(actionLoad);
+		
+		
 	}
 	
 	SequenceListener sequenceListener = new SequenceListener() {
@@ -78,11 +90,20 @@ public class Toolbar extends IcyFrame {
 		}
 	};
 	
-	ActionListener actionSave = new ActionListener(){
+	ActionListener actionReplace = new ActionListener(){
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			reader.saveAnnotations();
+			reader.saveAnnotations(true);
+		}
+		
+	};
+	
+	ActionListener actionUpload = new ActionListener(){
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			reader.saveAnnotations(false);
 		}
 		
 	};
@@ -97,6 +118,15 @@ public class Toolbar extends IcyFrame {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+		}
+		
+	};
+	
+	ActionListener actionCrop = new ActionListener(){
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			reader.cropAnnotation();
 		}
 		
 	};

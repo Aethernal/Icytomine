@@ -18,7 +18,7 @@ import be.cytomine.client.models.ImageInstance;
 import be.cytomine.client.models.Ontology;
 import be.cytomine.client.models.Project;
 
-public class CytomineImportedROI extends ROI2DPolygon {
+public class CytomineROI extends ROI2DPolygon {
 	public List<Long> terms;
 	private RoiConfigurationPanel config;
 
@@ -26,19 +26,19 @@ public class CytomineImportedROI extends ROI2DPolygon {
 		return config;
 	}
 
-	public CytomineImportedROI() {
+	public CytomineROI() {
 		super();
 		terms = new ArrayList<Long>();
 		setColor(Color.BLACK);
 	}
 
-	public CytomineImportedROI(List<Point2D> points) {
+	public CytomineROI(List<Point2D> points) {
 		super(points);
 		terms = new ArrayList<Long>();
 		setColor(Color.BLACK);
 	}
 
-	public CytomineImportedROI(List<Point2D> points, ImageInstance image,
+	public CytomineROI(List<Point2D> points, ImageInstance image,
 			Cytomine cytomine) {
 		super(points);
 		terms = new ArrayList<Long>();
@@ -46,7 +46,7 @@ public class CytomineImportedROI extends ROI2DPolygon {
 		setColor(Color.BLACK);
 	}
 
-	public CytomineImportedROI(List<Point2D> points, Annotation annotation) {
+	public CytomineROI(List<Point2D> points, Annotation annotation) {
 		super(points);
 		if (annotation != null) {
 			try {
@@ -83,7 +83,7 @@ public class CytomineImportedROI extends ROI2DPolygon {
 
 	}
 
-	public static CytomineImportedROI build(List<Point2D> points,
+	public static CytomineROI build(List<Point2D> points,
 			Annotation annotation, Cytomine cytomine) {
 
 		String annotationTerms = annotation.getStr("term");
@@ -95,7 +95,7 @@ public class CytomineImportedROI extends ROI2DPolygon {
 		for (int i = 1; i < annotationType.length;) {
 			long ID = Long.parseLong(annotationType[i]);
 
-			CytomineImportedROI roi = new CytomineImportedROI(points,
+			CytomineROI roi = new CytomineROI(points,
 					annotation);
 			String color;
 			try {
@@ -110,7 +110,7 @@ public class CytomineImportedROI extends ROI2DPolygon {
 
 		}
 
-		return new CytomineImportedROI(points, annotation);
+		return new CytomineROI(points, annotation);
 	}
 
 }

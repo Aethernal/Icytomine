@@ -10,7 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 
-import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
+import plugins.faubin.cytomine.utils.Configuration;
 
 @SuppressWarnings("serial")
 public class ImagesDownloadConfigurationPanel extends ConfigurationPanel {

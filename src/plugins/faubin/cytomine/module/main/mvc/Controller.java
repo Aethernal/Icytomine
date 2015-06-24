@@ -11,13 +11,29 @@ public abstract class Controller {
 		this.name = name;
 	};
 	
-	public abstract View getView(); // return module view
-	public abstract Model getModel(); // return module model
+	/**
+	 * this abstract function is used to get the view of the module
+	 * @return View
+	 */
+	public abstract View getView(); 
 	
+	/**
+	 * this abstract function is used to get the model of the module
+	 * @return Model
+	 */
+	public abstract Model getModel(); 
+	
+	/**
+	 * this function is used to add the module to the main interface
+	 */
 	public void applyToFrame(){
 		IcytomineFrame.getIcytomineFrame().addModule(this);
 	}
 	
+	/**
+	 * the name if  the module
+	 * @return String
+	 */
 	public String getName() {
 		return name;
 	}

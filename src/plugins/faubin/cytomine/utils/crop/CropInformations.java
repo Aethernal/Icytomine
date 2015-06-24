@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.utils;
+package plugins.faubin.cytomine.utils.crop;
 
 import icy.sequence.Sequence;
 

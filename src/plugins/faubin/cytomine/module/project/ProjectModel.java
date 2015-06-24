@@ -10,9 +10,11 @@ import javax.swing.ImageIcon;
 import plugins.faubin.cytomine.module.main.mvc.Model;
 import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
 import plugins.faubin.cytomine.module.tileViewer.toolbar.Toolbar;
-import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.utils.Config;
+import plugins.faubin.cytomine.utils.Configuration;
 import plugins.faubin.cytomine.utils.IcytomineUtil;
+import plugins.faubin.cytomine.utils.software.SoftwareGlomeruleFinder;
+import plugins.faubin.cytomine.utils.software.SoftwareSectionFinder;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.CytomineException;
 import be.cytomine.client.collections.ImageInstanceCollection;
@@ -24,7 +26,6 @@ public class ProjectModel extends Model {
 
 	public ProjectModel(Cytomine cytomine) {
 		super(cytomine);
-		// TODO Auto-generated constructor stub
 	}
 
 	public ImageInstanceCollection getImages(long ID){
@@ -75,6 +76,11 @@ public class ProjectModel extends Model {
 		return collection;
 	}
 
+	/**
+	 * this function is used to get the number of image in the project
+	 * @param ID
+	 * @return int
+	 */
 	public int getNbImages(long ID) {
 		try {
 			return cytomine.getImageInstances(ID).size();
@@ -83,6 +89,11 @@ public class ProjectModel extends Model {
 		}
 	}
 
+	/**
+	 * this function is used to start the dynamic viewer module
+	 * @param ID
+	 * @return
+	 */
 	public CytomineReader openReader(long ID) {
 		try {
 			ImageInstance instance = cytomine.getImageInstance(ID);
@@ -98,6 +109,12 @@ public class ProjectModel extends Model {
 		return null;
 	}
 
+	/**
+	 * this function is used to get the thumbnail used for the previsualisation in the module
+	 * @param ID
+	 * @param size
+	 * @return ImageIcon
+	 */
 	public ImageIcon getThumbnail(long ID, int size){
 		ImageIcon icon = new ImageIcon();
 
@@ -119,6 +136,10 @@ public class ProjectModel extends Model {
 		return icon;
 	}
 
+	/**
+	 * this function is used to start the section detection task
+	 * @param ID
+	 */
 	public void sectionDetection(long ID) {
 		processFrame.newAction();
 		
@@ -128,7 +149,9 @@ public class ProjectModel extends Model {
 		if(instance!=null){
 			Sequence sequence = IcytomineUtil.loadImage(instance, cytomine, configuration.thumbnailMaxSize, processFrame);
 
-			long idSoftware = Config.IDMap.get("SectionGenerationSoftware");
+			IcytomineUtil.createSectionSoftware(cytomine,projectID);
+			
+			long idSoftware = configuration.softwareID.get(cytomine.getHost()).get(new SoftwareSectionFinder().getName()).ID;
 			User job;
 			try {
 				job = IcytomineUtil.generateNewUserJob(cytomine, idSoftware, projectID);
@@ -143,6 +166,11 @@ public class ProjectModel extends Model {
 		}
 	}
 
+	/**
+	 * this function is used to get the image instance data.
+	 * @param ID
+	 * @return ImageInstance
+	 */
 	private ImageInstance getImage(long ID) {
 		try {
 			return cytomine.getImageInstance(ID);
@@ -151,6 +179,10 @@ public class ProjectModel extends Model {
 		}
 	}
 
+	/**
+	 * this function is used to start the glomerule detection task
+	 * @param ID
+	 */
 	public void glomeruleDetection(long ID) {
 		
 		processFrame.newAction();
@@ -158,7 +190,9 @@ public class ProjectModel extends Model {
 		ImageInstance instance = getImage(ID);
 		long projectID = instance.getLong("project");
 		
-		long idGlomerule = Config.IDMap.get("GlomeruleGenerationSoftware");
+		IcytomineUtil.createGlomeruleSoftware(cytomine,projectID);
+		
+		long idGlomerule = configuration.softwareID.get(cytomine.getHost()).get(new SoftwareGlomeruleFinder().getName()).ID;
 		
 		try {
 			User user = cytomine.getCurrentUser();
@@ -172,6 +206,80 @@ public class ProjectModel extends Model {
 			e.printStackTrace();
 		}
 		
+	}
+
+	/**
+	 * this function is used to start the section detection then the glomerule detection using the created section annotations.
+	 * @param ID
+	 */
+	public void sectglomDetection(long ID) {
+		processFrame.newAction();
+		
+		ImageInstance instance = getImage(ID);
+		long projectID = instance.getLong("project");
+		
+		
+		long idSection = configuration.softwareID.get(cytomine.getHost()).get(new SoftwareSectionFinder().getName()).ID;
+		User jobSection;
+		try {
+			jobSection = IcytomineUtil.generateNewUserJob(cytomine, idSection, projectID);
+	
+		
+			cytomine.changeStatus(jobSection.getLong("job"), Cytomine.JobStatus.RUNNING, 0);
+			
+	
+			Sequence sequence = IcytomineUtil.loadImage(instance, cytomine, configuration.thumbnailMaxSize, processFrame);
+	
+			
+			IcytomineUtil.generateSectionsROI(cytomine, jobSection, projectID, instance, sequence, processFrame);
+			
+			
+			cytomine.changeStatus(jobSection.getLong("job"), Cytomine.JobStatus.SUCCESS, 100);
+			
+			IcytomineUtil.sleep(1000);
+			
+			long idGlomerule = configuration.softwareID.get(cytomine.getHost()).get(new SoftwareGlomeruleFinder().getName()).ID;
+			User jobGlomerule = IcytomineUtil.generateNewUserJob(cytomine, idGlomerule, projectID);
+			
+			cytomine.changeStatus(jobGlomerule.getLong("job"), Cytomine.JobStatus.RUNNING, 0);
+			
+			IcytomineUtil.generateGlomerule(cytomine, jobSection, jobGlomerule, instance, 2, processFrame);
+			
+			cytomine.changeStatus(jobGlomerule.getLong("job"), Cytomine.JobStatus.SUCCESS, 100);
+			
+		} catch (CytomineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.gc();
+		
+	}
+
+	/**
+	 * this function is used to upload annotations that were on a thumbnail.
+	 * @param ID
+	 */
+	public void uploadThumbnail(long ID) {
+		processFrame.newAction();
+		
+		ImageInstance instance = getImage(ID);
+		long projectID = instance.getLong("project");
+		Sequence sequence = Icy.getMainInterface().getActiveSequence();
+		
+		if(sequence!=null){
+			IcytomineUtil.uploadROI(cytomine, instance, sequence, processFrame);
+		}
+		
+		
+	}
+
+	/**
+	 * this function is used to generate crop from sections annotations and save then in a folder as cytomine crop that could be loaded and uploaded later
+	 * @param ID
+	 */
+	public void cropSection(long ID) {
+		IcytomineUtil.cropSectionOfImage(cytomine, ID);
 	}
 
 }

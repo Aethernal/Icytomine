@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.module.tileViewer.toolbar;
+package plugins.faubin.cytomine.utils.crop.toolbar;
 
 import icy.gui.frame.IcyFrame;
 import icy.sequence.Sequence;
@@ -18,8 +18,10 @@ import java.awt.GridLayout;
 
 import javax.swing.JButton;
 
+import be.cytomine.client.Cytomine;
 import be.cytomine.client.CytomineException;
 import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
+import plugins.faubin.cytomine.utils.crop.CytomineCrop;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -29,10 +31,6 @@ import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 
-/**
- * @author faubin
- * this is a toolbar for the dynamyc viewer, it is used to store button that are related to the dynamyc viewer actions like saving annotation or loading them
- */
 public class Toolbar extends IcyFrame {
 
 	private JPanel contentPane;
@@ -40,20 +38,20 @@ public class Toolbar extends IcyFrame {
 	private JButton btnUpload;
 	private JButton btnReplace;
 	private JButton btnLoad;
-	private JButton btnCrop;
+	private JButton btnLocal;
 	
-	CytomineReader reader;
-
+	CytomineCrop crop;
+	Cytomine cytomine;
 
 	/**
 	 * Create the frame.
 	 */
-	public Toolbar(CytomineReader reader) {
-		super("Dynamic Viewer Toolbar", true, false);
-		addToDesktopPane();
+	public Toolbar(CytomineCrop crop, Cytomine cytomine) {
+		super("Cytomine Crop Toolbar", true, false);
 		
-		this.reader = reader;
-		reader.getSequence().addListener(sequenceListener);
+		this.crop = crop;
+		crop.getSequence().addListener(sequenceListener);
+		this.cytomine = cytomine;
 		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(new Rectangle(100, 100, 450, 100));
@@ -71,15 +69,15 @@ public class Toolbar extends IcyFrame {
 		contentPane.add(btnReplace);
 		btnReplace.addActionListener(actionReplace);
 		
-		btnCrop = new JButton("Crop annotation");
-		contentPane.add(btnCrop);
-		btnCrop.addActionListener(actionCrop);
+		btnLocal = new JButton("Save to local");
+		contentPane.add(btnLocal);
+		btnLocal.addActionListener(actionSaveLocal);
 		
 		btnLoad = new JButton("Load");
 		contentPane.add(btnLoad);
-		btnLoad.addActionListener(actionLoad);
 		
-		
+		addToDesktopPane();
+		setVisible(true);
 	}
 	
 	SequenceListener sequenceListener = new SequenceListener() {
@@ -94,45 +92,36 @@ public class Toolbar extends IcyFrame {
 		}
 	};
 	
-	ActionListener actionReplace = new ActionListener(){
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			reader.saveAnnotations(true);
-		}
-		
-	};
+	/* -- ActionListener -- */
 	
 	ActionListener actionUpload = new ActionListener(){
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			reader.saveAnnotations(false);
+			crop.upload(cytomine);
 		}
 		
+	};
+	
+	ActionListener actionReplace = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent e){
+			crop.replace(cytomine);
+		}
+	};
+	
+	ActionListener actionSaveLocal = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent e){
+			crop.localSave();
+		}
 	};
 	
 	ActionListener actionLoad = new ActionListener(){
-
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				reader.loadAnnotations();
-			} catch (CytomineException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+		public void actionPerformed(ActionEvent e){
+			crop.load(cytomine);
 		}
-		
-	};
-	
-	ActionListener actionCrop = new ActionListener(){
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			reader.cropAnnotation();
-		}
-		
 	};
-	
 }

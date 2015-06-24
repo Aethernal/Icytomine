@@ -1,8 +1,12 @@
 package plugins.faubin.cytomine.module.main;
 
+import icy.file.Loader;
+import icy.file.SequenceFileImporter;
 import icy.gui.frame.IcyFrame;
 import icy.main.Icy;
+import icy.sequence.Sequence;
 import icy.system.thread.ThreadUtil;
+import icy.util.XMLUtil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,6 +16,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Rectangle;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,13 +49,20 @@ import javax.swing.JMenuItem;
 import javax.swing.ScrollPaneConstants;
 
 import java.awt.SystemColor;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.swing.JLayeredPane;
 
+import org.w3c.dom.Node;
+
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.CytomineException;
+import be.cytomine.client.collections.ImageInstanceCollection;
+import be.cytomine.client.collections.ProjectCollection;
+import be.cytomine.client.collections.SoftwareCollection;
 import be.cytomine.client.models.ImageInstance;
+import be.cytomine.client.models.Software;
 import plugins.faubin.cytomine.module.main.mvc.Controller;
 import plugins.faubin.cytomine.module.main.mvc.custom.CustomTabbedPaneUI;
 import plugins.faubin.cytomine.module.main.mvc.frame.ConfigurationFrame;
@@ -60,8 +72,17 @@ import plugins.faubin.cytomine.module.project.ProjectController;
 import plugins.faubin.cytomine.module.projects.ProjectsController;
 import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
 import plugins.faubin.cytomine.module.tileViewer.toolbar.Toolbar;
-import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
+import plugins.faubin.cytomine.utils.Config;
+import plugins.faubin.cytomine.utils.Configuration;
+import plugins.faubin.cytomine.utils.IcytomineUtil;
+import plugins.faubin.cytomine.utils.crop.CytomineCrop;
+import plugins.faubin.cytomine.utils.software.SoftwareGlomeruleFinder;
+import plugins.faubin.cytomine.utils.software.SoftwareSectionFinder;
 
+/**
+ * @author faubin
+ *
+ */
 public class IcytomineFrame extends IcyFrame {
 	
 	public static IcytomineFrame frame = new IcytomineFrame();
@@ -78,14 +99,14 @@ public class IcytomineFrame extends IcyFrame {
 	private JTabbedPane tabbedPane;
 	private JScrollPane menu;
 	
+
 	/**
-	 * Create the frame.
-	 * @wbp.parser.entryPoint
+	 * this is the main frame of the plugin. It contain his own menu, and an area for the modules
 	 */
 	public IcytomineFrame() {
 		super("Icytomine",true,true,false,false);
 		addToDesktopPane();
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(new Rectangle(100, 100, 450, 300));
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -115,6 +136,8 @@ public class IcytomineFrame extends IcyFrame {
 		mntmOpenById_1.addActionListener(actionOpenImageID);
 		
 		JMenuItem mntmLoadLocalCrop = new JMenuItem("load local cytomine crop");
+		mntmLoadLocalCrop.addActionListener(actionOpenCrop);
+		
 		mnImage.add(mntmLoadLocalCrop);
 		
 		JMenuItem mntmConfiguration = new JMenuItem("Configuration");
@@ -198,24 +221,45 @@ public class IcytomineFrame extends IcyFrame {
 		
 	}
 	
+	/**
+	 * this function allow to define witch menu will be used
+	 * @param panel
+	 */
 	private void setMenu(JPanel panel){
 		menu.setViewportView(panel);
 	}
 	
+	/**
+	 * this function allow to select a tab between all the tabs available, tab correspond to a module
+	 * @param c
+	 */
 	private void setWorkSpace(Container c){
 		tabbedPane.setSelectedComponent(c);
 	}
 	
+	
+	/**
+	 * this function allow to show a module by showing his workspace and menu
+	 * @param controller
+	 */
 	private void showModule(Controller controller){
 		setWorkSpace(controller.getView().getWorkSpace());
 		setMenu(controller.getView().getMenu());
 	}
 	
+	/**
+	 * this function allow to add a new module to the interface, it add a new tab and then show the module
+	 * @param controller
+	 */
 	public void addModule(Controller controller){
 		tabbedPane.addTab(controller.getName(), controller.getView().getWorkSpace());
 		showModule(controller);
 	}
 	
+	/**
+	 * this function is used to remove a module from the interface
+	 * @param workspace
+	 */
 	public void removeModule(Workspace workspace){
 		setMenu(null);
 		tabbedPane.remove(workspace);
@@ -223,6 +267,9 @@ public class IcytomineFrame extends IcyFrame {
 	
 	//actions listeners
 	
+	/**
+	 * start the projects module
+	 */
 	ActionListener actionListProjects = new ActionListener(){
 
 		@Override
@@ -233,6 +280,9 @@ public class IcytomineFrame extends IcyFrame {
 		
 	};
 	
+	/**
+	 * start the images module showing  the content of a project.
+	 */
 	ActionListener actionOpenProjectID = new ActionListener(){
 
 		@Override
@@ -260,6 +310,9 @@ public class IcytomineFrame extends IcyFrame {
 		
 	};
 	
+	/**
+	 * start the dynamic viewer module with the specified image
+	 */
 	ActionListener actionOpenImageID = new ActionListener(){
 
 		@Override
@@ -300,17 +353,79 @@ public class IcytomineFrame extends IcyFrame {
 		
 	};
 	
-	ActionListener actionConfiguration = new ActionListener(){
+	/**
+	 * allow to load a saved cytomine crop using his xml file that should contain the <cytomine></cytomine> node
+	 */
+	ActionListener actionOpenCrop = new ActionListener(){
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			ConfigurationFrame.getConfigFrame().setVisible(true);
+				
+			JFileChooser fch = new JFileChooser();
+			int r = fch.showOpenDialog(null);
+			
+			if(r == JFileChooser.APPROVE_OPTION){
+				
+				Sequence seq = Loader.loadSequence(fch.getSelectedFile().getAbsolutePath(), 0, false);
+				Icy.getMainInterface().addSequence(seq);
+				seq.loadXMLData();
+				System.out.println(seq.getFilename());
+				
+				Node cytomineNode = seq.getNode("cytomine");
+				Node original = XMLUtil.getElement(cytomineNode, "originalBounding");
+				Node scaled = XMLUtil.getElement(cytomineNode, "scaledBounding");
+				
+				System.out.println(cytomineNode);
+				System.out.println(original);
+				
+				
+				
+				double ratio = XMLUtil.getElementDoubleValue(cytomineNode, "ratio", 1);
+				long instanceID = XMLUtil.getElementLongValue(cytomineNode, "instance", 0);
+				
+				int x,y,width,height;
+				
+				x = XMLUtil.getElementIntValue(original, "x", 0);
+				y = XMLUtil.getElementIntValue(original, "y", 0);
+				width = XMLUtil.getElementIntValue(original, "width", 0);
+				height = XMLUtil.getElementIntValue(original, "height", 0);
+				
+				Rectangle originalRect = new Rectangle(x,y,width,height);
+				
+				x = XMLUtil.getElementIntValue(scaled, "x", 0);
+				y = XMLUtil.getElementIntValue(scaled, "y", 0);
+				width = XMLUtil.getElementIntValue(scaled, "width", 0);
+				height = XMLUtil.getElementIntValue(scaled, "height", 0);
+				
+				Rectangle scaledRect = new Rectangle(x,y,width,height);
+				
+				CytomineCrop crop = new CytomineCrop(seq, instanceID, originalRect, scaledRect, ratio);
+				plugins.faubin.cytomine.utils.crop.toolbar.Toolbar toolbar = new plugins.faubin.cytomine.utils.crop.toolbar.Toolbar(crop, cytomine);
+				
+			}
+			
+				
+			
+
 			
 		}
 		
 	};
 	
-	//tabbed pane listener
+	/**
+	 * show the configuration frame
+	 */
+	ActionListener actionConfiguration = new ActionListener(){
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ConfigurationFrame.getConfigFrame().setVisible(true);
+		}
+	};
+
+	/**
+	 * tab listener to swap workspace and menu when a tab is selected or removed
+	 */
 	ChangeListener chList = new ChangeListener(){
 
 		@Override

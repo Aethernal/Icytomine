@@ -34,14 +34,12 @@ public class CMDProjectDeleteAll extends CMD{
 				try {
 					long projectID = Long.parseLong(args[0]);
 					try {
-						ImageInstanceCollection collection = console.cytomine
-								.getImageInstances(projectID);
+						ImageInstanceCollection collection = console.cytomine.getImageInstances(projectID);
 						int count = 0;
 						for (int i = 0; i < collection.size(); i++) {
 							ImageInstance instance = collection.get(i);
 
-							nbAnnotations += IcytomineUtil.deleteAllAnnotation(
-									console.cytomine, instance, null);
+							nbAnnotations += IcytomineUtil.deleteAllAnnotation(console.cytomine, instance, null);
 							count++;
 							System.out.println(count+ " of " + collection.size());
 						}

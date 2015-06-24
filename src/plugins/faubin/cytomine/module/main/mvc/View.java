@@ -6,7 +6,13 @@ import plugins.faubin.cytomine.module.main.mvc.panel.Workspace;
 
 public abstract class View{
 
+	/*
+	 * this function is used to get the workspace part of the view
+	 */
 	public abstract Workspace getWorkSpace();
+	/*
+	 * this function is used to get the menu part of the view
+	 */
 	public abstract Menu getMenu();
 	
 }

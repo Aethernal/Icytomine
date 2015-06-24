@@ -29,7 +29,7 @@ import plugins.faubin.cytomine.module.main.mvc.View;
 import plugins.faubin.cytomine.module.main.mvc.panel.Workspace;
 import plugins.faubin.cytomine.module.project.ProjectView;
 import plugins.faubin.cytomine.module.tileViewer.CytomineReader;
-import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
+import plugins.faubin.cytomine.utils.Configuration;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
 

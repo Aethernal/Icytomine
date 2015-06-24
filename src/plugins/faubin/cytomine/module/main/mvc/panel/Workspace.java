@@ -7,6 +7,10 @@ import javax.swing.JScrollPane;
 
 import plugins.faubin.cytomine.module.main.mvc.View;
 
+/**
+ * @author faubin
+ * it is the module workspace where the main information of the module should be displayed
+ */
 public abstract class Workspace extends JPanel {
 
 	protected JScrollPane scroll;

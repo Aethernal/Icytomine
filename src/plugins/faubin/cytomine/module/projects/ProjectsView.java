@@ -60,4 +60,8 @@ public class ProjectsView extends View {
 		MessageDialog.showDialog(string);
 	}
 
+	public void sectglomDetection() {
+		controller.sectglomDetection();
+	}
+
 }

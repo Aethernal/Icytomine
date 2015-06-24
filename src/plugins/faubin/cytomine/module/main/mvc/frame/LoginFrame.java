@@ -14,7 +14,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
+import plugins.faubin.cytomine.utils.Configuration;
 
 import java.awt.Color;
 
@@ -26,6 +26,10 @@ public class LoginFrame extends IcyFrame {
 	private JTextField hostField;
 	private JButton btnNewButton;
 
+	
+	/**
+	 * this frame is used to ask the user to enter his login informations
+	 */
 	public LoginFrame() {
 		super("Icytomine: login", true, true, false, false);
 
@@ -86,6 +90,10 @@ public class LoginFrame extends IcyFrame {
 		
 	}
 
+	/**
+	 * this function return the writed login information as a tab
+	 * @return String[]
+	 */
 	public String[] getInputs() {
 		String[] inputs = new String[3];
 		inputs[0] = publicKeyField.getText();

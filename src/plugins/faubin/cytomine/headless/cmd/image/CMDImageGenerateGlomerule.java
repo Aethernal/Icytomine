@@ -5,6 +5,8 @@ import plugins.faubin.cytomine.headless.cmd.CMD;
 import plugins.faubin.cytomine.headless.cmd.CMDAction;
 import plugins.faubin.cytomine.utils.Config;
 import plugins.faubin.cytomine.utils.IcytomineUtil;
+import plugins.faubin.cytomine.utils.software.SoftwareGlomeruleFinder;
+import plugins.faubin.cytomine.utils.software.SoftwareSectionFinder;
 import be.cytomine.client.collections.ImageInstanceCollection;
 import be.cytomine.client.models.ImageInstance;
 import be.cytomine.client.models.User;
@@ -21,7 +23,7 @@ public class CMDImageGenerateGlomerule extends CMD {
 		super.initialize(command, description, arguments);
 
 	}
-
+	
 	@Override
 	public Object execute(final String[] args) {
 
@@ -42,9 +44,12 @@ public class CMDImageGenerateGlomerule extends CMD {
 							try{
 								// variables
 								System.out.println("generating ROIs ...");
-	
-									long idSection = Config.IDMap.get("SectionGenerationSoftware");
-									long idGlomerule = Config.IDMap.get("GlomeruleGenerationSoftware");
+								
+								IcytomineUtil.createSectionSoftware(console.cytomine,projectID);
+								IcytomineUtil.createGlomeruleSoftware(console.cytomine,projectID);
+								
+									long idSection = configuration.softwareID.get(console.cytomine.getHost()).get(new SoftwareSectionFinder().getName()).ID;
+									long idGlomerule = configuration.softwareID.get(console.cytomine.getHost()).get(new SoftwareGlomeruleFinder().getName()).ID;
 									User jobSection = IcytomineUtil.generateNewUserJob(console.cytomine, idSection, projectID);
 									User jobGlomerule = IcytomineUtil.generateNewUserJob(console.cytomine, idGlomerule, projectID);
 									

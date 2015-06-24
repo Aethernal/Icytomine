@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.oldgui.mvc.model.utils;
+package plugins.faubin.cytomine.utils;
 
 import java.util.Stack;
 

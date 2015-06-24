@@ -80,4 +80,16 @@ public class ProjectView extends View {
 		controller.glomeruleDetection();
 	}
 
+	public void sectglomDetection() {
+		controller.sectglomDetection();
+	}
+
+	public void uploadThumbnail() {
+		controller.uploadThumbnail();
+	}
+
+	public void cropSection() {
+		controller.cropSection();
+	}
+
 }

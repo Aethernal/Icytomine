@@ -2,7 +2,7 @@ package plugins.faubin.cytomine.module.main.mvc;
 
 import icy.system.thread.ThreadUtil;
 import plugins.faubin.cytomine.module.main.mvc.frame.ProcessingFrame;
-import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
+import plugins.faubin.cytomine.utils.Configuration;
 import be.cytomine.client.Cytomine;
 
 public abstract class Model {
@@ -19,8 +19,10 @@ public abstract class Model {
 
 			@Override
 			public void run() {
+				/*
+				 * the processFrame is used to notify the user of the current status of the actions, the progression
+				 */
 				processFrame = new ProcessingFrame();
-
 			}
 			
 		});

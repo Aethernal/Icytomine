@@ -130,6 +130,8 @@ public class Console {
 		addCMD(cmdHelp);
 		
 		//plug-in
+		
+		//creating instance of command
 		CMDProjects cmdProjects = new CMDProjects(this);
 		CMDContainer cmdProject = new CMDContainer(this, "project"); 
 			CMDProjectDeleteAll cmdProjectDeleteAll = new CMDProjectDeleteAll(this);
@@ -143,25 +145,29 @@ public class Console {
 			
 			CMDProjectGenerateSectionAndGlomerule cmdProjectGenerateSectionAndGlomerule = new CMDProjectGenerateSectionAndGlomerule(this);
 			
-			cmdProject.add(cmdProjectDeleteAll);
-			cmdProject.add(cmdProjectDeleteTerm);
-			cmdProject.add(cmdProjectList);
-			cmdProject.add(cmdProjectGenerateSections);
-			cmdProject.add(cmdProjectGenerateSectionsFromOffset);
-			cmdProject.add(cmdProjectListTerms);
-			cmdProject.add(cmdProjectGenerateGlomerule);
-			cmdProject.add(cmdProjectGenerateGlomeruleWithOffset);
-			cmdProject.add(cmdProjectGenerateSectionAndGlomerule);
-			
 		CMDContainer cmdImage = new CMDContainer(this, "image"); 	
 			CMDImageGenerateSection cmdImageGenerateSections = new CMDImageGenerateSection(this);
 			CMDImageGenerateGlomerule cmdImageGenerateGlomerules = new CMDImageGenerateGlomerule(this);
 			CMDImageGenerateSectionAndGlomerule cmdImageGenerateSectionsAndGlomerules = new CMDImageGenerateSectionAndGlomerule(this);
+		
+		//adding command to corresponding container	
 			
-			cmdImage.add(cmdImageGenerateSections);
-			cmdImage.add(cmdImageGenerateGlomerules);
-			cmdImage.add(cmdImageGenerateSectionsAndGlomerules);
-			
+		cmdProject.add(cmdProjectDeleteAll);
+		cmdProject.add(cmdProjectDeleteTerm);
+		cmdProject.add(cmdProjectList);
+		cmdProject.add(cmdProjectGenerateSections);
+		cmdProject.add(cmdProjectGenerateSectionsFromOffset);
+		cmdProject.add(cmdProjectListTerms);
+		cmdProject.add(cmdProjectGenerateGlomerule);
+		cmdProject.add(cmdProjectGenerateGlomeruleWithOffset);
+		cmdProject.add(cmdProjectGenerateSectionAndGlomerule);
+		
+		cmdImage.add(cmdImageGenerateSections);
+		cmdImage.add(cmdImageGenerateGlomerules);
+		cmdImage.add(cmdImageGenerateSectionsAndGlomerules);
+		
+		//adding container to console commands
+		
 		addCMD(cmdProjects);
 		addCMD(cmdProject);
 		addCMD(cmdImage);

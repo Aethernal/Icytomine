@@ -13,9 +13,14 @@ import java.io.IOException;
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.module.main.IcytomineFrame;
 import plugins.faubin.cytomine.module.main.mvc.frame.LoginFrame;
-import plugins.faubin.cytomine.oldgui.mvc.model.utils.Configuration;
 import plugins.faubin.cytomine.utils.Config;
+import plugins.faubin.cytomine.utils.Configuration;
+import plugins.faubin.cytomine.utils.IcytomineUtil;
 import be.cytomine.client.Cytomine;
+import be.cytomine.client.CytomineException;
+import be.cytomine.client.collections.ImageInstanceCollection;
+import be.cytomine.client.collections.ProjectCollection;
+import be.cytomine.client.models.ImageInstance;
 
 public class Icytomine extends PluginActionable {
 	public static Cytomine cytomine;
@@ -119,7 +124,7 @@ public class Icytomine extends PluginActionable {
 		
 		// show the plugin panel
 		loginFrame.setVisible(false);
-
+		
 		IcytomineFrame.cytomine = cytomine;
 		IcytomineFrame frame = IcytomineFrame.getIcytomineFrame();
 		frame.setVisible(true);

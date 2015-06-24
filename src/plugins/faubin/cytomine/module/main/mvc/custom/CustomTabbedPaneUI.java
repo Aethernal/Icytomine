@@ -9,6 +9,10 @@ import java.awt.event.MouseEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.plaf.metal.MetalTabbedPaneUI;
 
+/**
+ * @author faubin
+ * this class is a custom ui for the tabs of the tabbed pane, it has a black cross used to remove the clicked tab to close.
+ */
 public class CustomTabbedPaneUI extends MetalTabbedPaneUI {
 	Rectangle xRect;
 
@@ -25,12 +29,10 @@ public class CustomTabbedPaneUI extends MetalTabbedPaneUI {
 		xRect = new Rectangle(textRect.x + textRect.width - size / 2 - 2, textRect.y
 				+ textRect.height / 2 - size / 2, size, size);
 
-
-		// border
-//		g.drawRect(textRect.x + textRect.width - size / 2 - 2, textRect.y
-//				+ textRect.height / 2 - size / 2, size, size);
-
-		// red cross
+		/*
+		 * black cross allowing to close the tab
+		 */
+		
 		g.setColor(Color.BLACK);
 		g.drawLine(textRect.x + textRect.width - size / 2 - 2 + 3, textRect.y
 				+ textRect.height / 2 - size / 2 + 3, textRect.x
@@ -43,6 +45,11 @@ public class CustomTabbedPaneUI extends MetalTabbedPaneUI {
 
 	}
 
+	
+	/**
+	 * @author faubin
+	 * this class allow to detect witch tab was pressed and delete it from the tabbed pane
+	 */
 	public class MyMouseHandler extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			if (xRect.contains(e.getPoint())) {
@@ -52,4 +59,5 @@ public class CustomTabbedPaneUI extends MetalTabbedPaneUI {
 			}
 		}
 	}
+	
 }

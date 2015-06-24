@@ -23,6 +23,11 @@ import javax.swing.border.EmptyBorder;
 import plugins.faubin.cytomine.utils.AnnotationTerm;
 import be.cytomine.client.collections.TermCollection;
 
+/**
+ * @author faubin
+ * this frame is used to show all the available terms and select some for an action.
+ * this frame is no more used in the plugin
+ */
 public class TermFrame extends IcyFrame {
 	private DefaultListModel<Object> defaultTerms;
 	private JList<Object> defaultList;
@@ -36,8 +41,8 @@ public class TermFrame extends IcyFrame {
 	}
 
 	/**
-	 * Create the frame.
 	 * 
+	 *
 	 * @param termCollection
 	 */
 	public TermFrame(TermCollection termCollection) {

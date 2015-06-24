@@ -48,10 +48,11 @@ import plugins.faubin.cytomine.module.tileViewer.utils.ThreadUrl;
 import plugins.faubin.cytomine.module.tileViewer.utils.Tile;
 import plugins.faubin.cytomine.module.tileViewer.utils.ViewerTool;
 import plugins.faubin.cytomine.module.tileViewer.utils.WholeSlide;
-import plugins.faubin.cytomine.utils.CropInformations;
-import plugins.faubin.cytomine.utils.CytomineCrop;
-import plugins.faubin.cytomine.utils.CytomineImportedROI;
+import plugins.faubin.cytomine.utils.CytomineROI;
 import plugins.faubin.cytomine.utils.IcytomineUtil;
+import plugins.faubin.cytomine.utils.crop.CropInformations;
+import plugins.faubin.cytomine.utils.crop.CytomineCrop;
+import plugins.faubin.cytomine.utils.crop.toolbar.Toolbar;
 import plugins.kernel.roi.roi2d.ROI2DPolygon;
 import be.cytomine.client.Cytomine;
 import be.cytomine.client.CytomineException;
@@ -63,6 +64,10 @@ import be.cytomine.client.models.ImageInstance;
  * this panel is an interface to view high resolution images from Cytomine by loading them tiles by tiles and writing them to 
  * a BufferedImage.
  * Tiles are loaded depending on the virtual position of the viewer on the image and on the zoom level
+ */
+/**
+ * @author faubin
+ *
  */
 @SuppressWarnings("serial")
 public class CytomineReader extends JPanel {
@@ -184,6 +189,10 @@ public class CytomineReader extends JPanel {
 		
 	}
 
+	/**
+	 * this function return the center of the panel
+	 * @return Point2D.Double
+	 */
 	public Point2D.Double getCenter() {
 		Point2D.Double center = new Point2D.Double();
 
@@ -334,6 +343,13 @@ public class CytomineReader extends JPanel {
 		return tiles;
 	}
 
+	/**
+	 * this function return the tiles that compose the asked area at the defined zoom
+	 * @param position
+	 * @param size
+	 * @param zoom
+	 * @return List<Tile>
+	 */
 	public List<Tile> getCrop(Point2D position, Dimension size, int zoom) {
 		List<Tile> tiles = new ArrayList<Tile>();
 
@@ -429,12 +445,20 @@ public class CytomineReader extends JPanel {
 
 	}
 
+	
+	/**
+	 * move the viewer by 1 tile to the left if possible
+	 * @return boolean
+	 */
 	public boolean left() {
 		double previous_x = window_position.getX();
 		window_position.setLocation(Math.max(0, window_position.getX() - (window_size.width - overlap)), window_position.getY());
 		return previous_x != window_position.getX();
 	}
-
+	/**
+	 * move the viewer by 1 tile to the right if possible
+	 * @return boolean
+	 */
 	public boolean right() {
 		if (window_position.getX() >= (image.levels[zoom].get("level_width") - window_size.width)) {
 			return false;
@@ -448,13 +472,21 @@ public class CytomineReader extends JPanel {
 			return true;
 		}
 	}
-
+	
+	/**
+	 * move the viewer by 1 tile to the top if possible
+	 * @return boolean
+	 */
 	public boolean up() {
 		double previous_y = window_position.getY();
 		window_position.setLocation(window_position.getX(), Math.max(0, window_position.getY() - (window_size.height - overlap)) );
 		return previous_y != window_position.getY();
 	}
-
+	
+	/**
+	 * move the viewer by 1 tile to the bottom if possible
+	 * @return boolean
+	 */
 	public boolean down() {
 		if (window_position.getY() >= (image.levels[zoom].get("level_height") - window_size.height)) {
 			return false;
@@ -470,6 +502,15 @@ public class CytomineReader extends JPanel {
 		}
 	}
 
+	/**
+	 * move the viewer to the next tile, assuming a 4x4 tiled image 
+	 * 1   2  3  4
+	 * 5   6  7  8
+	 * 9  10 11 12
+	 * 13 14 15 16	
+	 * when the position is at the 4st tile it will go to the 5
+	 * @return boolean
+	 */
 	public boolean next() {
 		if (right()) {
 			return true;
@@ -479,7 +520,15 @@ public class CytomineReader extends JPanel {
 			return down();
 		}
 	}
-
+	/**
+	 * move the viewer to the previous tile, assuming a 4x4 tiled image 
+	 * 1   2  3  4
+	 * 5   6  7  8
+	 * 9  10 11 12
+	 * 13 14 15 16	
+	 * when the position is at the 5st tile it will go to the 4
+	 * @return boolean
+	 */
 	public boolean previous() {
 		if (left()) {
 			return true;
@@ -490,6 +539,9 @@ public class CytomineReader extends JPanel {
 		}
 	}
 
+	/**
+	 * reset the queue containing requested tile to download
+	 */
 	public void resetQueues() {
 		queue = new Stack<Tile>();
 		
@@ -501,6 +553,11 @@ public class CytomineReader extends JPanel {
 		}
 	}
 
+	/**
+	 * increase the zoom
+	 * return false if the zoom was not changed
+	 * @return boolean
+	 */
 	public boolean inc_zoom() {
 		int previous_zoom = zoom;
 		zoom = Math.max(0, zoom - 1);
@@ -513,7 +570,11 @@ public class CytomineReader extends JPanel {
 
 		return previous_zoom != zoom;
 	}
-
+	/**
+	 * decrease the zoom
+	 * return false if the zoom was not changed
+	 * @return boolean
+	 */
 	public boolean dec_zoom() {
 		int previous_zoom = zoom;
 		zoom = Math.min(image.depth - 1, zoom + 1);
@@ -526,6 +587,11 @@ public class CytomineReader extends JPanel {
 		return previous_zoom != zoom;
 	}
 
+	
+	/**
+	 * translate the current position to match the new image size afted a zoom change
+	 * @param zoom_factor
+	 */
 	void translate_to_zoom(double zoom_factor) {
 		
 		view_position.setLocation( view_position.getX() * zoom_factor, view_position.getY() * zoom_factor);
@@ -537,6 +603,9 @@ public class CytomineReader extends JPanel {
 
 	public MouseListener mouseListener = new CytomineMouseListener(this);
 
+	/**
+	 * this function is used to move the position on the image while the 1st mouse button is grabbed
+	 */
 	public void mouseMove() {
 		Thread mouseThread = new Thread() {
 			public void run() {
@@ -598,6 +667,10 @@ public class CytomineReader extends JPanel {
 		return sequence;
 	}
 	
+	/**
+	 * this function is used to load the annotations from cytomine to the viewer
+	 * @throws CytomineException
+	 */
 	public void loadAnnotations() throws CytomineException{
 		sequence.removeAllROI();
 		
@@ -624,7 +697,7 @@ public class CytomineReader extends JPanel {
 			
 			Point2D.Double ratio = IcytomineUtil.getScaleRatio(imageSize, thumbnailSize);
 
-			CytomineImportedROI roi = CytomineImportedROI.build(IcytomineUtil.WKTtoPoint2D(polygon, ratio, imageSizeY), annotation, cytomine);
+			CytomineROI roi = CytomineROI.build(IcytomineUtil.WKTtoPoint2D(polygon, ratio, imageSizeY), annotation, cytomine);
 
 			roi.addListener(annotationListener);
 			roi.initialise(cytomine, instance);
@@ -637,6 +710,10 @@ public class CytomineReader extends JPanel {
 		
 	}
 	
+	/**
+	 * this function is used to save the annotation that were made on the dynamic viewer to cytomine
+	 * @param replace
+	 */
 	public void saveAnnotations(boolean replace){
 		if(replace){
 			IcytomineUtil.deleteAllAnnotation(cytomine, instance, null);
@@ -649,15 +726,15 @@ public class CytomineReader extends JPanel {
 
 			
 			// convert to ROI for cytomine if possible
-			CytomineImportedROI newROI;
+			CytomineROI newROI;
 			try {
-				newROI = (CytomineImportedROI) roi;
+				newROI = (CytomineROI) roi;
 				terms = newROI.terms;
 			} catch (Exception e) {
 				Annotation annotation = new Annotation();
 				annotation.set("term", terms.toString());
 
-				newROI = new CytomineImportedROI(((ROI2DPolygon) roi).getPoints(), annotation);
+				newROI = new CytomineROI(((ROI2DPolygon) roi).getPoints(), annotation);
 				newROI.setColor(Color.black);
 				sequence.getROI2Ds().set(i, newROI);
 
@@ -687,13 +764,16 @@ public class CytomineReader extends JPanel {
 		}
 	}
 	
+	/**
+	 * this function is used to create a crop of the selected annotation
+	 */
 	public void cropAnnotation(){
 		
 		ROI2D roi = sequence.getSelectedROI2D();
 		
-		if(roi != null && roi instanceof CytomineImportedROI){
+		if(roi != null && roi instanceof CytomineROI){
 			
-			CytomineImportedROI r = (CytomineImportedROI) roi;
+			CytomineROI r = (CytomineROI) roi;
 			
 			Point2D.Double translation = new Point2D.Double(-(getWidth()/2 + view_position.getX()) , -(getHeight()/2 + view_position.getY()));
 			
@@ -706,7 +786,7 @@ public class CytomineReader extends JPanel {
 			
 			
 			
-			CytomineImportedROI annotation = new CytomineImportedROI(r.getPoints());
+			CytomineROI annotation = new CytomineROI(r.getPoints());
 			annotation.translate(translation.getX(), translation.getY());
 			
 			try {
@@ -732,6 +812,7 @@ public class CytomineReader extends JPanel {
 					
 					crop.addToDesktopPane();
 					
+					Toolbar toolbar = new Toolbar(crop, cytomine);
 					
 				} catch (CytomineException e) {
 					// TODO Auto-generated catch block
@@ -772,12 +853,12 @@ public class CytomineReader extends JPanel {
 									if (event.getType() == ROIEventType.SELECTION_CHANGED) {
 
 										if (!roi.isSelected()
-												&& !(roi instanceof CytomineImportedROI)) {
+												&& !(roi instanceof CytomineROI)) {
 											System.out.println(event.getType());
 											Object source = event.getSource();
 											ROI2DPolygon roi = (ROI2DPolygon) source;
 
-											CytomineImportedROI annotation = new CytomineImportedROI(
+											CytomineROI annotation = new CytomineROI(
 													roi.getPoints(), instance,
 													cytomine);
 
@@ -808,7 +889,7 @@ public class CytomineReader extends JPanel {
 		public void roiChanged(ROIEvent event) {
 			if(event.getType()==ROIEventType.SELECTION_CHANGED){
 				Object source = event.getSource();
-				CytomineImportedROI roi = (CytomineImportedROI) source;
+				CytomineROI roi = (CytomineROI) source;
 				
 				if(roi.isSelected()){
 					roi.getConfig().setVisible(true);

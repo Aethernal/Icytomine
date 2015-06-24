@@ -1,4 +1,4 @@
-package plugins.faubin.cytomine.oldgui.mvc.model.utils;
+package plugins.faubin.cytomine.utils;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -9,8 +9,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.TreeMap;
+
+import plugins.faubin.cytomine.utils.software.SoftwareData;
 
 
+/**
+ * @author faubin
+ * this frame is used to store the plugin configuration
+ */
 @SuppressWarnings("serial")
 public class Configuration implements Serializable{
 	
@@ -22,9 +29,9 @@ public class Configuration implements Serializable{
 	
 	//default values
 	private static final boolean defaultRememberMe = true;
-	private static final String defaultPublicKey = "d42e7fe6-4e84-4c04-82f5-9863d10d590e";
-	private static final String defaultPrivateKey = "d22a6cd4-04cb-4d06-8a46-082379219b4c";
-	private static final String defaultHost = "http://cytomine.web.pasteur.fr";
+	private static final String defaultPublicKey = "";
+	private static final String defaultPrivateKey = "";
+	private static final String defaultHost = "";
 	
 	//images sizes
 	public int glomerulDetectionZoom; 
@@ -64,6 +71,16 @@ public class Configuration implements Serializable{
 	
 	//default values
 	private static final Dimension defaultDynamicViewerDim = new Dimension(500,500);
+	
+	
+	//software & ontology ID depending on server
+	public TreeMap<String, TreeMap<String, SoftwareData>> softwareID;
+	public TreeMap<String, Long> ontologyID;
+	
+	//default values
+	private static final TreeMap<String, TreeMap<String, SoftwareData>> defaultSoftwareID = new TreeMap<String, TreeMap<String, SoftwareData>>();
+	private static final TreeMap<String, Long> defaultOntologyID = new TreeMap<String, Long>();
+	
 	
 	//singleton
 	private static Configuration configuration = createConfiguration();
@@ -146,6 +163,11 @@ public class Configuration implements Serializable{
 		
 		//Dyn viewer
 		config.dynamicViewerDim = defaultDynamicViewerDim;
+		
+		//ontology & software
+		config.softwareID = defaultSoftwareID;
+		config.ontologyID = defaultOntologyID;
+		
 		
 		return config;
 	

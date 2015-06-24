@@ -13,6 +13,7 @@ public class ProjectsMenu extends Menu {
 	
 	private JButton sections;
 	private JButton glomerules;
+	private JButton sectAndGlom;
 	
 	public ProjectsMenu(ProjectsView view) {
 		super();
@@ -23,18 +24,21 @@ public class ProjectsMenu extends Menu {
 		/*------------------------------------------*/
 		sections = new JButton("Sections detection");
 		glomerules = new JButton("Glomerules detection");
+		sectAndGlom = new JButton("Section and Glomerules detection");
 		
 		/* -----------------------------------------*/
 		/* add to menu
 		/*------------------------------------------*/
 		add(sections);
 		add(glomerules);
+		add(sectAndGlom);
 		
 		/*------------------------------------------*/
 		/* add listeners
 		/*------------------------------------------*/
 		sections.addActionListener(sectionDetection);
 		glomerules.addActionListener(glomeruleDetection);
+		sectAndGlom.addActionListener(sectglomDetection);
 		
 		
 	}
@@ -61,6 +65,15 @@ public class ProjectsMenu extends Menu {
 		}
 		
 	};
-	
+	/*-------------------------------------------*/
+	ActionListener sectglomDetection = new ActionListener(){
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			view.sectglomDetection();
+			
+		}
+		
+	};
 	
 }

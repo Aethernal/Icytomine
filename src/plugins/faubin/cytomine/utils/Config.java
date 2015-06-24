@@ -5,6 +5,11 @@ import java.util.TreeMap;
 
 import javax.swing.UIManager;
 
+/**
+ * @author faubin
+ * this class was used to store constant.
+ * it was partially remplaced by the Configuration class that store and localy save the configurations of the plugin
+ */
 public class Config {
 
 	// basic configuration
@@ -18,30 +23,29 @@ public class Config {
 	public static Map<String, String> messages  = new TreeMap<String, String>();
 	
 	// ID MAP
-	public static Map<String, Long> IDMap = new TreeMap<String, Long>();
+//	public static Map<String, Long> IDMap = new TreeMap<String, Long>();
 
 	
 	public static void initialize() {
 		
-		//ID ontology
-		IDMap.put("ontology_section", 12237l);
-		IDMap.put("ontology_glomerule", 12224l);
-		
-		//ID Software
-		IDMap.put("software_SectionGeneration3", 6571943l);
-		IDMap.put("SectionGenerationSoftware", 8334270l);
-			IDMap.put("SectionGenerationSoftware_param1", 8334278l);
-			IDMap.put("SectionGenerationSoftware_param2", 8334284l);
-			IDMap.put("SectionGenerationSoftware_param3", 8334290l);
-		
-		IDMap.put("GlomeruleGenerationSoftware", 8424480l);
-			IDMap.put("GlomeruleGenerationSoftware_param1", 8424490l);
-			IDMap.put("GlomeruleGenerationSoftware_param2", 8424496l);
-			IDMap.put("GlomeruleGenerationSoftware_param3", 8424502l);
-			IDMap.put("GlomeruleGenerationSoftware_param4", 8424508l);
-			IDMap.put("GlomeruleGenerationSoftware_param5", 8424514l);
-			IDMap.put("GlomeruleGenerationSoftware_param6", 8424520l);
-			IDMap.put("GlomeruleGenerationSoftware_param7", 8424526l);
+//		//ID ontology
+//		IDMap.put("ontology_section", 621938l);
+//		IDMap.put("ontology_glomerule", 621948l);
+//		
+//		//ID Software
+//		IDMap.put("SectionGenerationSoftware", 632699l);
+//			IDMap.put("SectionGenerationSoftware_param1", 632709l);
+//			IDMap.put("SectionGenerationSoftware_param2", 632715l);
+//			IDMap.put("SectionGenerationSoftware_param3", 632721l);
+//		
+//		IDMap.put("GlomeruleGenerationSoftware", 632827l);
+//			IDMap.put("GlomeruleGenerationSoftware_param1", 632837l);
+//			IDMap.put("GlomeruleGenerationSoftware_param2", 632843l);
+//			IDMap.put("GlomeruleGenerationSoftware_param3", 632849l);
+//			IDMap.put("GlomeruleGenerationSoftware_param4", 632855l);
+//			IDMap.put("GlomeruleGenerationSoftware_param5", 632861l);
+//			IDMap.put("GlomeruleGenerationSoftware_param6", 632867l);
+//			IDMap.put("GlomeruleGenerationSoftware_param7", 632873l);
 		
 		//Errors messages
 		

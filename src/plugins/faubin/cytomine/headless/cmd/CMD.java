@@ -1,7 +1,9 @@
 package plugins.faubin.cytomine.headless.cmd;
 
+
 import plugins.faubin.cytomine.headless.Console;
 import plugins.faubin.cytomine.utils.Config;
+import plugins.faubin.cytomine.utils.Configuration;
 
 public abstract class CMD {
 	protected Console console;
@@ -12,6 +14,8 @@ public abstract class CMD {
 	
 	//toString variable
 	protected int nbTab = 0;
+	
+	public Configuration configuration = Configuration.getConfiguration();
 	
 	public CMD(Console console) {
 		this.console = console;

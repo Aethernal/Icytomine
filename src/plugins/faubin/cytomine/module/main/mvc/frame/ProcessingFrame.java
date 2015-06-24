@@ -26,14 +26,15 @@ public class ProcessingFrame extends IcyFrame {
 	private ConsoleUI console;
 	private Color textColor;
 
-	// reset or not the console between each use ±-±-±-±-±
+	// reset or not the console between each use 
 	private JCheckBox checkBox;
 
+
 	/**
-	 * @wbp.parser.entryPoint
+	 * this frame is used to show the progression of a task, it use a console and 2 progress bar.
 	 */
 	public ProcessingFrame() {
-		super("Processing", true, true, false, false); // IcyFrame constructor
+		super("Processing", true, true, false, false);
 
 		setSize(455, 350);
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -79,6 +80,10 @@ public class ProcessingFrame extends IcyFrame {
 		addToDesktopPane();
 	}
 
+	
+	/**
+	 * reset the frame and the console if the option keep is not selected
+	 */
 	public void newAction() {
 		setVisible(true);
 		setActionProgress(0);
@@ -92,6 +97,10 @@ public class ProcessingFrame extends IcyFrame {
 		}
 	}
 
+	/**
+	 * this function allow to set the progression of the action
+	 * @param value
+	 */
 	public void setActionProgress(final int value) {
 		ThreadUtil.invokeLater(new Runnable() {
 
@@ -103,6 +112,9 @@ public class ProcessingFrame extends IcyFrame {
 
 	}
 
+	/**
+	 * this function allow to set the progression of the task
+	 */
 	public void setGlobalProgress(final int value) {
 		ThreadUtil.invokeLater(new Runnable() {
 
@@ -114,10 +126,18 @@ public class ProcessingFrame extends IcyFrame {
 
 	}
 
+	/**
+	 * this function is used to print a message to the console with a line end
+	 * @param msg
+	 */
 	public void println(String msg) {
 		print(msg + "\n");
 	}
 
+	/**
+	 * this function is used to print a message to the console
+	 * @param msg
+	 */
 	public void print(final String msg) {
 		ThreadUtil.invokeLater(new Runnable() {
 			@Override
@@ -127,6 +147,10 @@ public class ProcessingFrame extends IcyFrame {
 		});
 	}
 
+	/**
+	 * this function is used to set the color of the next console messages.
+	 * @param textColor
+	 */
 	public void setColor(Color textColor) {
 		this.textColor = textColor;
 	}

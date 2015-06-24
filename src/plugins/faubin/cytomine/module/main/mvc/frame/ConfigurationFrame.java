@@ -91,14 +91,17 @@ public class ConfigurationFrame extends IcyFrame {
 	
 	/**
 	 * @author faubin
-	 * items for the JTree
+	 * items for the JTree, theses items correspond to configurable part of the plugin
 	 */
 	public enum Item {
 		Login, ImageDownload, ImagesView, GlomGen, DynView;
 	}
 	
 	
-	// event fired when selecting an item
+	/*
+	 * tree selection listener, event fired when the selection is modified.
+	 * when this listener receive an selection change event, it change the interface to show the corresponding configuration frame.
+	 */
 	TreeSelectionListener treeListener = new TreeSelectionListener() {
 		
 		@Override

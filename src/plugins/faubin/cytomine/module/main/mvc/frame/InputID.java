@@ -16,6 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * @author faubin
+ * this class allow to show a frame asking for an ID then start the runnable that was linked to it.
+ */
 public class InputID extends IcyFrame {
 
 	private JPanel contentPane;

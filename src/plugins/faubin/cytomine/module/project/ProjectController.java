@@ -99,5 +99,56 @@ public class ProjectController extends Controller {
 		}
 		
 	}
+
+	public void sectglomDetection() {
+		final long ID = view.getSelected();
+		
+		if(ID != -1){
+			ThreadUtil.bgRun(new Runnable(){
+
+				@Override
+				public void run() {
+					model.sectglomDetection(ID);
+				}
+				
+			});
+		}else{
+			view.showError("You need to select an image !");
+		}
+	}
+
+	public void uploadThumbnail() {
+		final long ID = view.getSelected();
+		
+		if(ID != -1){
+			ThreadUtil.bgRun(new Runnable(){
+
+				@Override
+				public void run() {
+					model.uploadThumbnail(ID);
+				}
+				
+			});
+		}else{
+			view.showError("You need to select an image !");
+		}
+	}
+
+	public void cropSection() {
+		final long ID = view.getSelected();
+		
+		if(ID != -1){
+			ThreadUtil.bgRun(new Runnable(){
+
+				@Override
+				public void run() {
+					model.cropSection(ID);
+				}
+				
+			});
+		}else{
+			view.showError("You need to select an image !");
+		}
+	}
 	
 }

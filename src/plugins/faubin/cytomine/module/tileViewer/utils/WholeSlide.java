@@ -7,6 +7,10 @@ import be.cytomine.client.Cytomine;
 import be.cytomine.client.CytomineException;
 import be.cytomine.client.models.AbstractImage;
 
+/**
+ * @author faubin
+ * this object is used to store data, it contain the height and width of each zoom level and others informations
+ */
 public class WholeSlide {
 	public AbstractImage image;
 	public int depth;

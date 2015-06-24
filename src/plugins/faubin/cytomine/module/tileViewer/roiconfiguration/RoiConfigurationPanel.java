@@ -17,7 +17,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import plugins.faubin.cytomine.utils.CytomineImportedROI;
+import plugins.faubin.cytomine.utils.CytomineROI;
 import be.cytomine.client.collections.TermCollection;
 import be.cytomine.client.models.Term;
 
@@ -26,12 +26,12 @@ public class RoiConfigurationPanel extends IcyFrame {
 	
 	private JPanel contentPane;
 	private JTextField roiName;
-	private CytomineImportedROI roi;
+	private CytomineROI roi;
 	
 	/**
 	 * Create the frame.
 	 */
-	public RoiConfigurationPanel(CytomineImportedROI roi, TermCollection terms) {
+	public RoiConfigurationPanel(CytomineROI roi, TermCollection terms) {
 		super("Configuration", true, true, false, false);
 		
 		//frame initialisation
@@ -75,6 +75,10 @@ public class RoiConfigurationPanel extends IcyFrame {
 
 	}
 	
+	/**
+	 * this function is used to modify the roi color and term depending on the OntologySelectionOption status
+	 * @param option
+	 */
 	public void optionFired(OntologySelectionOption option){
 		if(option.isSelected()){
 			roi.setColor(option.getColor());

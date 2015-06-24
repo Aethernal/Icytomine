@@ -77,5 +77,22 @@ public class ProjectsController extends Controller {
 			view.showError("You need to select a project !");
 		}
 	}
+
+	public void sectglomDetection() {
+		final long ID = view.getSelected();
+		
+		if(ID != -1){
+			ThreadUtil.bgRun(new Runnable(){
+
+				@Override
+				public void run() {
+					model.sectglomDetection(ID);
+				}
+				
+			});
+		}else{
+			view.showError("You need to select a project !");
+		}
+	}
 	
 }
